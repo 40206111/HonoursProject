@@ -7,7 +7,6 @@ public class flashline : MonoBehaviour
 
     private float time = 0.0f;
     private SpriteRenderer sr;
-    private int counter = 1;
 
     // Use this for initialization
     void Start()
@@ -18,11 +17,15 @@ public class flashline : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //increment time
         time += Time.deltaTime;
+        //temp colour variable
         Color col = sr.color;
 
+        //do every 0.3 seconds
         if (time > 0.3f)
         {
+            //Change opacity to cause line to flash
             if (col.a == 255)
             {
                 col.a = 0;
@@ -32,8 +35,9 @@ public class flashline : MonoBehaviour
                 col.a = 255;
             }
             sr.color = col;
+
+            //reset time to 0
             time = 0.0f;
-            counter++;
         }
     }
 }
