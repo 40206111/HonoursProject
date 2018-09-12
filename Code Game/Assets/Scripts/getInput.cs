@@ -29,6 +29,7 @@ public class getInput : MonoBehaviour
             {
                 if (theText.text.Length != 0)
                 {
+                    StartCoroutine(MoveLineLeft(theText.text[theText.text.Length - 1]));
                     theText.text = theText.text.Substring(0, theText.text.Length - 1);
                 }
             }
@@ -39,7 +40,25 @@ public class getInput : MonoBehaviour
             else
             {
                 theText.text += c;
+                StartCoroutine(MoveLineRight(c));
             }
         }
+    }
+
+
+    private IEnumerator MoveLineRight(char c)
+    {
+        yield return null;
+        CharacterInfo charInfo;
+        theText.font.GetCharacterInfo(c, out charInfo);
+        line.transform.localPosition = new Vector3(line.transform.localPosition.x + (charInfo.advance * 2.165f), line.transform.localPosition.y, line.transform.localPosition.z);
+    }
+
+    private IEnumerator MoveLineLeft(char c)
+    {
+        yield return null;
+        CharacterInfo charInfo;
+        theText.font.GetCharacterInfo(c, out charInfo);
+        line.transform.localPosition = new Vector3(line.transform.localPosition.x - (charInfo.advance * 2.165f), line.transform.localPosition.y, line.transform.localPosition.z);
     }
 }

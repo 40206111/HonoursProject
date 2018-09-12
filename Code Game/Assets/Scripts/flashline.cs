@@ -6,29 +6,34 @@ public class flashline : MonoBehaviour
 {
 
     private float time = 0.0f;
-    private Color sr;
+    private SpriteRenderer sr;
+    private int counter = 1;
 
     // Use this for initialization
     void Start()
     {
-        sr = GetComponent<SpriteRenderer>().color;
+        sr = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
         time += Time.deltaTime;
-        if (time > 0.5f)
+        Color col = sr.color;
+
+        if (time > 0.3f)
         {
-            if (sr.a == 255)
+            if (col.a == 255)
             {
-                sr.a = 0;
+                col.a = 0;
             }
             else
             {
-                sr.a = 255;
+                col.a = 255;
             }
+            sr.color = col;
             time = 0.0f;
+            counter++;
         }
     }
 }
