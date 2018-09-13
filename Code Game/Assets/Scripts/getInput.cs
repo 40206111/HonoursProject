@@ -10,6 +10,7 @@ public class getInput : MonoBehaviour
     private GameObject line;
     private int textPlace = 0;
     private float xVal = 0;
+    private float leeway = 0;
 
     // Use this for initialization
     void Start()
@@ -22,7 +23,7 @@ public class getInput : MonoBehaviour
         line.GetComponent<SpriteRenderer>().color = theText.color;
         //Place line in correct place
         RectTransform temp = theText.GetComponent<RectTransform>();
-        line.transform.localPosition = new Vector2((temp.localPosition.x - temp.rect.width/2) - theText.fontSize / 3, (temp.localPosition.y + temp.rect.height/2) + theText.fontSize / 4);
+        line.transform.localPosition = new Vector2(((0 - (temp.rect.width/2) + line.transform.localScale.x / 2)) + 1.6f - leeway, ((temp.rect.height/2) - line.transform.localScale.y/2));
         //store x value
         xVal = line.transform.localPosition.x;
     }
@@ -64,7 +65,12 @@ public class getInput : MonoBehaviour
             else
             {
                 theText.text += c;
-                //wait for frame before movng line to ensure correct values
+                //wait for frame before moving line to ensure correct values
+                CharacterInfo charInfo;
+                if (theText.font.GetCharacterInfo(c, out charInfo))
+                {
+                    Debug.Log("heh");
+                }
                 StartCoroutine(MoveLineRight(c));
             }
         }
@@ -75,8 +81,9 @@ public class getInput : MonoBehaviour
     {
         yield return null;
         CharacterInfo charInfo;
-        theText.font.GetCharacterInfo(c, out charInfo);
-        line.transform.localPosition = new Vector3(line.transform.localPosition.x + (charInfo.advance * 2.165f), line.transform.localPosition.y, line.transform.localPosition.z);
+        theText.font.RequestCharactersInTexture(c.ToString(), theText.fontSize, theText.fontStyle);
+        theText.font.GetCharacterInfo(c, out charInfo, theText.fontSize, theText.fontStyle);
+        line.transform.localPosition = new Vector3((line.transform.localPosition.x + leeway + (charInfo.advance)) - leeway, line.transform.localPosition.y, line.transform.localPosition.z);
     }
 
     //Coroutine to move flashing line left
@@ -84,8 +91,9 @@ public class getInput : MonoBehaviour
     {
         yield return null;
         CharacterInfo charInfo;
-        theText.font.GetCharacterInfo(c, out charInfo);
-        line.transform.localPosition = new Vector3(line.transform.localPosition.x - (charInfo.advance * 2.165f), line.transform.localPosition.y, line.transform.localPosition.z);
+        theText.font.RequestCharactersInTexture(c.ToString(), theText.fontSize, theText.fontStyle);
+        theText.font.GetCharacterInfo(c, out charInfo, theText.fontSize, theText.fontStyle);
+        line.transform.localPosition = new Vector3(line.transform.localPosition.x - (charInfo.advance), line.transform.localPosition.y, line.transform.localPosition.z);
     }
 
     //Method to move flashing line's x position to correct place
