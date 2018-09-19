@@ -18,6 +18,12 @@ public class CopyText : MonoBehaviour {
 
     public void OnValueChanged()
     {
+        StartCoroutine(WaitForText());
+    }
+
+    IEnumerator WaitForText()
+    {
+        yield return null;
         theText.text = GetComponent<UnityEngine.UI.Text>().text;
     }
 }
