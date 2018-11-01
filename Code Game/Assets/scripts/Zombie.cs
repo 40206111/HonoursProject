@@ -5,7 +5,6 @@ using UnityEngine;
 public class Zombie : MonoBehaviour {
 
     private GameObject player;
-    [SerializeField]
     private float speed = 2.0f;
 
 	// Use this for initialization
@@ -15,9 +14,11 @@ public class Zombie : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Vector3 direction = player.transform.localPosition - gameObject.transform.localPosition;
+        Vector3 direction = player.transform.position - gameObject.transform.position;
         direction = direction.normalized;
-        gameObject.transform.localPosition += direction * speed * Time.deltaTime;
+        direction = direction * speed;
+        direction.y = 0.0f;
+        gameObject.transform.position += direction * Time.deltaTime;
 
 	}
 }
