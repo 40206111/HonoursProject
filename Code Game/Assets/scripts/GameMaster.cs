@@ -4,23 +4,59 @@ using UnityEngine;
 
 public class GameMaster : MonoBehaviour {
 
-    GameObject[] zombie;
-    float waitTime = 0.0f;
-    int lastZombie = 0;
-    float maxWait = 4.0f;
-    float SpeedTime = 10.0f;
-    float SpeedUp;
+    private GameObject[] zombie;
+    private float waitTime = 0.0f;
+    private float maxWait = 4.0f;
+    private float SpeedTime = 10.0f;
+    private float SpeedUp;
+    public static int score = 0;
+    public static bool pause = false;
+    private UnityEngine.UI.Text scoreTxt;
+    public static bool reset = false;
 
     // Use this for initialization
     void Start ()
     {
         zombie = GameObject.FindGameObjectsWithTag("Zombie");
         SpeedUp = SpeedTime;
-	}
-	
-	// Update is called once per frame
-	void Update ()
+        scoreTxt = GameObject.FindGameObjectWithTag("Score").GetComponent<UnityEngine.UI.Text>();
+        scoreTxt.text = "Score: 0";
+
+    }
+
+    IEnumerator Reset()
     {
+        waitTime = 0.0f;
+        maxWait = 4.0f;
+        SpeedUp = SpeedTime;
+        score = 0;
+        scoreTxt.text = "Score: 0";
+        GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().Reset();
+        for (int i = 0; i < zombie.Length; ++i)
+        {
+            zombie[i].GetComponent<Zombie>().Reset();
+        }
+        yield return new WaitForEndOfFrame();
+        pause = false;
+        reset = false;
+    }
+
+    // Update is called once per frame
+    void Update ()
+    {
+        if (pause)
+        {
+            if (!reset && Input.GetKeyDown(KeyCode.Space))
+            {
+                reset = true;
+            }
+            if(reset)
+            {
+                StartCoroutine(Reset());
+            }
+            return;
+        }
+        scoreTxt.text = "Score: " + score;
         if (waitTime <= 0.0f)
         {
             waitTime = Random.Range(0.5f, maxWait);
