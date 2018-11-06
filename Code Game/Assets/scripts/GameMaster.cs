@@ -7,11 +7,15 @@ public class GameMaster : MonoBehaviour {
     GameObject[] zombie;
     float waitTime = 0.0f;
     int lastZombie = 0;
+    float maxWait = 4.0f;
+    float SpeedTime = 10.0f;
+    float SpeedUp;
 
     // Use this for initialization
     void Start ()
     {
         zombie = GameObject.FindGameObjectsWithTag("Zombie");
+        SpeedUp = SpeedTime;
 	}
 	
 	// Update is called once per frame
@@ -19,19 +23,27 @@ public class GameMaster : MonoBehaviour {
     {
         if (waitTime <= 0.0f)
         {
-            waitTime = Random.Range(1.0f, 4.0f);
-            for (int i = 0; i < zombie.Length; ++i)
+            waitTime = Random.Range(0.5f, maxWait);
+            int zInt = Random.Range(0, zombie.Length);
+            for (int i = zInt; i < zInt + zombie.Length; ++i)
             {
-                if (zombie[i].GetComponent<Zombie>().dead)
+                if (zombie[i % zombie.Length].GetComponent<Zombie>().dead)
                 {
-                    zombie[i].GetComponent<Zombie>().dead = false;
-                    zombie[i].transform.position = new Vector3(zombie[i].transform.position.x, 0.0f, 15.0f);
+                    zombie[i % zombie.Length].GetComponent<Zombie>().dead = false;
+                    zombie[i % zombie.Length].transform.position = new Vector3(zombie[i % zombie.Length].transform.position.x, 0.0f, 15.0f);
                     break;
                 }
             }
         }
 
+        if (maxWait >= 1.0f && SpeedUp <= 0.0f)
+        {
+            maxWait -= 0.5f;
+            SpeedUp = SpeedTime;
+        }
+
         waitTime -= Time.deltaTime;
+        SpeedUp -= Time.deltaTime;
 
     }
 }
