@@ -6,19 +6,22 @@ public class Zombie : MonoBehaviour {
 
     private GameObject player;
     private float speed = 2.0f;
+    public bool dead = true;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         player = GameObject.FindGameObjectWithTag("Player");
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        Vector3 direction = player.transform.position - gameObject.transform.position;
-        direction = direction.normalized;
-        direction = direction * speed;
-        direction.y = 0.0f;
-        gameObject.transform.position += direction * Time.deltaTime;
-
-	}
+	void Update ()
+    { 
+        if (!dead && gameObject.transform.position.z > player.transform.position.z + 2)
+        {
+            Vector3 movement = gameObject.transform.position;
+            movement.z -= speed * Time.deltaTime;
+            gameObject.transform.position = movement;
+        }
+    }
 }
