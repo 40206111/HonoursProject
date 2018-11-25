@@ -56,7 +56,6 @@ public class GameMaster : MonoBehaviour {
             }
             return;
         }
-        scoreTxt.text = "Score: " + score;
         if (waitTime <= 0.0f)
         {
             waitTime = Random.Range(0.5f, maxWait);
@@ -71,6 +70,7 @@ public class GameMaster : MonoBehaviour {
                 }
             }
         }
+        scoreTxt.text = "Score: " + score;
 
         if (maxWait >= 1.0f && SpeedUp <= 0.0f)
         {

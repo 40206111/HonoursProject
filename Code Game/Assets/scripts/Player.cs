@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < zombie.Length; ++i)
             {
                 if (zombie[i].transform.position.x > 0 && zombie[i].transform.position.z <= gameObject.transform.position.z + 3)
                 {
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < zombie.Length; ++i)
             {
                 if (zombie[i].transform.position.x == 0 && zombie[i].transform.position.z <= gameObject.transform.position.z + 3)
                 {
@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < zombie.Length; ++i)
             {
                 if (zombie[i].transform.position.x < 0 && zombie[i].transform.position.z <= gameObject.transform.position.z + 3)
                 {
