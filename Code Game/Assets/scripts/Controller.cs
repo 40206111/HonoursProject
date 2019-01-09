@@ -5,17 +5,20 @@ using TMPro;
 
 public class Controller : MonoBehaviour
 {
-    private TMP_InputField test;
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+    public void Run()
+    {
+        ////
+        ///run start method once
+        ///run update method until stopped pressed (multithread?)
+        ///
     }
 }
