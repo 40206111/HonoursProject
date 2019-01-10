@@ -9,7 +9,12 @@ public class Controller : MonoBehaviour
     private TMP_InputField numbers;
     [SerializeField]
     private TMP_Text theText;
+    [SerializeField]
+    private TMP_InputField input;
     private static int lines = 1;
+
+    //monospace tag
+    const string monostring = "<mspace=1.2em>";
 
 
     // Start is called before the first frame update
@@ -22,15 +27,16 @@ public class Controller : MonoBehaviour
     {
         //Stop MSpace Being Deleted (if input box selected and carat position = 0 and backspace pressed, replace text with monospace tag.)
         LineNumbers();
+        CheckContent();
     }
 
     void LineNumbers()
     {
         ///Abiltiy could be added to have text resize if it gets too big
-            ///e.g. if characters has increased
-            ///add <size = x> to text before adding value
-            ///if characters will decrease
-            ///remove 9 + x.tostring.length extra characters
+        ///e.g. if characters has increased
+        ///add <size = x> to text before adding value
+        ///if characters will decrease
+        ///remove 9 + x.tostring.length extra characters
 
         int current = theText.textInfo.lineCount;
         while (lines > current)
@@ -42,6 +48,34 @@ public class Controller : MonoBehaviour
         {
             lines++;
             numbers.text += lines + "\n";
+        }
+    }
+
+    void CheckContent()
+    {
+        //stop from going out of scope
+        int amount = 14;
+        if (input.text.Length < 14)
+        {
+            amount = input.text.Length;
+        }
+
+        //check if monospace tag has been deleted
+        if (input.text.Substring(0, amount) != monostring)
+        {
+            //remove extra letters from tag
+            if (input.text.Length > 13)
+            {
+                input.text = input.text.Substring(13);
+            }
+            else
+            {
+                input.text = "";
+            }
+            //add tag back
+            input.text = monostring + input.text;
+            input.caretPosition = 14;
+            Canvas.ForceUpdateCanvases();
         }
     }
 
