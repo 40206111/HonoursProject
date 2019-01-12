@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Linq;
 
 public class Controller : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Controller : MonoBehaviour
     private static int lines = 1;
 
     //monospace tag
-    const string monostring = "<mspace=1.2em>";
+    const string monostring = "<mspace=1.2em><noparse>";
 
 
     // Start is called before the first frame update
@@ -25,19 +26,17 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Stop MSpace Being Deleted (if input box selected and carat position = 0 and backspace pressed, replace text with monospace tag.)
-        LineNumbers();
+
+        //if (Input.GetKeyDown(KeyCode.Return))
+        //{
+        ////fix scrollbar jumping to top
+        //}
         CheckContent();
+        LineNumbers();
     }
 
-    void LineNumbers()
+    public void LineNumbers()
     {
-        ///Abiltiy could be added to have text resize if it gets too big
-        ///e.g. if characters has increased
-        ///add <size = x> to text before adding value
-        ///if characters will decrease
-        ///remove 9 + x.tostring.length extra characters
-
         int current = theText.textInfo.lineCount;
         while (lines > current)
         {
@@ -51,11 +50,11 @@ public class Controller : MonoBehaviour
         }
     }
 
-    void CheckContent()
+    public void CheckContent()
     {
         //stop from going out of scope
-        int amount = 14;
-        if (input.text.Length < 14)
+        int amount = 23;
+        if (input.text.Length < 23)
         {
             amount = input.text.Length;
         }
@@ -64,9 +63,9 @@ public class Controller : MonoBehaviour
         if (input.text.Substring(0, amount) != monostring)
         {
             //remove extra letters from tag
-            if (input.text.Length > 13)
+            if (input.text.Length > 22)
             {
-                input.text = input.text.Substring(13);
+                input.text = input.text.Substring(22);
             }
             else
             {
@@ -74,15 +73,19 @@ public class Controller : MonoBehaviour
             }
             //add tag back
             input.text = monostring + input.text;
-            input.caretPosition = 14;
+            input.caretPosition = 23;
             Canvas.ForceUpdateCanvases();
         }
     }
 
     public void Compile()
     {
+        int currentLine = 0;
+        int character = 0;
+
         ////
         ///Break text by ;
+        List<string> code = theText.text.Split(';').ToList();
         ///until not usings
         ///Add usings to list
         ///for all commands after usings
