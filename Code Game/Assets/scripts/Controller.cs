@@ -7,12 +7,14 @@ using System.Linq;
 public class Controller : MonoBehaviour
 {
     [SerializeField]
-    private TMP_InputField numbers;
+    private TMP_Text numbers;
     [SerializeField]
     private TMP_Text theText;
     [SerializeField]
     private TMP_InputField input;
+    [SerializeField] UnityEngine.UI.Scrollbar scroll;
     private static int lines = 1;
+    private static float number_center;
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
@@ -21,21 +23,28 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        number_center = numbers.transform.position.y;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        //if (Input.GetKeyDown(KeyCode.Return))
-        //{
-        ////fix scrollbar jumping to top
-        //}
         CheckContent();
         LineNumbers();
     }
 
-    public void LineNumbers()
+    public void ScrollNumbers()
+    {
+        Vector3 pos = numbers.transform.position;
+        float test  = numbers.textBounds.extents.y;
+
+        Debug.Log(test);
+        pos.y = number_center + scroll.value * test;
+
+        numbers.transform.position = pos;
+    }
+
+    private void LineNumbers()
     {
         int current = theText.textInfo.lineCount;
         while (lines > current)
@@ -50,7 +59,7 @@ public class Controller : MonoBehaviour
         }
     }
 
-    public void CheckContent()
+    private void CheckContent()
     {
         //stop from going out of scope
         int amount = 23;
