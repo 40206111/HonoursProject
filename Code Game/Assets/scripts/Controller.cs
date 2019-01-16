@@ -16,6 +16,9 @@ public class Controller : MonoBehaviour
     private static int lines = 1;
     private static float number_center;
 
+    //Code Storage Variables//
+    List<string> allUsing = new List<string>();
+
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
 
@@ -87,16 +90,62 @@ public class Controller : MonoBehaviour
         }
     }
 
+
     public void Compile()
     {
+        Debug.Log("Compile Button Pressed");
         int currentLine = 0;
+        allUsing.Clear();
+
+        Error error = TryCompile(ref currentLine);
+    }
+
+    private Error TryCompile(ref int lineNo)
+    {
         int character = 0;
 
-        ////
-        ///Break text by ;
+        //Break text by ;
         List<string> code = theText.text.Split(';').ToList();
-        ///until not usings
-        ///Add usings to list
+        //until not usings
+        for (int i = 0; i < code.Count(); ++i)
+        {
+            string usings = "using ";
+            int usingCount = 0;
+
+            //Add usings to list
+            foreach (char c in code[i])
+            {
+                //check if found using key word
+                if (usingCount == usings.Length)
+                {
+                    //check that using is valid
+                    if ((c >= 0 && c <= 31) ||  //non printable characters
+                        (c >= 20 && c <= 45) || //  !"#$%'()*+,-
+                        c == 47 ||              // /
+                        (c >= 58 && c <= 64) ||   // :;<=>?@
+                        (c >= 91 && c <= 96) || // [\]^_`
+                        (c >= 123 && c <= 127))    // {|}~
+                    {
+                        //return error
+                        return new Error(Error.ErrorCodes.Syntax, "invalid characters in using declaration", lineNo);
+                    }
+                    //add character to list of usings
+                    allUsing[allUsing.Count() - 1] += c;
+                }
+                else if (c == usings[i]) // character in usings key word
+                {
+                    //increment using count
+                    usingCount++;
+                    if (usingCount == usings.Length)
+                    {
+                        //add new using to list
+                        allUsing.Add("");
+                    }
+                }
+            }
+            //remove used line
+            code.RemoveAt(0);
+        }
         ///for all commands after usings
         ///incriment by 1 every new line and every 50 (dependednt on point size -> 1120/pointsize) characters (counting line numbers)
         ///If line does not equal using check for class (if not output error on current line)
@@ -104,6 +153,8 @@ public class Controller : MonoBehaviour
         ///if in class while bracketcount = 1 start class check
         ///if bracket count is zero check for class or end of file
         ///if error break loops and continue with error help
+
+        return new Error();
     }
 
     private bool ClassCheck(int lineNo)
