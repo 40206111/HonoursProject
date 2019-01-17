@@ -39,7 +39,7 @@ public class Controller : MonoBehaviour
     public void ScrollNumbers()
     {
         Vector3 pos = numbers.transform.position;
-        float test  = numbers.textBounds.extents.y;
+        float test = numbers.textBounds.extents.y;
 
         Debug.Log(test);
         pos.y = number_center + scroll.value * test;
@@ -94,10 +94,12 @@ public class Controller : MonoBehaviour
     public void Compile()
     {
         Debug.Log("Compile Button Pressed");
-        int currentLine = 0;
+        int currentLine = 1;
         allUsing.Clear();
 
         Error error = TryCompile(ref currentLine);
+
+        Debug.Log(error);
     }
 
     private Error TryCompile(ref int lineNo)
@@ -106,15 +108,39 @@ public class Controller : MonoBehaviour
 
         //Break text by ;
         List<string> code = theText.text.Split(';').ToList();
+
+        code[0] = code[0].Substring(monostring.Length, code[0].Length - monostring.Length);
+
         //until not usings
-        for (int i = 0; i < code.Count(); ++i)
+        while (code.Count > 0)
         {
             string usings = "using ";
             int usingCount = 0;
 
-            //Add usings to list
-            foreach (char c in code[i])
+            if (code[0] == "")
             {
+                return new Error(Error.ErrorCodes.Syntax, "Expected instruction before semicolon", lineNo);
+            }
+
+            //Add usings to list
+            foreach (char c in code[0])
+            {
+                if (c == 8203)
+                {
+                    character++;
+                    continue;
+                }
+
+                if (c == '\n')
+                {
+                    lineNo++;
+                    character = 0;
+                }
+                else if (character >= 1)
+                {
+                    character = 0;
+                    lineNo++;
+                }
                 //check if found using key word
                 if (usingCount == usings.Length)
                 {
@@ -132,7 +158,7 @@ public class Controller : MonoBehaviour
                     //add character to list of usings
                     allUsing[allUsing.Count() - 1] += c;
                 }
-                else if (c == usings[i]) // character in usings key word
+                else if (c == usings[usingCount]) // character in usings key word
                 {
                     //increment using count
                     usingCount++;
@@ -142,7 +168,21 @@ public class Controller : MonoBehaviour
                         allUsing.Add("");
                     }
                 }
+                else if (!(usingCount == 0 && char.IsWhiteSpace(c)))
+                {
+                    return new Error(Error.ErrorCodes.Syntax, "expected keyword \"using\"", lineNo);
+                }
             }
+
+            //using keyword not complete
+            if (usingCount > 0 && usingCount < usings.Length - 1) return new Error(Error.ErrorCodes.Syntax, "expected keyword \"using\"", lineNo);
+            //no package given after using keyword
+            else if (usingCount == usings.Length - 1) return new Error(Error.ErrorCodes.Syntax, "name of package should be given after \"using\" keyword", lineNo);
+            else if (allUsing.Count != 0)
+            {
+                if ((allUsing[allUsing.Count() - 1] == "")) return new Error(Error.ErrorCodes.Syntax, "name of package should be given after \"using\" keyword", lineNo);
+            }
+
             //remove used line
             code.RemoveAt(0);
         }
