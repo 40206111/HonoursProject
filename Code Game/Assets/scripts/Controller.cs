@@ -164,13 +164,14 @@ public class Controller : MonoBehaviour
                     usingCount++;
                     if (usingCount == usings.Length)
                     {
+                        if (code.Count == 1) return new Error(Error.ErrorCodes.Syntax, "Expected semi colon", lineNo);
                         //add new using to list
                         allUsing.Add("");
                     }
                 }
                 else if (!(usingCount == 0 && char.IsWhiteSpace(c)))
                 {
-                    return new Error(Error.ErrorCodes.Syntax, "expected keyword \"using\"", lineNo);
+                    break;
                 }
             }
 
@@ -186,13 +187,37 @@ public class Controller : MonoBehaviour
             //remove used line
             code.RemoveAt(0);
         }
-        ///for all commands after usings
-        ///incriment by 1 every new line and every 50 (dependednt on point size -> 1120/pointsize) characters (counting line numbers)
-        ///If line does not equal using check for class (if not output error on current line)
-        ///check for open bracket (increment bracket count)
-        ///if in class while bracketcount = 1 start class check
-        ///if bracket count is zero check for class or end of file
-        ///if error break loops and continue with error help
+
+        //for all commands after usings
+        for (int i = 0; i < code.Count; ++i)
+        {
+            //incriment by 1 every new line and every character = 8203 (counting line numbers)
+            foreach (char c in code[0])
+            {
+                if (c == 8203)
+                {
+                    character++;
+                    continue;
+                }
+
+                if (c == '\n')
+                {
+                    lineNo++;
+                    character = 0;
+                }
+                else if (character >= 1)
+                {
+                    character = 0;
+                    lineNo++;
+                }
+
+                ///check for class if not already in class (if not output error on current line)
+                ///check for open bracket (increment bracket count)
+                ///if in class while bracketcount = 1 start class check
+                ///if bracket count is zero check for class or end of file
+                ///if error break loops and continue with error help
+            }
+        }
 
         return new Error();
     }
