@@ -8,7 +8,8 @@ public class Error
     public enum ErrorCodes
     {
         None,
-        Syntax
+        Syntax,
+        InGame      //errors that occur due to not having the full functionality of C#
     };
 
     ErrorCodes errorCode = ErrorCodes.None;

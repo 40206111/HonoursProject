@@ -22,6 +22,15 @@ public class Controller : MonoBehaviour
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
 
+    //keywords
+    const string usings = "using ";
+    const string pub = "public";
+    const string aClass = "class";
+    const string unityClass = "MonoBehaviour";
+    const string theVoid = "void";
+    const string start = "Start()";
+    const string update = "Update()";
+
 
     // Start is called before the first frame update
     void Start()
@@ -105,6 +114,7 @@ public class Controller : MonoBehaviour
     private Error TryCompile(ref int lineNo)
     {
         int character = 0;
+        bool end = false;
 
         //Break text by ;
         List<string> code = theText.text.Split(';').ToList();
@@ -114,7 +124,6 @@ public class Controller : MonoBehaviour
         //until not usings
         while (code.Count > 0)
         {
-            string usings = "using ";
             int usingCount = 0;
 
             if (code[0] == "")
@@ -171,6 +180,7 @@ public class Controller : MonoBehaviour
                 }
                 else if (!(usingCount == 0 && char.IsWhiteSpace(c)))
                 {
+                    end = true;
                     break;
                 }
             }
@@ -184,13 +194,28 @@ public class Controller : MonoBehaviour
                 if ((allUsing[allUsing.Count() - 1] == "")) return new Error(Error.ErrorCodes.Syntax, "name of package should be given after \"using\" keyword", lineNo);
             }
 
+            if (end)
+            {
+                break;
+            }
             //remove used line
             code.RemoveAt(0);
         }
 
+
+        int bracCount = 0; // bracket count
+        string word = "";
+        string prevWord = "";
+
         //for all commands after usings
         for (int i = 0; i < code.Count; ++i)
         {
+
+            if (code[i] == "")
+            {
+                return new Error(Error.ErrorCodes.Syntax, "Expected instruction before semicolon", lineNo);
+            }
+
             //incriment by 1 every new line and every character = 8203 (counting line numbers)
             foreach (char c in code[0])
             {
@@ -211,12 +236,104 @@ public class Controller : MonoBehaviour
                     lineNo++;
                 }
 
-                ///check for class if not already in class (if not output error on current line)
+                if (c == '}')
+                {
+                    bracCount--;
+                    word = "";
+                    prevWord = "";
+                }
+                else if (word == unityClass && c == '\n')
+                {
+                    continue;
+                }
+                else if (c == '{')
+                {
+                    bracCount++;
+
+                    prevWord = "{";
+                    word = "";
+
+                    if (bracCount == 0 && !((word == unityClass && prevWord == ":") || prevWord == unityClass))
+                    {
+                        return new Error(Error.ErrorCodes.InGame, "Expected derevition from monobehaviour", lineNo);
+                    }
+                }
+                else if (c == ':'  && (prevWord == "Zombie" || prevWord == "GameMaster" || prevWord == "Player"))
+                {
+                    prevWord = ":";
+                    word = "";
+                    continue;
+                }
+                else if (word.Length > 1 && ((c >= 0 && c <= 31) ||  //non printable characters
+                        (c >= 33 && c <= 47) || //  !"#$%'()*+,-./
+                        (c >= 58 && c <= 64) ||   // :;<=>?@
+                        (c >= 91 && c <= 96) || // [\]^_`
+                        (c >= 123 && c <= 127)))   // {|}~)
+                {
+                    return new Error(Error.ErrorCodes.Syntax, "Invalid character found in middle of expected keyword begining " + word, lineNo);
+                }
+                else if (!((c >= 0 && c <= 31) ||  //non printable characters
+                        (c >= 20 && c <= 47) || //  !"#$%'()*+,-./
+                        (c >= 58 && c <= 64) ||   // :;<=>?@
+                        (c >= 91 && c <= 96) || // [\]^_`
+                        (c >= 123 && c <= 127)))   // {|}~)
+                {
+                    word += c;
+                    continue;
+                }
+
+                ///check for class if not already in class
+                if (bracCount == 0)
+                {
+                    if (prevWord == ":" && word == unityClass)
+                    {
+                        prevWord = word;
+                        word = "";
+                    }
+                    else if (prevWord == aClass)
+                    {
+                        switch(word)
+                        {
+                            case "Zombie":
+                                break;
+                            case "GameMaster":
+                                break;
+                            case "Player":
+                                break;
+                            default:
+                                return new Error(Error.ErrorCodes.InGame, "Class Must be called \"Zombie\", \"Player\" or \"GameMaster\"", lineNo);
+                        }
+                        prevWord = word;
+                        word = "";
+                    }
+                    else if (word == aClass && prevWord == pub)
+                    {
+                        prevWord = word;
+                        word = "";
+                    }
+                    else if (word == pub)
+                    {
+                        prevWord = word;
+                        word = "";
+                    }
+                    else if (prevWord != ":")
+                    {
+                        return new Error(Error.ErrorCodes.Syntax, "unrecognised keyword for class declairation " + "\"" + word + "\"", lineNo);
+                    }
+                }
+
                 ///check for open bracket (increment bracket count)
                 ///if in class while bracketcount = 1 start class check
                 ///if bracket count is zero check for class or end of file
                 ///if error break loops and continue with error help
             }
+
+            if (word != "")
+            {
+                return new Error(Error.ErrorCodes.Syntax, "Invalid instruction before semi colon", lineNo);
+            }
+            word = "";
+            prevWord = "";
         }
 
         return new Error();
