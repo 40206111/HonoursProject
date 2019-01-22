@@ -18,9 +18,13 @@ public class Controller : MonoBehaviour
 
     //Code Storage Variables//
     List<string> allUsing = new List<string>();
+    IDictionary<string, string> strings = new Dictionary<string, string>();
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
+
+    string stringset = "";
+    string type = "";
 
     //keywords
     const string usings = "using ";
@@ -321,11 +325,15 @@ public class Controller : MonoBehaviour
                         return new Error(Error.ErrorCodes.Syntax, "unrecognised keyword for class declairation " + "\"" + word + "\"", lineNo);
                     }
                 }
-
-                ///check for open bracket (increment bracket count)
-                ///if in class while bracketcount = 1 start class check
-                ///if bracket count is zero check for class or end of file
-                ///if error break loops and continue with error help
+                else
+                {
+                    string error = ClassCheck(word, ref prevWord, ref bracCount);
+                    if (error != "")
+                    {
+                        return new Error(Error.ErrorCodes.Syntax, error, lineNo);
+                    }
+                    word = "";
+                }
             }
 
             if (word != "")
@@ -339,15 +347,47 @@ public class Controller : MonoBehaviour
         return new Error();
     }
 
-    private bool ClassCheck(int lineNo)
+    private string ClassCheck(string word, ref string prevWord, ref int bracCount)
     {
-        ///if close bracket decrement bracket count
+
+        if (word[0] == '=')
+        {
+            prevWord = "=";
+            word = word.Substring(1, word.Length - 1);
+            if (word == "")
+            {
+                return "";
+            }
+        }
+        
         ///check for variable store variables
+        if (prevWord == "=")
+        {
+            if (type == "string")
+            {
+                if (stringset == "" || !strings.ContainsKey(stringset))
+                {
+                    return "string does not exsist to be set";
+                }
+
+                strings[stringset] = word;
+            }
+        }
+        else if (word == "string")
+        {
+            prevWord = word;
+        }
+        else if (prevWord == "string")
+        {
+            type = "string";
+            strings.Add(word, "");
+            stringset = word;
+        }
         ///check for method store methods
         ///check for open bracket (increment bracket count)
         ///if in method while bracket count = 2 start method check
         ///if error return false
-        return false;
+        return "";
     }
 
     private bool MethodCheck(int lineNo)
