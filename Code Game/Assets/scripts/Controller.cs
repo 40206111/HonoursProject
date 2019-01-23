@@ -108,7 +108,12 @@ public class Controller : MonoBehaviour
     {
         Debug.Log("Compile Button Pressed");
         int currentLine = 1;
+
+        //Clear Global Values
         allUsing.Clear();
+        strings.Clear();
+        stringset = "";
+        type = "";
 
         Error error = TryCompile(ref currentLine);
 
@@ -206,10 +211,16 @@ public class Controller : MonoBehaviour
             code.RemoveAt(0);
         }
 
+        /////////////////////////AFTER USINGS/////////////////////////////////////
 
         int bracCount = 0; // bracket count
         string word = "";
         string prevWord = "";
+
+        bool instring = false;
+        bool expectCommand = false;
+        bool ignore = false;
+        bool superIgnore = false;
 
         //for all commands after usings
         for (int i = 0; i < code.Count; ++i)
@@ -219,9 +230,10 @@ public class Controller : MonoBehaviour
             {
                 return new Error(Error.ErrorCodes.Syntax, "Expected instruction before semicolon", lineNo);
             }
+            code[i] += " ";
 
             //incriment by 1 every new line and every character = 8203 (counting line numbers)
-            foreach (char c in code[0])
+            foreach (char c in code[i])
             {
                 if (c == 8203)
                 {
@@ -231,6 +243,11 @@ public class Controller : MonoBehaviour
 
                 if (c == '\n')
                 {
+                    ignore = false;
+                    if (instring)
+                    {
+                        return new Error(Error.ErrorCodes.Syntax, "Newline found in middle of string", lineNo);
+                    }
                     lineNo++;
                     character = 0;
                 }
@@ -240,11 +257,61 @@ public class Controller : MonoBehaviour
                     lineNo++;
                 }
 
-                if (c == '}')
+                if (superIgnore && c=='*')
+                {
+                    expectCommand = true;
+                    continue;
+                }
+                else if (superIgnore && expectCommand)
+                {
+                    expectCommand = false;
+                    if (c == '/')
+                    {
+                        superIgnore = false;
+                    }
+                    continue;
+                }
+
+                if (expectCommand && !instring)
+                {
+                    expectCommand = false;
+
+                    if (c == '/')
+                    {
+                        ignore = true;
+                        continue;
+                    }
+                    else if (c == '*')
+                    {
+                        superIgnore = true;
+                        continue;
+                    }
+                    else
+                    {
+                        word += "/";
+                    }
+                }
+
+                if (ignore || superIgnore)
+                {
+                    continue;
+                }
+                else if (c == '/' && word == "" && !instring)
+                {
+                    expectCommand = true;
+                    continue;
+                }
+                else if (c == '"')
+                {
+                    instring = !instring;
+                    continue;
+                }
+                else if (c == '}')
                 {
                     bracCount--;
                     word = "";
                     prevWord = "";
+                    continue;
                 }
                 else if (word == unityClass && c == '\n')
                 {
@@ -262,13 +329,13 @@ public class Controller : MonoBehaviour
                         return new Error(Error.ErrorCodes.InGame, "Expected derevition from monobehaviour", lineNo);
                     }
                 }
-                else if (c == ':'  && (prevWord == "Zombie" || prevWord == "GameMaster" || prevWord == "Player"))
+                else if (c == ':' && (prevWord == "Zombie" || prevWord == "GameMaster" || prevWord == "Player"))
                 {
                     prevWord = ":";
                     word = "";
                     continue;
                 }
-                else if (word.Length > 1 && ((c >= 0 && c <= 31) ||  //non printable characters
+                else if (!instring && word.Length > 1 && ((c >= 0 && c <= 31) ||  //non printable characters
                         (c >= 33 && c <= 47) || //  !"#$%'()*+,-./
                         (c >= 58 && c <= 64) ||   // :;<=>?@
                         (c >= 91 && c <= 96) || // [\]^_`
@@ -276,13 +343,37 @@ public class Controller : MonoBehaviour
                 {
                     return new Error(Error.ErrorCodes.Syntax, "Invalid character found in middle of expected keyword begining " + word, lineNo);
                 }
-                else if (!((c >= 0 && c <= 31) ||  //non printable characters
+                else if (instring || !((c >= 0 && c <= 31) ||  //non printable characters
                         (c >= 20 && c <= 47) || //  !"#$%'()*+,-./
-                        (c >= 58 && c <= 64) ||   // :;<=>?@
+                        (c >= 58 && c <= 60) ||   // :;<
+                        (c >= 62 && c <= 64) ||   // >?@
                         (c >= 91 && c <= 96) || // [\]^_`
                         (c >= 123 && c <= 127)))   // {|}~)
                 {
-                    word += c;
+                    if (c == '\\' && !expectCommand && instring)
+                    {
+                        expectCommand = true;
+                    }
+                    else if (expectCommand && instring)
+                    {
+                        expectCommand = false;
+                        switch(c)
+                        {
+                            case 'n':
+                                word += '\n';
+                                break;
+                            case '\\':
+                                word += '\\';
+                                break;
+                            case 't':
+                                word += '\t';
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        word += c;
+                    }
                     continue;
                 }
 
@@ -296,7 +387,7 @@ public class Controller : MonoBehaviour
                     }
                     else if (prevWord == aClass)
                     {
-                        switch(word)
+                        switch (word)
                         {
                             case "Zombie":
                                 break;
@@ -320,7 +411,7 @@ public class Controller : MonoBehaviour
                         prevWord = word;
                         word = "";
                     }
-                    else if (prevWord != ":")
+                    else if (prevWord != ":"  && word != "")
                     {
                         return new Error(Error.ErrorCodes.Syntax, "unrecognised keyword for class declairation " + "\"" + word + "\"", lineNo);
                     }
@@ -350,16 +441,19 @@ public class Controller : MonoBehaviour
     private string ClassCheck(string word, ref string prevWord, ref int bracCount)
     {
 
-        if (word[0] == '=')
+        if (word.Length > 0)
         {
-            prevWord = "=";
-            word = word.Substring(1, word.Length - 1);
-            if (word == "")
+            if (word[0] == '=')
             {
-                return "";
+                prevWord = "=";
+                word = word.Substring(1, word.Length - 1);
+                if (word == "")
+                {
+                    return "";
+                }
             }
         }
-        
+
         ///check for variable store variables
         if (prevWord == "=")
         {
@@ -371,6 +465,9 @@ public class Controller : MonoBehaviour
                 }
 
                 strings[stringset] = word;
+                prevWord = "";
+                type = "";
+                stringset = "";
             }
         }
         else if (word == "string")
@@ -379,9 +476,15 @@ public class Controller : MonoBehaviour
         }
         else if (prevWord == "string")
         {
+            if (word[word.Length - 1] == '=')
+            {
+                prevWord = "=";
+                word = word.Substring(0, word.Length - 1);
+            }
             type = "string";
             strings.Add(word, "");
             stringset = word;
+            prevWord = "";
         }
         ///check for method store methods
         ///check for open bracket (increment bracket count)
