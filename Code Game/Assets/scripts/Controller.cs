@@ -301,7 +301,7 @@ public class Controller : MonoBehaviour
                     expectCommand = true;
                     continue;
                 }
-                else if (c == '"')
+                else if (c == '"' && !(instring && expectCommand))
                 {
                     instring = !instring;
                     continue;
@@ -367,6 +367,9 @@ public class Controller : MonoBehaviour
                                 break;
                             case 't':
                                 word += '\t';
+                                break;
+                            case '\"':
+                                word += '\"';
                                 break;
                         }
                     }
