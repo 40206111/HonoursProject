@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Linq;
+using System;
 
 public class Controller : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class Controller : MonoBehaviour
     //Code Storage Variables//
     List<string> allUsing = new List<string>();
     IDictionary<string, string> strings = new Dictionary<string, string>();
+    IDictionary<string, int> ints = new Dictionary<string, int>();
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
@@ -49,6 +51,7 @@ public class Controller : MonoBehaviour
         LineNumbers();
     }
 
+    //Method to scroll line numbers
     public void ScrollNumbers()
     {
         Vector3 pos = numbers.transform.position;
@@ -60,6 +63,7 @@ public class Controller : MonoBehaviour
         numbers.transform.position = pos;
     }
 
+    //Method to Add line numbers
     private void LineNumbers()
     {
         int current = theText.textInfo.lineCount;
@@ -75,6 +79,7 @@ public class Controller : MonoBehaviour
         }
     }
 
+    //Method to keep tags in input
     private void CheckContent()
     {
         //stop from going out of scope
@@ -103,7 +108,7 @@ public class Controller : MonoBehaviour
         }
     }
 
-
+    //Method to compile code
     public void Compile()
     {
         Debug.Log("Compile Button Pressed");
@@ -112,6 +117,7 @@ public class Controller : MonoBehaviour
         //Clear Global Values
         allUsing.Clear();
         strings.Clear();
+        ints.Clear();
         stringset = "";
         type = "";
 
@@ -257,7 +263,7 @@ public class Controller : MonoBehaviour
                     lineNo++;
                 }
 
-                if (superIgnore && c=='*')
+                if (superIgnore && c == '*')
                 {
                     expectCommand = true;
                     continue;
@@ -304,6 +310,7 @@ public class Controller : MonoBehaviour
                 else if (c == '"' && !(instring && expectCommand))
                 {
                     instring = !instring;
+                    word += c;
                     continue;
                 }
                 else if (c == '}')
@@ -335,11 +342,13 @@ public class Controller : MonoBehaviour
                     word = "";
                     continue;
                 }
-                else if (!instring && word.Length > 1 && ((c >= 0 && c <= 31) ||  //non printable characters
+                else if (!instring &&
+                        (word.Length > 1 && ((c >= 0 && c <= 31) || (c == 61))) ||  //non printable characters && =
                         (c >= 33 && c <= 47) || //  !"#$%'()*+,-./
-                        (c >= 58 && c <= 64) ||   // :;<=>?@
+                        (c >= 58 && c <= 60) ||   // :;<
+                        (c >= 62 && c <= 64) || // =>?@
                         (c >= 91 && c <= 96) || // [\]^_`
-                        (c >= 123 && c <= 127)))   // {|}~)
+                        (c >= 123 && c <= 127))   // {|}~)
                 {
                     return new Error(Error.ErrorCodes.Syntax, "Invalid character found in middle of expected keyword begining " + word, lineNo);
                 }
@@ -357,7 +366,7 @@ public class Controller : MonoBehaviour
                     else if (expectCommand && instring)
                     {
                         expectCommand = false;
-                        switch(c)
+                        switch (c)
                         {
                             case 'n':
                                 word += '\n';
@@ -414,7 +423,7 @@ public class Controller : MonoBehaviour
                         prevWord = word;
                         word = "";
                     }
-                    else if (prevWord != ":"  && word != "")
+                    else if (prevWord != ":" && word != "")
                     {
                         return new Error(Error.ErrorCodes.Syntax, "unrecognised keyword for class declairation " + "\"" + word + "\"", lineNo);
                     }
@@ -443,7 +452,6 @@ public class Controller : MonoBehaviour
 
     private string ClassCheck(string word, ref string prevWord, ref int bracCount)
     {
-
         if (word.Length > 0)
         {
             if (word[0] == '=')
@@ -462,23 +470,61 @@ public class Controller : MonoBehaviour
         {
             if (type == "string")
             {
+                if (word.Length == 0)
+                {
+                    return "Too many spaces";
+                }
                 if (stringset == "" || !strings.ContainsKey(stringset))
                 {
                     return "string does not exsist to be set";
                 }
-
-                strings[stringset] = word;
-                prevWord = "";
-                type = "";
-                stringset = "";
+                if (word[0] == '\"' && word[word.Length - 1] == '\"')
+                {
+                    word = word.Substring(1, word.Length - 2);
+                    strings[stringset] = word;
+                    prevWord = "";
+                    type = "";
+                    stringset = "";
+                }
+                else
+                {
+                    return "expected a string. " + word + " is not a string";
+                }
             }
-        }
-        else if (word == "string")
-        {
-            prevWord = word;
+            if (type == "int")
+            {
+                if (word.Length == 0)
+                {
+                    return "Too many spaces";
+                }
+                if (stringset == "" || !ints.ContainsKey(stringset))
+                {
+                    return "int does not exsist to be set";
+                }
+
+                int value;
+
+                if (Int32.TryParse(word, out value))
+                {
+                    ints[stringset] = value;
+                }
+                else
+                {
+                    return "expected integer value";
+                }
+            }
         }
         else if (prevWord == "string")
         {
+            prevWord = "";
+            if (word.Length == 0)
+            {
+                return "Too many spaces";
+            }
+            if (word[0] == '\"' && word[word.Length - 1] == '\"')
+            {
+                return "String not expected";
+            }
             if (word[word.Length - 1] == '=')
             {
                 prevWord = "=";
@@ -487,7 +533,30 @@ public class Controller : MonoBehaviour
             type = "string";
             strings.Add(word, "");
             stringset = word;
+        }
+        else if (prevWord == "int")
+        {
             prevWord = "";
+            if (word.Length == 0)
+            {
+                return "Too many spaces";
+            }
+            if (word[0] == '\"' && word[word.Length - 1] == '\"')
+            {
+                return "String not expected";
+            }
+            if (word[word.Length - 1] == '=')
+            {
+                prevWord = "=";
+                word = word.Substring(0, word.Length - 1);
+            }
+            type = "int";
+            ints.Add(word, 0);
+            stringset = word;
+        }
+        else if (word == "string" || word == "int")
+        {
+            prevWord = word;
         }
         ///check for method store methods
         ///check for open bracket (increment bracket count)
