@@ -7,6 +7,13 @@ using System;
 
 public class Controller : MonoBehaviour
 {
+    private enum MethodType
+    {
+        None,
+        Start,
+        Update
+    }
+
     [SerializeField]
     private TMP_Text numbers;
     [SerializeField]
@@ -21,12 +28,15 @@ public class Controller : MonoBehaviour
     List<string> allUsing = new List<string>();
     IDictionary<string, string> strings = new Dictionary<string, string>();
     IDictionary<string, int> ints = new Dictionary<string, int>();
+    IDictionary<string, float> floats = new Dictionary<string, float>();
+    IDictionary<string, bool> bools = new Dictionary<string, bool>();
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
 
     string stringset = "";
     string type = "";
+    MethodType currentMethod = MethodType.None;
 
     //keywords
     const string usings = "using ";
@@ -118,6 +128,8 @@ public class Controller : MonoBehaviour
         allUsing.Clear();
         strings.Clear();
         ints.Clear();
+        floats.Clear();
+        bools.Clear();
         stringset = "";
         type = "";
 
@@ -343,17 +355,19 @@ public class Controller : MonoBehaviour
                     continue;
                 }
                 else if (!instring &&
-                        (word.Length > 1 && ((c >= 0 && c <= 31) || (c == 61))) ||  //non printable characters && =
-                        (c >= 33 && c <= 47) || //  !"#$%'()*+,-./
+                        ((word.Length > 1 && ((c >= 0 && c <= 31) || (c == 61))) ||  //non printable characters && =
+                        (c >= 33 && c <= 45) || //  !"#$%'()*+,-
+                        (c == 47) ||            // /
                         (c >= 58 && c <= 60) ||   // :;<
                         (c >= 62 && c <= 64) || // =>?@
                         (c >= 91 && c <= 96) || // [\]^_`
-                        (c >= 123 && c <= 127))   // {|}~)
+                        (c >= 123 && c <= 127)))   // {|}~)
                 {
                     return new Error(Error.ErrorCodes.Syntax, "Invalid character found in middle of expected keyword begining " + word, lineNo);
                 }
                 else if (instring || !((c >= 0 && c <= 31) ||  //non printable characters
-                        (c >= 20 && c <= 47) || //  !"#$%'()*+,-./
+                        (c >= 20 && c <= 45) || //  !"#$%'()*+,-
+                        (c == 47) ||            // /
                         (c >= 58 && c <= 60) ||   // :;<
                         (c >= 62 && c <= 64) ||   // >?@
                         (c >= 91 && c <= 96) || // [\]^_`
@@ -388,6 +402,9 @@ public class Controller : MonoBehaviour
                     }
                     continue;
                 }
+
+                //ignore whitespace
+                if (word.Length == 0) continue;
 
                 ///check for class if not already in class
                 if (bracCount == 0)
@@ -465,6 +482,8 @@ public class Controller : MonoBehaviour
             }
         }
 
+        List<string> points = word.Split('.').ToList();
+
         ///check for variable store variables
         if (prevWord == "=")
         {
@@ -491,7 +510,7 @@ public class Controller : MonoBehaviour
                     return "expected a string. " + word + " is not a string";
                 }
             }
-            if (type == "int")
+            else if (type == "int")
             {
                 if (word.Length == 0)
                 {
@@ -513,9 +532,69 @@ public class Controller : MonoBehaviour
                     return "expected integer value";
                 }
             }
+            else if (type == "float")
+            {
+                if (word.Length == 0)
+                {
+                    return "Too many spaces";
+                }
+                if (stringset == "" || !floats.ContainsKey(stringset))
+                {
+                    return "float does not exsist to be set";
+                }
+                if (word[word.Length - 1] != 'f')
+                {
+                    return "Cannot convert double to float";
+                }
+
+                word = word.Substring(0, word.Length - 1);
+
+                float value;
+
+                if (float.TryParse(word, out value))
+                {
+                    floats[stringset] = value;
+                }
+                else
+                {
+                    return "expected float value";
+                }
+            }
+            else if (type == "bool")
+            {
+                if (word.Length == 0)
+                {
+                    return "Too many spaces";
+                }
+                if (stringset == "" || !bools.ContainsKey(stringset))
+                {
+                    return "bool does not exsist to be set";
+                }
+
+                bool value;
+
+                if (bool.TryParse(word, out value))
+                {
+                    bools[stringset] = value;
+                }
+                else
+                {
+                    return "expected boolean value";
+                }
+            }
+            type = "";
         }
-        else if (prevWord == "string")
+        else if (type != "")
         {
+            return "expected = got " + word;
+        }
+        else if (prevWord == "string" || prevWord == "int" || prevWord == "float" || prevWord == "bool")
+        {
+            if (points.Count() > 1)
+            {
+                return "Unexpected decimal point within variable name";
+            }
+            type = prevWord;
             prevWord = "";
             if (word.Length == 0)
             {
@@ -530,31 +609,21 @@ public class Controller : MonoBehaviour
                 prevWord = "=";
                 word = word.Substring(0, word.Length - 1);
             }
-            type = "string";
-            strings.Add(word, "");
+            if (type == "string")
+                strings.Add(word, "");
+            if (type == "int")
+                ints.Add(word, 0);
+            if (type == "bool")
+                bools.Add(word, false);
+            if (type == "float")
+                floats.Add(word, 0.0f);
             stringset = word;
         }
-        else if (prevWord == "int")
+        else if (prevWord == "void")
         {
-            prevWord = "";
-            if (word.Length == 0)
-            {
-                return "Too many spaces";
-            }
-            if (word[0] == '\"' && word[word.Length - 1] == '\"')
-            {
-                return "String not expected";
-            }
-            if (word[word.Length - 1] == '=')
-            {
-                prevWord = "=";
-                word = word.Substring(0, word.Length - 1);
-            }
-            type = "int";
-            ints.Add(word, 0);
-            stringset = word;
+            //Check for Start or Update, check if has Brackets()
         }
-        else if (word == "string" || word == "int")
+        else if (word == "string" || word == "int" || word == "float" || word == "bool" || word == "void")
         {
             prevWord = word;
         }
