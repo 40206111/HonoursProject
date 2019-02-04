@@ -26,10 +26,10 @@ public class Controller : MonoBehaviour
 
     //Code Storage Variables//
     List<string> allUsing = new List<string>();
-    IDictionary<string, string> strings = new Dictionary<string, string>();
-    IDictionary<string, int> ints = new Dictionary<string, int>();
-    IDictionary<string, float> floats = new Dictionary<string, float>();
-    IDictionary<string, bool> bools = new Dictionary<string, bool>();
+    public static IDictionary<string, string> strings = new Dictionary<string, string>();
+    public static IDictionary<string, int> ints = new Dictionary<string, int>();
+    public static IDictionary<string, float> floats = new Dictionary<string, float>();
+    public static IDictionary<string, bool> bools = new Dictionary<string, bool>();
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
