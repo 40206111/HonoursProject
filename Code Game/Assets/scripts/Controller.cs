@@ -24,12 +24,16 @@ public class Controller : MonoBehaviour
     private static int lines = 1;
     private static float number_center;
 
+    //Methods
+    List<Method> methods = new List<Method>();
+
     //Code Storage Variables//
     List<string> allUsing = new List<string>();
     public static IDictionary<string, string> strings = new Dictionary<string, string>();
     public static IDictionary<string, int> ints = new Dictionary<string, int>();
     public static IDictionary<string, float> floats = new Dictionary<string, float>();
     public static IDictionary<string, bool> bools = new Dictionary<string, bool>();
+    public static IDictionary<string, Vector3> vecs = new Dictionary<string, Vector3>();
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
@@ -59,6 +63,21 @@ public class Controller : MonoBehaviour
     {
         CheckContent();
         LineNumbers();
+    }
+
+    public void Run()
+    {
+        bool wait = false;
+
+        for (int i = 0; i < methods.Count(); ++i)
+        {
+            bool output = methods[i].Compute();
+
+            if (methods[i].GetType() == typeof(Code_if))
+            {
+
+            }
+        }
     }
 
     //Method to scroll line numbers
@@ -484,7 +503,18 @@ public class Controller : MonoBehaviour
 
         List<string> points = word.Split('.').ToList();
 
-        ///check for variable store variables
+        //check for variable store variables
+        if (prevWord == "new" && type == "Vector3")
+        {
+            if (word.Length == 0)
+            {
+                return "Too many spaces";
+            }
+            if (stringset == "" || !vecs.ContainsKey(stringset))
+            {
+                return "string does not exsist to be set";
+            }
+        }
         if (prevWord == "=")
         {
             if (type == "string")
@@ -509,6 +539,8 @@ public class Controller : MonoBehaviour
                 {
                     return "expected a string. " + word + " is not a string";
                 }
+                type = "";
+
             }
             else if (type == "int")
             {
@@ -531,6 +563,8 @@ public class Controller : MonoBehaviour
                 {
                     return "expected integer value";
                 }
+                type = "";
+
             }
             else if (type == "float")
             {
@@ -559,6 +593,8 @@ public class Controller : MonoBehaviour
                 {
                     return "expected float value";
                 }
+                type = "";
+
             }
             else if (type == "bool")
             {
@@ -581,14 +617,24 @@ public class Controller : MonoBehaviour
                 {
                     return "expected boolean value";
                 }
+                type = "";
+
             }
-            type = "";
+            else if (type == "Vector3")
+            {
+                if (word != "new")
+                {
+                    return "expected keyword new";
+                }
+
+                prevWord = word;
+            }
         }
         else if (type != "")
         {
             return "expected = got " + word;
         }
-        else if (prevWord == "string" || prevWord == "int" || prevWord == "float" || prevWord == "bool")
+        else if (prevWord == "string" || prevWord == "int" || prevWord == "float" || prevWord == "bool" || prevWord == "Vector3")
         {
             if (points.Count() > 1)
             {
@@ -617,13 +663,15 @@ public class Controller : MonoBehaviour
                 bools.Add(word, false);
             if (type == "float")
                 floats.Add(word, 0.0f);
+            if (type == "Vector3")
+                vecs.Add(word, new Vector3());
             stringset = word;
         }
         else if (prevWord == "void")
         {
             //Check for Start or Update, check if has Brackets()
         }
-        else if (word == "string" || word == "int" || word == "float" || word == "bool" || word == "void")
+        else if (word == "string" || word == "int" || word == "float" || word == "bool" || word == "Vector3" || word == "void")
         {
             prevWord = word;
         }
