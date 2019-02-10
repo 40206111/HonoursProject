@@ -15,30 +15,21 @@ public class Code_if : Method
         MORETHAN
     }
 
-    public enum Type
+    public enum VectorPart
     {
-        Int,
-        Bool,
-        Float,
-        String,
-        IF
+        none,
+        x,
+        y,
+        z
     }
 
     private Logic ifType = Logic.EQUAL;
     public Code_if ifLHS = null;
     public Code_if ifRHS = null;
-    public Type typeLHS;
-    public Type typeRHS;
-    public string contentLHS = "";
-    public string contentRHS = "";
-    public bool boolLHS = false;
-    public bool boolRHS = false;
-    public int intLHS;
-    public int intRHS;
-    public string stringLHS;
-    public string stringRHS;
-    public float floatLHS;
-    public float floatRHS;
+    public Variable lhs;
+    public Variable rhs;
+    public VectorPart rightV;
+    public VectorPart leftV;
 
 
     public override bool Compute()
@@ -48,161 +39,144 @@ public class Code_if : Method
 
     public bool getValue()
     {
-        bool boolCompare = false;
+        if (lhs.type == Variable.VariableType.BOOL || ifLHS != null)    //compare booleans
+        {
+            return CompareBools();
+        }
+        else if (lhs.type == Variable.VariableType.FLOAT || //Compare numbers
+            lhs.type == Variable.VariableType.INT ||
+            rhs.type == Variable.VariableType.FLOAT ||
+            rhs.type == Variable.VariableType.INT)
+        {
+                return CompareFloats(LhsValue(), RhsValue());
+        }
+        else if (lhs.type == Variable.VariableType.VEC3)    //compare vec3s
+        {
+            if (leftV != VectorPart.none)
+            {
+                return CompareFloats(LhsValue(), RhsValue());
+            }
+            switch (ifType)
+            {
+                case Logic.EQUAL:
+                    return (lhs.vec3_value == rhs.vec3_value);
+                case Logic.NOT:
+                    return (lhs.vec3_value != rhs.vec3_value);
+            }
+        }
+        else if (lhs.type == Variable.VariableType.STRING)  //compare strings
+        {
+            switch (ifType)
+            {
+                case Logic.EQUAL:
+                    return (lhs.str_value == rhs.str_value);
+                case Logic.NOT:
+                    return (lhs.str_value != rhs.str_value);
+            }
+        }
 
-        //set LHS
-        if (typeLHS == Type.IF)
+        //if all else fails to return anything return false
+        return false;
+    }
+
+    //helper method to compare bools
+    private bool CompareBools()
+    {
+        //get lhs bool
+        bool boolLHS = false;
+        if (ifLHS != null)
         {
             boolLHS = ifLHS.getValue();
-            boolCompare = true;
         }
-        else if (typeLHS == Type.Bool)
+        else
         {
-            if (Controller.bools.ContainsKey(contentLHS))
-            {
-                boolLHS = Controller.bools[contentLHS];
-            }
-            boolCompare = true;
-        }
-        else if (typeLHS == Type.Float)
-        {
-            if (Controller.floats.ContainsKey(contentLHS))
-            {
-                floatLHS = Controller.floats[contentLHS];
-            }
-        }
-        else if (typeLHS == Type.Int)
-        {
-            if (Controller.ints.ContainsKey(contentLHS))
-            {
-                intLHS = Controller.ints[contentLHS];
-            }
-        }
-        else if (typeLHS == Type.String)
-        {
-            if (Controller.strings.ContainsKey(contentLHS))
-            {
-                stringLHS = Controller.strings[contentLHS];
-            }
+            boolLHS = lhs.bool_value;
         }
 
-        //Set RHS
-        if (typeRHS == Type.IF)
+        //get rhs bool
+        bool boolRHS = false;
+        if (ifRHS != null)
         {
             boolRHS = ifRHS.getValue();
-            boolCompare = true;
         }
-        else if (typeRHS == Type.Bool)
+        else
         {
-            if (Controller.bools.ContainsKey(contentRHS))
-            {
-                boolRHS = Controller.bools[contentRHS];
-            }
-            boolCompare = true;
-        }
-        else if (typeRHS == Type.Float)
-        {
-            if (Controller.floats.ContainsKey(contentRHS))
-            {
-                floatRHS = Controller.floats[contentRHS];
-            }
-        }
-        else if (typeRHS == Type.Int)
-        {
-            if (Controller.ints.ContainsKey(contentRHS))
-            {
-                intRHS = Controller.ints[contentRHS];
-            }
-        }
-        else if (typeRHS == Type.String)
-        {
-            if (Controller.strings.ContainsKey(contentRHS))
-            {
-                stringRHS = Controller.strings[contentRHS];
-            }
+            boolRHS = rhs.bool_value;
         }
 
-        if (boolCompare)
+        //compare bools
+        switch (ifType)
         {
-            switch (ifType)
-            {
-                case Logic.AND:
-                    return (boolLHS && boolRHS);
-                case Logic.EQUAL:
-                    return (boolLHS == boolRHS);
-                case Logic.NOT:
-                    return (boolLHS != boolRHS);
-                case Logic.OR:
-                    return (boolLHS || boolRHS);
-            }
+            case Logic.AND:
+                return (boolLHS && boolRHS);
+            case Logic.EQUAL:
+                return (boolLHS == boolRHS);
+            case Logic.NOT:
+                return (boolLHS != boolRHS);
+            case Logic.OR:
+                return (boolLHS || boolRHS);
         }
-        else if (typeLHS == Type.Float && typeRHS == Type.Float)
-        {
-            switch (ifType)
-            {
-                case Logic.EQUAL:
-                    return (floatLHS == floatRHS);
-                case Logic.NOT:
-                    return (floatLHS != floatRHS);
-                case Logic.LESSTHAN:
-                    return (floatLHS < floatRHS);
-                case Logic.MORETHAN:
-                    return (floatLHS > floatRHS);
-            }
-        }
-        else if (typeLHS == Type.Float && typeRHS == Type.Int)
-        {
-            switch (ifType)
-            {
-                case Logic.EQUAL:
-                    return (floatLHS == intRHS);
-                case Logic.NOT:
-                    return (floatLHS != intRHS);
-                case Logic.LESSTHAN:
-                    return (floatLHS < intRHS);
-                case Logic.MORETHAN:
-                    return (floatLHS > intRHS);
-            }
-        }
-        else if (typeLHS == Type.Int && typeRHS == Type.Float)
-        {
-            switch (ifType)
-            {
-                case Logic.EQUAL:
-                    return (intLHS == floatRHS);
-                case Logic.NOT:
-                    return (intLHS != floatRHS);
-                case Logic.LESSTHAN:
-                    return (intLHS < floatRHS);
-                case Logic.MORETHAN:
-                    return (intLHS > floatRHS);
-            }
-        }
-        else if (typeLHS == Type.Int && typeRHS == Type.Int)
-        {
-            switch (ifType)
-            {
-                case Logic.EQUAL:
-                    return (intLHS == intRHS);
-                case Logic.NOT:
-                    return (intLHS != intRHS);
-                case Logic.LESSTHAN:
-                    return (intLHS < intRHS);
-                case Logic.MORETHAN:
-                    return (intLHS > intRHS);
-            }
-        }
-        else if (typeLHS == Type.String && typeRHS == Type.String)
-        {
-            switch (ifType)
-            {
-                case Logic.EQUAL:
-                    return (stringLHS == stringRHS);
-                case Logic.NOT:
-                    return (stringLHS != stringRHS);
-            }
-        }
-
         return false;
+    }
+
+    //helper method to compare floats
+    private bool CompareFloats(float l, float r)
+    {
+        switch (ifType)
+        {
+            case Logic.EQUAL:
+                return (l == r);
+            case Logic.NOT:
+                return (l != r);
+            case Logic.LESSTHAN:
+                return (l < r);
+            case Logic.MORETHAN:
+                return (l > r);
+        }
+        return false;
+    }
+
+    //helper method to get numeric value of right hand side
+    private float RhsValue()
+    {
+        if (rhs.type == Variable.VariableType.VEC3)
+        {
+            switch (rightV)
+            {
+                case VectorPart.x:
+                    return rhs.vec3_value.x;
+                case VectorPart.y:
+                    return rhs.vec3_value.y;
+                case VectorPart.z:
+                    return rhs.vec3_value.z;
+            }
+        }
+        else if (rhs.type == Variable.VariableType.INT)
+        {
+            return rhs.int_value;
+        }
+        return rhs.flt_value;
+    }
+
+    //helper method to get numeric value of left hand side
+    private float LhsValue()
+    {
+        if (lhs.type == Variable.VariableType.VEC3)
+        {
+            switch (leftV)
+            {
+                case VectorPart.x:
+                    return lhs.vec3_value.x;
+                case VectorPart.y:
+                    return lhs.vec3_value.y;
+                case VectorPart.z:
+                    return lhs.vec3_value.z;
+            }
+        }
+        else if (lhs.type == Variable.VariableType.INT)
+        {
+            return lhs.int_value;
+        }
+        return lhs.flt_value;
     }
 }
