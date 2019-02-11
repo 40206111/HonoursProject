@@ -65,6 +65,7 @@ public class Controller : MonoBehaviour
     {
         CheckContent();
         LineNumbers();
+        ScrollNumbers();
     }
 
     public void Run()
@@ -85,13 +86,9 @@ public class Controller : MonoBehaviour
     //Method to scroll line numbers
     public void ScrollNumbers()
     {
-        Vector3 pos = numbers.transform.position;
-        float test = numbers.textBounds.extents.y;
-
-        Debug.Log(test);
-        pos.y = number_center + scroll.value * test;
-
-        numbers.transform.position = pos;
+        Vector3 pos = numbers.transform.localPosition;
+        pos.y = theText.transform.localPosition.y;
+        numbers.transform.localPosition = pos;
     }
 
     //Method to Add line numbers
