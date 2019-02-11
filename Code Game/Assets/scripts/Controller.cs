@@ -46,7 +46,7 @@ public class Controller : MonoBehaviour
     //Methods
     List<Method> methods = new List<Method>();
     //Variables
-    List<Variable> vars = new List<Variable>();
+    public static IDictionary<string, Variable> vars = new Dictionary<string, Variable>();
 
 
     //monospace tag
