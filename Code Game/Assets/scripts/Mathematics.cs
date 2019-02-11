@@ -12,15 +12,15 @@ public class Mathematics
         DIVIDE
     }
 
-    Mathematics lhs = null;
-    Mathematics rhs = null;
-    string varLHS = "";
-    string varRHS = "";
-    float fLHS;
-    float fRHS;
-    Operator op = Operator.NONE;
-    Code_if.VectorPart vectorLHS;
-    Code_if.VectorPart vectorRHS;
+    public Mathematics lhs = null;
+    public Mathematics rhs = null;
+    public string varLHS = "";
+    public string varRHS = "";
+    public float fLHS;
+    public float fRHS;
+    public Operator op = Operator.NONE;
+    public Code_if.VectorPart vectorLHS;
+    public Code_if.VectorPart vectorRHS;
 
     public float Calculate()
     {

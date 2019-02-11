@@ -26,8 +26,8 @@ public class Code_if : Method
     private Logic ifType = Logic.EQUAL;
     public Code_if ifLHS = null;
     public Code_if ifRHS = null;
-    public Variable lhs;
-    public Variable rhs;
+    public string lhs;
+    public string rhs;
     public VectorPart rightV;
     public VectorPart leftV;
 
@@ -39,18 +39,18 @@ public class Code_if : Method
 
     public bool getValue()
     {
-        if (lhs.type == Variable.VariableType.BOOL || ifLHS != null)    //compare booleans
+        if (Controller.vars[lhs].type == Variable.VariableType.BOOL || ifLHS != null)    //compare booleans
         {
             return CompareBools();
         }
-        else if (lhs.type == Variable.VariableType.FLOAT || //Compare numbers
-            lhs.type == Variable.VariableType.INT ||
-            rhs.type == Variable.VariableType.FLOAT ||
-            rhs.type == Variable.VariableType.INT)
+        else if (Controller.vars[lhs].type == Variable.VariableType.FLOAT || //Compare numbers
+            Controller.vars[lhs].type == Variable.VariableType.INT ||
+            Controller.vars[rhs].type == Variable.VariableType.FLOAT ||
+            Controller.vars[rhs].type == Variable.VariableType.INT)
         {
                 return CompareFloats(LhsValue(), RhsValue());
         }
-        else if (lhs.type == Variable.VariableType.VEC3)    //compare vec3s
+        else if (Controller.vars[lhs].type == Variable.VariableType.VEC3)    //compare vec3s
         {
             if (leftV != VectorPart.none)
             {
@@ -59,19 +59,19 @@ public class Code_if : Method
             switch (ifType)
             {
                 case Logic.EQUAL:
-                    return (lhs.vec3_value == rhs.vec3_value);
+                    return (Controller.vars[lhs].vec3_value == Controller.vars[rhs].vec3_value);
                 case Logic.NOT:
-                    return (lhs.vec3_value != rhs.vec3_value);
+                    return (Controller.vars[lhs].vec3_value != Controller.vars[rhs].vec3_value);
             }
         }
-        else if (lhs.type == Variable.VariableType.STRING)  //compare strings
+        else if (Controller.vars[lhs].type == Variable.VariableType.STRING)  //compare strings
         {
             switch (ifType)
             {
                 case Logic.EQUAL:
-                    return (lhs.str_value == rhs.str_value);
+                    return (Controller.vars[lhs].str_value == Controller.vars[rhs].str_value);
                 case Logic.NOT:
-                    return (lhs.str_value != rhs.str_value);
+                    return (Controller.vars[lhs].str_value != Controller.vars[rhs].str_value);
             }
         }
 
@@ -90,7 +90,7 @@ public class Code_if : Method
         }
         else
         {
-            boolLHS = lhs.bool_value;
+            boolLHS = Controller.vars[lhs].bool_value;
         }
 
         //get rhs bool
@@ -101,7 +101,7 @@ public class Code_if : Method
         }
         else
         {
-            boolRHS = rhs.bool_value;
+            boolRHS = Controller.vars[rhs].bool_value;
         }
 
         //compare bools
@@ -139,44 +139,44 @@ public class Code_if : Method
     //helper method to get numeric value of right hand side
     private float RhsValue()
     {
-        if (rhs.type == Variable.VariableType.VEC3)
+        if (Controller.vars[rhs].type == Variable.VariableType.VEC3)
         {
             switch (rightV)
             {
                 case VectorPart.x:
-                    return rhs.vec3_value.x;
+                    return Controller.vars[rhs].vec3_value.x;
                 case VectorPart.y:
-                    return rhs.vec3_value.y;
+                    return Controller.vars[rhs].vec3_value.y;
                 case VectorPart.z:
-                    return rhs.vec3_value.z;
+                    return Controller.vars[rhs].vec3_value.z;
             }
         }
-        else if (rhs.type == Variable.VariableType.INT)
+        else if (Controller.vars[rhs].type == Variable.VariableType.INT)
         {
-            return rhs.int_value;
+            return Controller.vars[rhs].int_value;
         }
-        return rhs.flt_value;
+        return Controller.vars[rhs].flt_value;
     }
 
     //helper method to get numeric value of left hand side
     private float LhsValue()
     {
-        if (lhs.type == Variable.VariableType.VEC3)
+        if (Controller.vars[lhs].type == Variable.VariableType.VEC3)
         {
             switch (leftV)
             {
                 case VectorPart.x:
-                    return lhs.vec3_value.x;
+                    return Controller.vars[lhs].vec3_value.x;
                 case VectorPart.y:
-                    return lhs.vec3_value.y;
+                    return Controller.vars[lhs].vec3_value.y;
                 case VectorPart.z:
-                    return lhs.vec3_value.z;
+                    return Controller.vars[lhs].vec3_value.z;
             }
         }
-        else if (lhs.type == Variable.VariableType.INT)
+        else if (Controller.vars[lhs].type == Variable.VariableType.INT)
         {
-            return lhs.int_value;
+            return Controller.vars[lhs].int_value;
         }
-        return lhs.flt_value;
+        return Controller.vars[lhs].flt_value;
     }
 }
