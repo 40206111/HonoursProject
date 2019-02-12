@@ -22,6 +22,8 @@ public struct Variable
     public Vector3 vec3_value;
     public bool bool_value;
     public VariableType type;
+    public bool pub;
+    public bool inScope;
 }
 
 public class Controller : MonoBehaviour
@@ -47,16 +49,113 @@ public class Controller : MonoBehaviour
     List<Method> methods = new List<Method>();
     //Variables
     public static IDictionary<string, Variable> vars = new Dictionary<string, Variable>();
+    Happening curHaps = Happening.Starting;
+    Happening previous = Happening.Starting;
 
+    private IDictionary<string, Happening> keys = new Dictionary<string, Happening>
+    {
+        {"//", Happening.Ignore},
+        {"/*", Happening.SuperIgnore},
+        {"using ", Happening.ExpectUsing},
+        {"public ", Happening.PublicClass},
+        {"class ", Happening.ExpectClassName},
+        {"\n", Happening.Starting},
+        {"*/", Happening.Starting},
+        {"int ", Happening.ExpectVariableName},
+        {"string ", Happening.ExpectVariableName},
+        {"bool ", Happening.ExpectVariableName},
+        {"float ", Happening.ExpectVariableName},
+        {"vector3 ", Happening.ExpectVariableName},
+        {"void ", Happening.ExpectMethodName},
+        {"Start()", Happening.ExpectBracket},
+        {"Update()", Happening.ExpectBracket},
+        {"Zombie", Happening.MonoBehaviour},
+        {"Player", Happening.MonoBehaviour},
+        {"GameMaster", Happening.MonoBehaviour},
+        {": MonoBehaviour", Happening.ExpectBracket},
+        {":MonoBehaviour", Happening.ExpectBracket},
+        {"private ", Happening.PublicPrivate},
+        {"}", Happening.Starting},
+        {"if", Happening.ExpectIf},
+        {"while", Happening.ExpectIf},
+        {"for", Happening.ExpectFor},
+        {"return", Happening.ExpectSemiColon},
+        {"{", Happening.Starting},
+        {";", Happening.Starting},
+        {"=", Happening.ExpectInt},
+    };
+
+    private List<List<string>> scopeVariables = new List<List<string>>();
 
     //monospace tag
     const string monostring = "<mspace=1.2em><noparse>";
 
+    bool ignore = false;
+    bool superIgnore = false;
+    bool inClass = false;
+    bool inMethod = false;
+    bool allowNewLines = false;
 
+
+    private enum Happening
+    {
+        Starting,
+        PublicClass,
+        Ignore,
+        SuperIgnore,
+        PublicPrivate,
+        ExpectMethodName,
+        ExpectClassName,
+        MonoBehaviour,
+        InClass,
+        InMethod,
+        ExpectBracket,
+        ExpectSemiColon,
+        ExpectEquals,
+        ////////////
+        ExpectInt,
+        ExpectString,
+        ExpectFloat,
+        ExpectBool,
+        ExpectVec3,
+        ExpectVariableName,
+        ExpectUsing,
+        ExpectIf,
+        ExpectFor
+    }
+
+    private List<List<string>> allStrings = new List<List<string>>();
 
     // Start is called before the first frame update
     void Start()
     {
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "using ", "public ", "//", "/*" }); //Starting
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "class " }); //PublicClass
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "\n" }); // Ignore
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "*/" });  //SuperIgnore
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float ", "vector3 ", "void " });  //PublicPrivate
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "Start()", "Update()" });  //ExpectMethodName
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "Zombie", "Player", "GameMaster" });  //ExpectClassName
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { ": Monobehaviour", ":Monobehaviour" });  //MonoBehaviour
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "public ", "private ", "int ", "string ", "bool ", "float ", "vector3 ", "}", "//", "/*", "{" });  //InClass
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{" });  //InMethod
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "{", "//", "/*" });  //ExpectBracket
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { ";" });  //ExpectSemiColon
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "=", ";" });  //ExpectEquals
+
         number_center = numbers.transform.position.y;
     }
 
@@ -149,6 +248,98 @@ public class Controller : MonoBehaviour
 
     private Error TryCompile(ref int lineNo)
     {
+        int character = 0;
+        int bracket = 0;
+        string word = "";
+        string closestWord = "";
+        curHaps = Happening.Starting;
+        List<string> current = allStrings[(int)curHaps];
+
+        foreach (char c in input.text)
+        {
+            if (c == 8203)
+            {
+                lineNo++;
+                continue;
+            }
+
+            if (c == '\n')
+            {
+                lineNo++;
+            }
+
+            word += c;
+            if ((int)curHaps > allStrings.Count - 1)
+            {
+
+            }
+            else
+            {
+                foreach (string s in current)
+                {
+                    if (c != s[character])
+                    {
+                        if (ignore || superIgnore)
+                        {
+                            word = "";
+                        }
+                        else
+                        {
+                            current.Remove(s);
+                        }
+                    }
+                    else if (word == s)
+                    {
+                        if (ignore) ignore = false;
+                        if (superIgnore) superIgnore = false;
+
+                        previous = curHaps;
+                        curHaps = keys[word];
+                        if ((int)curHaps < allStrings.Count)
+                        {
+                            current = allStrings[(int)curHaps];
+                        }
+
+                        switch (curHaps)
+                        {
+                            case Happening.Ignore:
+                                ignore = true;
+                                break;
+                            case Happening.SuperIgnore:
+                                superIgnore = true;
+                                break;
+                            case Happening.Starting:
+                                if (inMethod)
+                                {
+                                    curHaps = Happening.InMethod;
+                                }
+                                else if (inClass)
+                                {
+                                    curHaps = Happening.InClass;
+                                }
+                                break;
+                            case Happening.PublicClass:
+                                if (inClass)
+                                {
+                                    curHaps = Happening.PublicPrivate;
+                                }
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        closestWord = s;
+                    }
+
+                }
+                if (current.Count == 0)
+                {
+                    return new Error(Error.ErrorCodes.Syntax, "word \"" + word + "\" not understood. Closest word " + closestWord, lineNo);
+                }
+            }
+
+        }
+
         return new Error();
     }
 
