@@ -308,15 +308,20 @@ public class Controller : MonoBehaviour
                         }
                         break;
                     case Happening.ExpectVariableName:
-                        if (character > 0 && c == ';')
+                        if ( c == ';')
                         {
+                            stringset = word.Substring(0, word.Length - 1);
+                            if (character == 0)
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "No variable name found", lineNo);
+                            }
                             lineUnfinished = false;
                             allowWhiteSpace = true;
-                            if (vars.ContainsKey(word))
+                            if (vars.ContainsKey(stringset))
                             {
-                                if (vars[word].inScope == true)
+                                if (vars[stringset].inScope == true)
                                 {
-                                    return new Error(Error.ErrorCodes.Syntax, "cannot redefine \"" + word + "\"", lineNo);
+                                    return new Error(Error.ErrorCodes.Syntax, "cannot redefine \"" + stringset + "\"", lineNo);
                                 }
                             }
                             Variable theNew = new Variable();
@@ -344,8 +349,9 @@ public class Controller : MonoBehaviour
                                     theNew.str_value = "";
                                     break;
                             }
-                            vars.Add(word, theNew);
-                            word = "";
+                            vars.Add(stringset, theNew);
+                            scopeVariables[scopeVariables.Count - 1].Add(stringset);
+                            stringset = "";
                             character = -1;
                             if (inMethod)
                             {
@@ -371,7 +377,6 @@ public class Controller : MonoBehaviour
                         {
                             stringset = word.Substring(0, word.Length - 1);
                             curHaps = next;
-                            current = new List<string>(allStrings[(int)curHaps]);
                             allowWhiteSpace = false;
                             lineUnfinished = true;
                             word = "";
@@ -380,6 +385,47 @@ public class Controller : MonoBehaviour
                         else if (!(c >= 65 && c <= 90) && !(c >= 97 && c <= 122) && (character == 0 && (c >= 48 && c <= 57)))
                         {
                             return new Error(Error.ErrorCodes.Syntax, "Invalid character found in variableName", lineNo);
+                        }
+                        break;
+                    case Happening.ExpectInt:
+                        if (c == ';')
+                        {
+                            if (character == 0)
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "No variable name found", lineNo);
+                            }
+
+                            Variable theNew = new Variable();
+                            theNew.inScope = true;
+                            theNew.type = Variable.VariableType.INT;
+                            int value;
+                            if (Int32.TryParse(word.Substring(0, word.Length -1), out value))
+                            {
+                                theNew.int_value = value;
+                            }
+                            else
+                            {
+                                return new Error(Error.ErrorCodes.Mathematical, "Error parsing \"" + word + "\" as int", lineNo);
+                            }
+                            vars.Add(stringset, theNew);
+                            scopeVariables[scopeVariables.Count - 1].Add(stringset);
+                            if (inMethod)
+                            {
+                                curHaps = Happening.InMethod;
+                            }
+                            else
+                            {
+                                curHaps = Happening.InClass;
+                            }
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
+                            character = -1;
+                        }
+                        else if (!(c >= 48 && c <= 57))
+                        {
+                            return new Error(Error.ErrorCodes.Mathematical, "Cannot convert \"" + c + "\" to int", lineNo);
                         }
                         break;
                 }
@@ -415,6 +461,7 @@ public class Controller : MonoBehaviour
                             {
                                 inMethod = true;
                             }
+                            scopeVariables.Add(new List<string>());
                         }
 
                         if (word == "int ")
@@ -453,6 +500,14 @@ public class Controller : MonoBehaviour
                             {
                                 inMethod = false;
                             }
+
+                            foreach (string s in scopeVariables[scopeVariables.Count - 1])
+                            {
+                                Variable temp = vars[s];
+                                temp.inScope = false;
+                            }
+
+                            scopeVariables.Remove(scopeVariables.Last());
                         }
 
                         previous = curHaps;

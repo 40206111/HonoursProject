@@ -9,7 +9,8 @@ public class Error
     {
         None,
         Syntax,
-        InGame      //errors that occur due to not having the full functionality of C#
+        InGame,      //errors that occur due to not having the full functionality of C#
+        Mathematical
     };
 
     ErrorCodes errorCode = ErrorCodes.None;
