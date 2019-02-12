@@ -10,7 +10,9 @@ public class Error
         None,
         Syntax,
         InGame,      //errors that occur due to not having the full functionality of C#
-        Mathematical
+        Mathematical,
+        Compiler,
+        TypeMismatch
     };
 
     ErrorCodes errorCode = ErrorCodes.None;

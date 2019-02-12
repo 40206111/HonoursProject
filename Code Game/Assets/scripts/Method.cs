@@ -11,10 +11,23 @@ public abstract class Method
 public class Code_While : Method
 {
     public Code_if checkCase;
+    List<Method> inside = new List<Method>();
 
     public override bool Compute()
     {
-        return checkCase.getValue();
+        while (checkCase.getValue())
+        {
+            Controller.MethodRun(inside);
+        }
+        return true;
+    }
+}
+
+public class Code_EndIf : Method
+{
+    public override bool Compute()
+    {
+        return true;
     }
 }
 
@@ -109,14 +122,14 @@ public class Code_Vec3Set : Method
 
 public class Code_SimpleSet : Method
 {
-    string output = "";
-    string input = "";
-    int iValue = 0;
-    float fValue = 0;
-    bool bValue = false;
-    string sValue = "";
-    Code_if.VectorPart outPart = Code_if.VectorPart.none;
-    Code_if.VectorPart inPart = Code_if.VectorPart.none;
+    public string output = "";
+    public string input = "";
+    public int iValue = 0;
+    public float fValue = 0;
+    public bool bValue = false;
+    public string sValue = "";
+    public Code_if.VectorPart outPart = Code_if.VectorPart.none;
+    public Code_if.VectorPart inPart = Code_if.VectorPart.none;
 
     public override bool Compute()
     {
@@ -205,7 +218,7 @@ public class Code_SimpleSet : Method
     private float InputValue()
     {
         if (Controller.vars[input].type == Variable.VariableType.FLOAT)
-           return Controller.vars[input].flt_value;
+            return Controller.vars[input].flt_value;
         else if (Controller.vars[input].type == Variable.VariableType.INT)
             return Controller.vars[input].int_value;
         else if (Controller.vars[input].type == Variable.VariableType.VEC3)

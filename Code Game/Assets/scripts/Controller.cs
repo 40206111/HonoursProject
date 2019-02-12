@@ -112,6 +112,7 @@ public class Controller : MonoBehaviour
         ExpectFloat,
         ExpectBool,
         ExpectVec3,
+        ExpectEquation,
         ExpectVariableName,
         ExpectUsing,
         ExpectIf,
@@ -148,7 +149,7 @@ public class Controller : MonoBehaviour
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { ";" });  //ExpectSemiColon
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "=", "= " });  //ExpectEquals
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "=" });  //ExpectEquals
 
         number_center = numbers.transform.position.y;
     }
@@ -163,15 +164,50 @@ public class Controller : MonoBehaviour
 
     public void Run()
     {
+        MethodRun(methods);
+    }
+
+    public static void MethodRun(List<Method> ms)
+    {
         bool wait = false;
 
-        for (int i = 0; i < methods.Count(); ++i)
+        for (int i = 0; i < ms.Count(); ++i)
         {
-            bool output = methods[i].Compute();
-
-            if (methods[i].GetType() == typeof(Code_if))
+            Type waitType = null;
+            Type countType = null;
+            int count = 0;
+            if (!wait)
             {
+                bool output = ms[i].Compute();
 
+                if (!output)
+                {
+                    if (ms[i].GetType() == typeof(Code_if))
+                    {
+                        wait = true;
+                        count = 0;
+                        waitType = typeof(Code_EndIf);
+                        countType = typeof(Code_if);
+                    }
+                }
+            }
+            else
+            {
+                if (ms[i].GetType() == waitType)
+                {
+                    if (count == 0)
+                    {
+                        wait = false;
+                    }
+                    else
+                    {
+                        count--;
+                    }
+                }
+                else if (ms[i].GetType() == countType)
+                {
+                    count++;
+                }
             }
         }
     }
@@ -256,6 +292,7 @@ public class Controller : MonoBehaviour
         curHaps = Happening.Starting;
         List<string> current = new List<string>(allStrings[(int)curHaps]);
         vars.Clear();
+        Mathematics theMaths;
 
         Happening next = Happening.ExpectInt;
 
@@ -308,7 +345,7 @@ public class Controller : MonoBehaviour
                         }
                         break;
                     case Happening.ExpectVariableName:
-                        if ( c == ';')
+                        if (c == ';')
                         {
                             stringset = word.Substring(0, word.Length - 1);
                             if (character == 0)
@@ -392,38 +429,38 @@ public class Controller : MonoBehaviour
                         {
                             if (character == 0)
                             {
-                                return new Error(Error.ErrorCodes.Syntax, "No variable name found", lineNo);
+                                return new Error(Error.ErrorCodes.Syntax, "No value found", lineNo);
                             }
 
-                            Variable theNew = new Variable();
-                            theNew.inScope = true;
-                            theNew.type = Variable.VariableType.INT;
-                            int value;
-                            if (Int32.TryParse(word.Substring(0, word.Length -1), out value))
+                            word = word.Substring(0, word.Length - 1);
+
+                            if (vars.ContainsKey(word))
                             {
-                                theNew.int_value = value;
+                                if (!inMethod)
+                                {
+                                    return new Error(Error.ErrorCodes.Compiler, "Cannot initialise variable to variable outside of method", lineNo);
+                                }
+                                if (vars[word].type != Variable.VariableType.INT)
+                                {
+                                    return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert variable \"" + word + "\" to int", lineNo);
+                                }
+                                Code_SimpleSet temp = new Code_SimpleSet();
+                                temp.output = stringset;
+                                temp.input = word;
+                                methods.Add(temp);
                             }
-                            else
-                            {
-                                return new Error(Error.ErrorCodes.Mathematical, "Error parsing \"" + word + "\" as int", lineNo);
-                            }
-                            vars.Add(stringset, theNew);
-                            scopeVariables[scopeVariables.Count - 1].Add(stringset);
-                            if (inMethod)
-                            {
-                                curHaps = Happening.InMethod;
-                            }
-                            else
-                            {
-                                curHaps = Happening.InClass;
-                            }
+
                             current = new List<string>(allStrings[(int)curHaps]);
                             allowWhiteSpace = true;
                             lineUnfinished = false;
                             word = "";
                             character = -1;
                         }
-                        else if (!(c >= 48 && c <= 57))
+                        else if (c == '+' || c == '-' || c == '*' || c == '/')
+                        {
+
+                        }
+                        else if (!(c >= 65 && c <= 90) && !(c >= 97 && c <= 122) && (c >= 48 && c <= 57))   //not letters or numbers
                         {
                             return new Error(Error.ErrorCodes.Mathematical, "Cannot convert \"" + c + "\" to int", lineNo);
                         }
