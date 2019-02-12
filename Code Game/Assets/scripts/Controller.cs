@@ -22,7 +22,6 @@ public struct Variable
     public Vector3 vec3_value;
     public bool bool_value;
     public VariableType type;
-    public bool pub;
     public bool inScope;
 }
 
@@ -65,7 +64,7 @@ public class Controller : MonoBehaviour
         {"string ", Happening.ExpectVariableName},
         {"bool ", Happening.ExpectVariableName},
         {"float ", Happening.ExpectVariableName},
-        {"vector3 ", Happening.ExpectVariableName},
+        {"Vector3 ", Happening.ExpectVariableName},
         {"void ", Happening.ExpectMethodName},
         {"Start()", Happening.ExpectBracket},
         {"Update()", Happening.ExpectBracket},
@@ -83,18 +82,13 @@ public class Controller : MonoBehaviour
         {"{", Happening.Starting},
         {";", Happening.Starting},
         {"=", Happening.ExpectInt},
+        {"= ", Happening.ExpectInt},
     };
 
     private List<List<string>> scopeVariables = new List<List<string>>();
 
     //monospace tag
-    const string monostring = "<mspace=1.2em><noparse>";
-
-    bool ignore = false;
-    bool superIgnore = false;
-    bool inClass = false;
-    bool inMethod = false;
-    bool allowNewLines = false;
+    const string monostring = "<noparse>";
 
 
     private enum Happening
@@ -138,23 +132,23 @@ public class Controller : MonoBehaviour
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "*/" });  //SuperIgnore
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float ", "vector3 ", "void " });  //PublicPrivate
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float ", "Vector3 ", "void " });  //PublicPrivate
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "Start()", "Update()" });  //ExpectMethodName
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "Zombie", "Player", "GameMaster" });  //ExpectClassName
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { ": Monobehaviour", ":Monobehaviour" });  //MonoBehaviour
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { ": MonoBehaviour", ":MonoBehaviour" });  //MonoBehaviour
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "public ", "private ", "int ", "string ", "bool ", "float ", "vector3 ", "}", "//", "/*", "{" });  //InClass
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "public ", "private ", "int ", "string ", "bool ", "float ", "Vector3 ", "}", "//", "/*" });  //InClass
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{" });  //InMethod
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "Vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{", "Debug.Log(" });  //InMethod
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "{", "//", "/*" });  //ExpectBracket
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { ";" });  //ExpectSemiColon
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "=", ";" });  //ExpectEquals
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "=", "= " });  //ExpectEquals
 
         number_center = numbers.transform.position.y;
     }
@@ -210,8 +204,8 @@ public class Controller : MonoBehaviour
     private void CheckContent()
     {
         //stop from going out of scope
-        int amount = 23;
-        if (input.text.Length < 23)
+        int amount = monostring.Length;
+        if (input.text.Length < monostring.Length)
         {
             amount = input.text.Length;
         }
@@ -220,9 +214,9 @@ public class Controller : MonoBehaviour
         if (input.text.Substring(0, amount) != monostring)
         {
             //remove extra letters from tag
-            if (input.text.Length > 22)
+            if (input.text.Length > monostring.Length - 1)
             {
-                input.text = input.text.Substring(22);
+                input.text = input.text.Substring(monostring.Length - 1);
             }
             else
             {
@@ -230,7 +224,7 @@ public class Controller : MonoBehaviour
             }
             //add tag back
             input.text = monostring + input.text;
-            input.caretPosition = 23;
+            input.caretPosition = monostring.Length;
             Canvas.ForceUpdateCanvases();
         }
     }
@@ -248,14 +242,26 @@ public class Controller : MonoBehaviour
 
     private Error TryCompile(ref int lineNo)
     {
+        string stringset = "";
+        bool ignore = false;
+        bool superIgnore = false;
+        bool inClass = false;
+        bool inMethod = false;
+        bool allowWhiteSpace = true;
+        bool lineUnfinished = false;
         int character = 0;
         int bracket = 0;
         string word = "";
         string closestWord = "";
         curHaps = Happening.Starting;
-        List<string> current = allStrings[(int)curHaps];
+        List<string> current = new List<string>(allStrings[(int)curHaps]);
+        vars.Clear();
 
-        foreach (char c in input.text)
+        Happening next = Happening.ExpectInt;
+
+        string allText = input.text.Substring(monostring.Length, input.text.Length - monostring.Length);
+
+        foreach (char c in allText)
         {
             if (c == 8203)
             {
@@ -268,47 +274,202 @@ public class Controller : MonoBehaviour
                 lineNo++;
             }
 
-            word += c;
-            if ((int)curHaps > allStrings.Count - 1)
+            if ((!allowWhiteSpace || character > 1) && (c == '\n' || (c >= 0 && c <= 31)))
             {
-
+                return new Error(Error.ErrorCodes.Syntax, "Too much white space found between commands", lineNo);
+            }
+            else if (allowWhiteSpace && character == 0 && (c == '\n' || (c >= 0 && c <= 32)))
+            {
+                continue;
             }
             else
             {
-                foreach (string s in current)
+                word += c;
+            }
+
+
+            if ((int)curHaps > allStrings.Count - 1)
+            {
+                switch (curHaps)
                 {
-                    if (c != s[character])
+                    case Happening.ExpectUsing:
+                        if (character > 0 && c == ';')
+                        {
+                            word = "";
+                            character = -1;
+                            curHaps = Happening.Starting;
+                            current = new List<string>(allStrings[(int)Happening.Starting]);
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                        }
+                        else if (c != 46 && !(c >= 65 && c <= 90) && !(c >= 97 && c <= 122))
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "Invalid character found in using declairation", lineNo);
+                        }
+                        break;
+                    case Happening.ExpectVariableName:
+                        if (character > 0 && c == ';')
+                        {
+                            lineUnfinished = false;
+                            allowWhiteSpace = true;
+                            if (vars.ContainsKey(word))
+                            {
+                                if (vars[word].inScope == true)
+                                {
+                                    return new Error(Error.ErrorCodes.Syntax, "cannot redefine \"" + word + "\"", lineNo);
+                                }
+                            }
+                            Variable theNew = new Variable();
+                            theNew.inScope = true;
+                            switch (next)
+                            {
+                                case Happening.ExpectInt:
+                                    theNew.type = Variable.VariableType.INT;
+                                    theNew.int_value = 0;
+                                    break;
+                                case Happening.ExpectBool:
+                                    theNew.type = Variable.VariableType.BOOL;
+                                    theNew.bool_value = false;
+                                    break;
+                                case Happening.ExpectFloat:
+                                    theNew.type = Variable.VariableType.FLOAT;
+                                    theNew.flt_value = 0;
+                                    break;
+                                case Happening.ExpectVec3:
+                                    theNew.type = Variable.VariableType.VEC3;
+                                    theNew.vec3_value = new Vector3();
+                                    break;
+                                case Happening.ExpectString:
+                                    theNew.type = Variable.VariableType.STRING;
+                                    theNew.str_value = "";
+                                    break;
+                            }
+                            vars.Add(word, theNew);
+                            word = "";
+                            character = -1;
+                            if (inMethod)
+                            {
+                                curHaps = Happening.InMethod;
+                            }
+                            else if (inClass)
+                            {
+                                curHaps = Happening.InClass;
+                            }
+                            current = new List<string>(allStrings[(int)curHaps]);
+                        }
+                        else if (character > 0 && c == 32)
+                        {
+                            stringset = word.Substring(0, word.Length - 1);
+                            curHaps = Happening.ExpectEquals;
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = false;
+                            lineUnfinished = true;
+                            word = "";
+                            character = -1;
+                        }
+                        else if (character > 0 && c == 61)
+                        {
+                            stringset = word.Substring(0, word.Length - 1);
+                            curHaps = next;
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = false;
+                            lineUnfinished = true;
+                            word = "";
+                            character = -1;
+                        }
+                        else if (!(c >= 65 && c <= 90) && !(c >= 97 && c <= 122) && (character == 0 && (c >= 48 && c <= 57)))
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "Invalid character found in variableName", lineNo);
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < current.Count; ++i)
+                {
+                    if (c != current[i][character])
                     {
                         if (ignore || superIgnore)
                         {
                             word = "";
+                            character = -1;
                         }
                         else
                         {
-                            current.Remove(s);
+                            current.Remove(current[i]);
+                            i--;
                         }
                     }
-                    else if (word == s)
+                    else if (word == current[i])
                     {
+                        if (word == "{")
+                        {
+                            bracket++;
+
+                            if (previous == Happening.MonoBehaviour)
+                            {
+                                inClass = true;
+                            }
+                            else if (previous == Happening.ExpectMethodName)
+                            {
+                                inMethod = true;
+                            }
+                        }
+
+                        if (word == "int ")
+                        {
+                            next = Happening.ExpectInt;
+                        }
+                        else if (word == "string ")
+                        {
+                            next = Happening.ExpectString;
+                        }
+                        else if (word == "float ")
+                        {
+                            next = Happening.ExpectFloat;
+                        }
+                        else if (word == "Vector3 ")
+                        {
+                            next = Happening.ExpectVec3;
+                        }
+
+                        character = -1;
                         if (ignore) ignore = false;
                         if (superIgnore) superIgnore = false;
+                        if (!(curHaps == Happening.ExpectSemiColon)) lineUnfinished = true;
+                        allowWhiteSpace = false;
+
+                        if (word == "}")
+                        {
+                            bracket--;
+                            if (bracket == 0)
+                            {
+                                lineUnfinished = false;
+                                inClass = false;
+                            }
+
+                            if (inMethod && bracket == 1)
+                            {
+                                inMethod = false;
+                            }
+                        }
 
                         previous = curHaps;
                         curHaps = keys[word];
-                        if ((int)curHaps < allStrings.Count)
-                        {
-                            current = allStrings[(int)curHaps];
-                        }
 
                         switch (curHaps)
                         {
                             case Happening.Ignore:
+                                allowWhiteSpace = true;
                                 ignore = true;
                                 break;
                             case Happening.SuperIgnore:
+                                allowWhiteSpace = true;
                                 superIgnore = true;
                                 break;
                             case Happening.Starting:
+                                allowWhiteSpace = true;
                                 if (inMethod)
                                 {
                                     curHaps = Happening.InMethod;
@@ -324,11 +485,47 @@ public class Controller : MonoBehaviour
                                     curHaps = Happening.PublicPrivate;
                                 }
                                 break;
+                            case Happening.MonoBehaviour:
+                                allowWhiteSpace = true;
+                                break;
+                            case Happening.ExpectBracket:
+                                allowWhiteSpace = true;
+                                break;
                         }
+
+                        if (previous == Happening.ExpectEquals)
+                        {
+                            switch (next)
+                            {
+                                case Happening.ExpectInt:
+                                    curHaps = Happening.ExpectInt;
+                                    break;
+                                case Happening.ExpectBool:
+                                    curHaps = Happening.ExpectBool;
+                                    break;
+                                case Happening.ExpectFloat:
+                                    curHaps = Happening.ExpectFloat;
+                                    break;
+                                case Happening.ExpectVec3:
+                                    curHaps = Happening.ExpectVec3;
+                                    break;
+                                case Happening.ExpectString:
+                                    curHaps = Happening.ExpectString;
+                                    break;
+                            }
+                        }
+
+                        if ((int)curHaps < allStrings.Count)
+                        {
+                            current = new List<string>(allStrings[(int)curHaps]);
+                        }
+                        word = "";
+                        closestWord = "";
+                        break;
                     }
                     else
                     {
-                        closestWord = s;
+                        closestWord = current[i];
                     }
 
                 }
@@ -337,7 +534,12 @@ public class Controller : MonoBehaviour
                     return new Error(Error.ErrorCodes.Syntax, "word \"" + word + "\" not understood. Closest word " + closestWord, lineNo);
                 }
             }
+            character++;
+        }
 
+        if (lineUnfinished == true)
+        {
+            return new Error(Error.ErrorCodes.Syntax, "Line not complete", lineNo);
         }
 
         return new Error();
