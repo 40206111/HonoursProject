@@ -21,6 +21,24 @@ public class Mathematics
     public Operator op = Operator.NONE;
     public Code_if.VectorPart vectorLHS;
     public Code_if.VectorPart vectorRHS;
+    public bool lhsComplete = false;
+    public bool rhsComplete = false;
+
+    public Mathematics() { }
+    public Mathematics(Mathematics m)
+    {
+        lhs = m.lhs;
+        rhs = m.rhs;
+        varLHS = m.varLHS;
+        varRHS = m.varRHS;
+        fLHS = m.fLHS;
+        fRHS = m.fRHS;
+        op = m.op;
+        vectorLHS = m.vectorLHS;
+        vectorRHS = m.vectorRHS;
+        lhsComplete = m.lhsComplete;
+        rhsComplete = m.rhsComplete;
+    }
 
     public float Calculate()
     {

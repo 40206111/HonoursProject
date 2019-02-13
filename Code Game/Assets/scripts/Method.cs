@@ -63,13 +63,19 @@ public class Code_SetZombie : Method
 
 public class Code_Equation : Method
 {
-    string output = "";
-    Code_if.VectorPart vPart = Code_if.VectorPart.none;
-    Mathematics maths = null;
+    public string output = "";
+    public Code_if.VectorPart vPart = Code_if.VectorPart.none;
+    public Mathematics maths = null;
+    public bool changeType = false;
+    public Variable.VariableType newType = Variable.VariableType.INT;
 
     public override bool Compute()
     {
         Variable temp = Controller.vars[output];
+        if (changeType)
+        {
+            temp.type = newType;
+        }
         switch (temp.type)
         {
             case Variable.VariableType.FLOAT:
@@ -101,10 +107,10 @@ public class Code_Equation : Method
 
 public class Code_Vec3Set : Method
 {
-    string output = "";
-    Mathematics x = null;
-    Mathematics y = null;
-    Mathematics z = null;
+    public string output = "";
+    public Mathematics x = null;
+    public Mathematics y = null;
+    public Mathematics z = null;
 
     public override bool Compute()
     {
@@ -113,6 +119,7 @@ public class Code_Vec3Set : Method
         if (x != null) temp.vec3_value.x = x.Calculate();
         if (y != null) temp.vec3_value.y = y.Calculate();
         if (z != null) temp.vec3_value.z = z.Calculate();
+        temp.type = Variable.VariableType.VEC3;
 
         Controller.vars[output] = temp;
 
@@ -130,10 +137,16 @@ public class Code_SimpleSet : Method
     public string sValue = "";
     public Code_if.VectorPart outPart = Code_if.VectorPart.none;
     public Code_if.VectorPart inPart = Code_if.VectorPart.none;
+    public Variable.VariableType newType = Variable.VariableType.INT;
+    public bool changeType = false;
 
     public override bool Compute()
     {
         Variable temp = Controller.vars[output];
+        if (changeType)
+        {
+            temp.type = newType;
+        }
 
         switch (temp.type)
         {

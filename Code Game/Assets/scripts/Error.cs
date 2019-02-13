@@ -15,7 +15,7 @@ public class Error
         TypeMismatch
     };
 
-    ErrorCodes errorCode = ErrorCodes.None;
+    public ErrorCodes errorCode = ErrorCodes.None;
     string message = "";
     int lineNo = 0;
 
