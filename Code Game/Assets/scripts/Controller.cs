@@ -268,6 +268,8 @@ public class Controller : MonoBehaviour
     //Method to compile code
     public void Compile()
     {
+        GM.console.text = "";
+        GM.console.text = "Compile Button Pressed\n";
         Debug.Log("Compile Button Pressed");
         int currentLine = 1;
 

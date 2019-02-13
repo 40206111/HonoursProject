@@ -8,6 +8,51 @@ public abstract class Method
 
 }
 
+public class Code_Debug : Method
+{
+    public string variablename;
+    public Code_if.VectorPart vPart = Code_if.VectorPart.none;
+    public string content;
+
+    public override bool Compute()
+    {
+        if (variablename != "")
+        {
+            switch (Controller.vars[variablename].type)
+            {
+                case Variable.VariableType.BOOL:
+                    GM.console.text += Controller.vars[variablename].bool_value + "\n";
+                    break;
+                case Variable.VariableType.FLOAT:
+                    GM.console.text += Controller.vars[variablename].flt_value + "\n";
+                    break;
+                case Variable.VariableType.INT:
+                    GM.console.text += Controller.vars[variablename].int_value + "\n";
+                    break;
+                case Variable.VariableType.STRING:
+                    GM.console.text += Controller.vars[variablename].str_value + "\n";
+                    break;
+                case Variable.VariableType.VEC3:
+                    if (vPart == Code_if.VectorPart.none)
+                        GM.console.text += Controller.vars[variablename].vec3_value + "\n";
+                    else if (vPart == Code_if.VectorPart.x)
+                        GM.console.text += Controller.vars[variablename].vec3_value.x + "\n";
+                    else if (vPart == Code_if.VectorPart.y)
+                        GM.console.text += Controller.vars[variablename].vec3_value.y + "\n";
+                    else if (vPart == Code_if.VectorPart.z)
+                        GM.console.text += Controller.vars[variablename].vec3_value.z + "\n";
+                    break;
+
+            }
+        }
+        else
+        {
+            GM.console.text += content + "\n";
+        }
+        return true;
+    }
+}
+
 public class Code_While : Method
 {
     public Code_if checkCase;
