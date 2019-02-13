@@ -274,7 +274,8 @@ public class Controller : MonoBehaviour
 
         Error error = TryCompile(ref currentLine);
 
-        GM.console.text += "- " + error + "\n";
+        if (error.errorCode != Error.ErrorCodes.None)
+            GM.console.text += "- " + error + "\n";
     }
 
     private Error TryCompile(ref int lineNo)
@@ -310,6 +311,7 @@ public class Controller : MonoBehaviour
 
             if (c == '\n')
             {
+                superIgnore = false;
                 lineNo++;
             }
 
@@ -319,7 +321,14 @@ public class Controller : MonoBehaviour
             }
             else if (allowWhiteSpace && character == 0 && (c == '\n' || (c >= 0 && c <= 32)))
             {
-                continue;
+                if (!ignore)
+                {
+                    continue;
+                }
+                else
+                {
+                    word += c;
+                }
             }
             else
             {
@@ -478,6 +487,10 @@ public class Controller : MonoBehaviour
                                 temp = vars[stringset];
                                 temp.inScope = true;
                                 vars[stringset] = temp;
+                            }
+                            if (!initialise && !vars.ContainsKey(stringset))
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "\"" + stringset + "\" does not exsist to be set", lineNo);
                             }
                             previous = next;
                             if (next == Happening.Starting)
@@ -922,6 +935,13 @@ public class Controller : MonoBehaviour
                             word = "";
                             character = -1;
                             stringset = "";
+                        }
+                        break;
+                    case Happening.ExpectString:
+                        if (c == ';')
+                        {
+                            word = word.Substring(0, word.Length - 1);
+                            word = word.Trim();
                         }
                         break;
                     case Happening.ExpectEquation:
