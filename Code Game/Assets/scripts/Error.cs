@@ -31,7 +31,7 @@ public class Error
 
     public override string ToString()
     {
-        string output = message;
+        string output = "ERROR CODE:" + errorCode + " " +  message;
 
         if (output == "")
         {

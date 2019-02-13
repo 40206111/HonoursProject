@@ -288,8 +288,10 @@ public class Controller : MonoBehaviour
         bool allowWhiteSpace = true;
         bool lineUnfinished = false;
         bool initialise = false;
+        bool expectCommand = false;
         int character = 0;
         int bracket = 0;
+        int inString = 0;
         string word = "";
         string closestWord = "";
         curHaps = Happening.Starting;
@@ -938,10 +940,126 @@ public class Controller : MonoBehaviour
                         }
                         break;
                     case Happening.ExpectString:
-                        if (c == ';')
+                        if (expectCommand)
                         {
+                            switch (c)
+                            {
+                                case '\\':
+                                    break;
+                                case '\"':
+                                    word = word.Substring(0, word.Length - 1) + "\"";
+                                    break;
+                                case 'n':
+                                    word = word.Substring(0, word.Length - 1) + "\n";
+                                    break;
+                                case 't':
+                                    word = word.Substring(0, word.Length - 1) + "\t";
+                                    break;
+                                default:
+                                    return new Error(Error.ErrorCodes.Syntax, "Unexpected character after \\", lineNo);
+                            }
+                            expectCommand = false;
+                        }
+                        else if (c == '\\')
+                        {
+                            expectCommand = true;
+                        }
+                        else if (c == '\"' && inString < 2)
+                        {
+                            inString++;
+                        }
+                        else if (c == ';' && (inString == 2 || inString == 0))
+                        {
+                            inString = 0;
                             word = word.Substring(0, word.Length - 1);
                             word = word.Trim();
+
+                            if (vars.ContainsKey(word))
+                            {
+                                if (vars[word].type != Variable.VariableType.STRING)
+                                {
+                                    return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value to string", lineNo);
+                                }
+                                if (!inMethod)
+                                {
+                                    return new Error(Error.ErrorCodes.Compiler, "Varaible cannot be initialised to another variable outside of class", lineNo);
+                                }
+
+                                if (!vars.ContainsKey(stringset))
+                                {
+                                    Variable temp = new Variable
+                                    {
+                                        str_value = vars[word].str_value,
+                                        inScope = true,
+                                        type = Variable.VariableType.STRING
+                                    };
+
+                                    vars.Add(stringset, temp);
+                                }
+
+                                Code_SimpleSet set = new Code_SimpleSet
+                                {
+                                    input = word,
+                                    output = stringset
+                                };
+
+                                if (vars[stringset].type != Variable.VariableType.STRING)
+                                {
+                                    set.changeType = true;
+                                    set.newType = Variable.VariableType.STRING;
+                                }
+                                methods.Add(set);
+                            }
+                            else if (word[0] == '\"' && word[word.Length - 1] == '\"')
+                            {
+                                if (!vars.ContainsKey(stringset))
+                                {
+                                    Variable temp = new Variable
+                                    {
+                                        str_value = word.Substring(1, word.Length - 2),
+                                        inScope = true,
+                                        type = Variable.VariableType.STRING
+                                    };
+
+                                    vars.Add(stringset, temp);
+                                }
+
+                                Code_SimpleSet set = new Code_SimpleSet
+                                {
+                                    sValue = word.Substring(1, word.Length - 2),
+                                    output = stringset
+                                };
+
+                                if (vars[stringset].type != Variable.VariableType.STRING)
+                                {
+                                    set.changeType = true;
+                                    set.newType = Variable.VariableType.STRING;
+                                }
+                                methods.Add(set);
+                            }
+                            else
+                            {
+                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value int string", lineNo);
+                            }
+                            curHaps = Happening.Starting;
+                            if (inMethod)
+                            {
+                                curHaps = Happening.InMethod;
+                            }
+                            else if (inClass)
+                            {
+                                curHaps = Happening.InClass;
+                            }
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
+                            character = -1;
+                            stringset = "";
+                        }
+                        else if (inString > 2)
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "cannot convert value into string", lineNo);
                         }
                         break;
                     case Happening.ExpectEquation:
@@ -1010,6 +1128,7 @@ public class Controller : MonoBehaviour
                         break;
                 }
             }
+            ////////////////////// Non Special Cases //////////////////////////
             else
             {
                 for (int i = 0; i < current.Count; ++i)

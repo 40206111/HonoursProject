@@ -2178,9 +2178,10 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tfloat test;\n\tint test2;\n\tbool
-    test3;\n\tstring test4;\n\tVector3 test5;\n\n\tpublic void Start()\n\t{\n\t\ttest
-    = 6;\n\t}\n}"
+  m_Text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tfloat test = 4.2f;\n\tint
+    test2 = 32;\n\tbool test3 = true;\n\tstring test4 = \"(\\\"test\\\")\\n\";\n\tVector3
+    test5;\n\n\tpublic void Start()\n\t{\n\t\ttest = 6;\n\t\tint try = test + 4;\n\t\tbool
+    bananas = false;\n\t\tVector3 toop;\n\t\tstring altTest = \"better naming schemes\";\n\t}\n}"
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2525,9 +2526,10 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tfloat test;\n\tint test2;\n\tbool
-    test3;\n\tstring test4;\n\tVector3 test5;\n\n\tpublic void Start()\n\t{\n\t\ttest
-    = 6;\n\t}\n}\u200B"
+  m_text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tfloat test = 4.2f;\n\tint
+    test2 = 32;\n\tbool test3 = true;\n\tstring test4 = \"(\\\"test\\\")\\n\";\n\tVector3
+    test5;\n\n\tpublic void Start()\n\t{\n\t\ttest = 6;\n\t\tint try = test + 4;\n\t\tbool
+    bananas = false;\n\t\tVector3 toop;\n\t\tstring altTest = \"better naming schemes\";\n\t}\n}\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bb17a26b7de130c498ea36c009469c3b, type: 2}
   m_sharedMaterial: {fileID: 21003833481397090, guid: bb17a26b7de130c498ea36c009469c3b,
@@ -2597,12 +2599,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1622086299}
-    characterCount: 149
+    characterCount: 291
     spriteCount: 0
-    spaceCount: 35
-    wordCount: 19
+    spaceCount: 69
+    wordCount: 39
     linkCount: 0
-    lineCount: 13
+    lineCount: 17
     pageCount: 1
     materialCount: 1
   m_havePropertiesChanged: 0
@@ -2610,7 +2612,7 @@ MonoBehaviour:
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 0
-  m_inputSource: 0
+  m_inputSource: 3
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
