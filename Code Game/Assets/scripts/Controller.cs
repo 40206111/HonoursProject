@@ -825,6 +825,7 @@ public class Controller : MonoBehaviour
                         {
                             string[] words = { "true;", " true;", "true ;", " true ;",
                                            "false;", " false;", "false ;", " false ;" };
+                            bool complete = false;
                             for (int i = 0; i < words.Length; ++i)
                             {
                                 if (word == words[i])
@@ -858,47 +859,51 @@ public class Controller : MonoBehaviour
                                         }
                                     }
 
+                                    complete = true;
                                     break;
                                 }
 
                             }
-                            word = word.Substring(0, word.Length - 1);
-                            word = word.Trim();
-                            if (vars.ContainsKey(word))
+                            if (!complete)
                             {
-                                if (!inMethod)
+                                word = word.Substring(0, word.Length - 1);
+                                word = word.Trim();
+                                if (vars.ContainsKey(word))
                                 {
-                                    return new Error(Error.ErrorCodes.Compiler, "Cannot set variable to another variable outside of class", lineNo);
-                                }
-                                if (vars[word].type != Variable.VariableType.BOOL)
-                                {
-                                    return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value to bool type", lineNo);
-                                }
-
-                                if (!vars.ContainsKey(stringset))
-                                {
-                                    Variable temp = new Variable
+                                    if (!inMethod)
                                     {
-                                        inScope = true,
-                                        bool_value = vars[word].bool_value
+                                        return new Error(Error.ErrorCodes.Compiler, "Cannot set variable to another variable outside of class", lineNo);
+                                    }
+                                    if (vars[word].type != Variable.VariableType.BOOL)
+                                    {
+                                        return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value to bool type", lineNo);
+                                    }
+
+                                    if (!vars.ContainsKey(stringset))
+                                    {
+                                        Variable temp = new Variable
+                                        {
+                                            inScope = true,
+                                            bool_value = vars[word].bool_value
+                                        };
+                                        vars.Add(stringset, temp);
+                                        vars[stringset] = temp;
+                                    }
+                                    Code_SimpleSet set = new Code_SimpleSet
+                                    {
+                                        input = word,
+                                        output = stringset
                                     };
-                                    vars.Add(stringset, temp);
-                                    vars[stringset] = temp;
+                                    if (vars[stringset].type != Variable.VariableType.BOOL)
+                                    {
+                                        set.changeType = true;
+                                        set.newType = Variable.VariableType.BOOL;
+                                    }
                                 }
-                                Code_SimpleSet set = new Code_SimpleSet
+                                else
                                 {
-                                    input = word,
-                                    output = stringset
-                                };
-                                if (vars[stringset].type != Variable.VariableType.BOOL)
-                                {
-                                    set.changeType = true;
-                                    set.newType = Variable.VariableType.BOOL;
+                                    return new Error(Error.ErrorCodes.Syntax, "Cannot convert value to bool", lineNo);
                                 }
-                            }
-                            else
-                            {
-                                return new Error(Error.ErrorCodes.Syntax, "Cannot convert value to bool", lineNo);
                             }
 
                             curHaps = Happening.Starting;
