@@ -460,6 +460,9 @@ public class Controller : MonoBehaviour
                             }
                             current = new List<string>(allStrings[(int)curHaps]);
                             initialise = false;
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
                         }
                         else if (character > 0 && c == 32)
                         {
@@ -712,7 +715,39 @@ public class Controller : MonoBehaviour
                             }
                             else if (word[word.Length - 1] != 'f')
                             {
-                                return new Error(Error.ErrorCodes.TypeMismatch, "Expected float value", lineNo);
+                                int int_value;
+                                if (Int32.TryParse(word, out int_value))
+                                {
+                                    if (!vars.ContainsKey(stringset))
+                                    {
+                                        Variable temp = new Variable
+                                        {
+                                            type = Variable.VariableType.FLOAT,
+                                            inScope = true,
+                                            flt_value = int_value
+                                        };
+                                        vars.Add(stringset, temp);
+                                        scopeVariables[scopeVariables.Count - 1].Add(stringset);
+                                    }
+
+                                    if (inMethod)
+                                    {
+                                        Code_SimpleSet set = new Code_SimpleSet
+                                        {
+                                            output = stringset,
+                                            fValue = int_value
+                                        };
+
+                                        if (vars[stringset].type != Variable.VariableType.FLOAT)
+                                        {
+                                            set.changeType = true;
+                                            set.newType = Variable.VariableType.FLOAT;
+                                        }
+
+                                        methods.Add(set);
+                                    }
+                                }
+                                else return new Error(Error.ErrorCodes.TypeMismatch, "Expected float value", lineNo);
                             }
                             else if (float.TryParse(word.Substring(1, word.Length - 2), out value))
                             {
@@ -865,6 +900,22 @@ public class Controller : MonoBehaviour
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Cannot convert value to bool", lineNo);
                             }
+
+                            curHaps = Happening.Starting;
+                            if (inMethod)
+                            {
+                                curHaps = Happening.InMethod;
+                            }
+                            else if (inClass)
+                            {
+                                curHaps = Happening.InClass;
+                            }
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
+                            character = -1;
+                            stringset = "";
                         }
                         break;
                     case Happening.ExpectEquation:
@@ -989,7 +1040,7 @@ public class Controller : MonoBehaviour
                         }
                         else if (word == "bool ")
                         {
-                            next = Happening.ExpectVec3;
+                            next = Happening.ExpectBool;
                             initialise = true;
                         }
 

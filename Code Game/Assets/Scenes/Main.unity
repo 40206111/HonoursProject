@@ -2176,7 +2176,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tint test = 5;\n\n\tpublic
+  m_Text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tint test = 9*8+6-5/8;\n\n\tpublic
     void Start()\n\t{\n\t\ttest = 6;\n\t}\n}"
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
@@ -2522,7 +2522,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tint test = 5;\n\n\tpublic
+  m_text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tint test = 9*8+6-5/8;\n\n\tpublic
     void Start()\n\t{\n\t\ttest = 6;\n\t}\n}\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7a0ffa20cd2fdb340a1d43c808ad6a4e, type: 2}
@@ -2593,10 +2593,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1622086299}
-    characterCount: 95
+    characterCount: 103
     spriteCount: 0
     spaceCount: 25
-    wordCount: 12
+    wordCount: 15
     linkCount: 0
     lineCount: 9
     pageCount: 1
@@ -3073,7 +3073,7 @@ PrefabInstance:
     - target: {fileID: 9177461317475684556, guid: 59910e6126f68f442b71dc6b8ca0d177,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5.96
+      value: -7.47
       objectReference: {fileID: 0}
     - target: {fileID: 9177461317475684556, guid: 59910e6126f68f442b71dc6b8ca0d177,
         type: 3}
