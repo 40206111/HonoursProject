@@ -47,7 +47,7 @@ public class Code_Debug : Method
         }
         else
         {
-            GM.console.text += content + "\n";
+            GM.console.text += "- " + content + "\n";
         }
         return true;
     }
