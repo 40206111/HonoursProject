@@ -945,15 +945,16 @@ public class Controller : MonoBehaviour
                             switch (c)
                             {
                                 case '\\':
+                                    word = word.Substring(0, word.Length - 1);
                                     break;
                                 case '\"':
-                                    word = word.Substring(0, word.Length - 1) + "\"";
+                                    word = word.Substring(0, word.Length - 2) + "\"";
                                     break;
                                 case 'n':
-                                    word = word.Substring(0, word.Length - 1) + "\n";
+                                    word = word.Substring(0, word.Length - 2) + "\n";
                                     break;
                                 case 't':
-                                    word = word.Substring(0, word.Length - 1) + "\t";
+                                    word = word.Substring(0, word.Length - 2) + "\t";
                                     break;
                                 default:
                                     return new Error(Error.ErrorCodes.Syntax, "Unexpected character after \\", lineNo);
