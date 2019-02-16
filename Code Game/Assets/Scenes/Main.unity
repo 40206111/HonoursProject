@@ -2180,8 +2180,9 @@ MonoBehaviour:
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
   m_Text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tfloat test = 4.2f;\n\tint
     test2 = 32;\n\tbool test3 = true;\n\tstring test4 = \"(\\\"test\\\")\\n\";\n\tVector3
-    test5;\n\n\tpublic void Start()\n\t{\n\t\ttest = 6;\n\t\tint try = test + 4;\n\t\tbool
-    bananas = false;\n\t\tVector3 toop;\n\t\tstring altTest = \"better naming schemes\";\n\t}\n}"
+    test5 = new Vector3( 6, 9, 3);\n\n\tpublic void Start()\n\t{\n\t\ttest = 6;\n\t\tint
+    try = test + 4;\n\t\tbool bananas = false;\n\t\tVector3 toop = new Vector3(1,2,3);\n\t\tstring
+    altTest = \"better naming schemes\";\n\t}\n}"
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2528,8 +2529,9 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: "<noparse>public class Zombie : MonoBehaviour\n{\n\tfloat test = 4.2f;\n\tint
     test2 = 32;\n\tbool test3 = true;\n\tstring test4 = \"(\\\"test\\\")\\n\";\n\tVector3
-    test5;\n\n\tpublic void Start()\n\t{\n\t\ttest = 6;\n\t\tint try = test + 4;\n\t\tbool
-    bananas = false;\n\t\tVector3 toop;\n\t\tstring altTest = \"better naming schemes\";\n\t}\n}\u200B"
+    test5 = new Vector3( 6, 9, 3);\n\n\tpublic void Start()\n\t{\n\t\ttest = 6;\n\t\tint
+    try = test + 4;\n\t\tbool bananas = false;\n\t\tVector3 toop = new Vector3(1,2,3);\n\t\tstring
+    altTest = \"better naming schemes\";\n\t}\n}\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bb17a26b7de130c498ea36c009469c3b, type: 2}
   m_sharedMaterial: {fileID: 21003833481397090, guid: bb17a26b7de130c498ea36c009469c3b,
@@ -2599,10 +2601,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1622086299}
-    characterCount: 291
+    characterCount: 336
     spriteCount: 0
-    spaceCount: 69
-    wordCount: 39
+    spaceCount: 78
+    wordCount: 49
     linkCount: 0
     lineCount: 17
     pageCount: 1

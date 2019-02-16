@@ -83,6 +83,10 @@ public class Controller : MonoBehaviour
         {";", Happening.Starting},
         {"=", Happening.ExpectInt},
         {"= ", Happening.ExpectInt},
+        {"Vector3(", Happening.ExpectVec3 },
+        {"Vector3 (", Happening.ExpectVec3 },
+        {"new ", Happening.New },
+        {" new ", Happening.New }
     };
 
     private List<List<string>> scopeVariables = new List<List<string>>();
@@ -106,6 +110,8 @@ public class Controller : MonoBehaviour
         ExpectBracket,
         ExpectSemiColon,
         ExpectEquals,
+        ExpectNew,
+        New,
         ////////////
         ExpectInt,
         ExpectString,
@@ -150,6 +156,11 @@ public class Controller : MonoBehaviour
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { ";" });  //ExpectSemiColon
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "=" });  //ExpectEquals
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "new ", " new " });  //ExpectNew
+        allStrings.Add(new List<string>());
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "Vector3(", "Vector3 (" });  //New
+
 
         number_center = numbers.transform.position.y;
     }
@@ -290,8 +301,9 @@ public class Controller : MonoBehaviour
         bool initialise = false;
         bool expectCommand = false;
         int character = 0;
-        int bracket = 0;
+        int bracket = 0;    // { kind of brackets
         int inString = 0;
+        int lilBracket = 1; // ( kind of brackets
         string word = "";
         string closestWord = "";
         curHaps = Happening.Starting;
@@ -564,7 +576,15 @@ public class Controller : MonoBehaviour
                                     next = Happening.ExpectVec3;
                                 }
                             }
-                            curHaps = next;
+                            if (next == Happening.ExpectVec3)
+                            {
+                                curHaps = Happening.New;
+                                current = new List<string>(allStrings[(int)curHaps]);
+                            }
+                            else
+                            {
+                                curHaps = next;
+                            }
                             allowWhiteSpace = false;
                             lineUnfinished = true;
                             word = "";
@@ -707,13 +727,13 @@ public class Controller : MonoBehaviour
                                     {
                                         temp.inPart = Code_if.VectorPart.x;
                                     }
-                                    else if (words[1] == "x")
+                                    else if (words[1] == "y")
                                     {
-                                        temp.inPart = Code_if.VectorPart.x;
+                                        temp.inPart = Code_if.VectorPart.y;
                                     }
-                                    else if (words[1] == "x")
+                                    else if (words[1] == "z")
                                     {
-                                        temp.inPart = Code_if.VectorPart.x;
+                                        temp.inPart = Code_if.VectorPart.z;
                                     }
                                     else
                                     {
@@ -994,7 +1014,7 @@ public class Controller : MonoBehaviour
                                         inScope = true,
                                         type = Variable.VariableType.STRING
                                     };
-
+                                    scopeVariables[scopeVariables.Count - 1].Add(stringset);
                                     vars.Add(stringset, temp);
                                 }
 
@@ -1022,6 +1042,7 @@ public class Controller : MonoBehaviour
                                         type = Variable.VariableType.STRING
                                     };
 
+                                    scopeVariables[scopeVariables.Count - 1].Add(stringset);
                                     vars.Add(stringset, temp);
                                 }
 
@@ -1061,6 +1082,119 @@ public class Controller : MonoBehaviour
                         else if (inString > 2)
                         {
                             return new Error(Error.ErrorCodes.Syntax, "cannot convert value into string", lineNo);
+                        }
+                        break;
+                    case Happening.ExpectVec3:
+                        ///////CHECK BRAKET COUNT ADJAWDAWOPNMD AWOWMD AWNM
+                        if (c == '(')
+                        {
+                            lilBracket++;
+                        }
+                        else if (c == ')')
+                        {
+                            lilBracket--;
+                        }
+                        else if (c == ';' && lilBracket == 0)
+                        {
+                            word = word.Substring(0, word.Length - 2);
+                            string[] xyz = word.Split(',');
+                            lilBracket = 1;
+                            if (word == "")
+                            {
+                                if (!vars.ContainsKey(stringset))
+                                {
+                                    Variable temp = new Variable()
+                                    {
+                                        type = Variable.VariableType.VEC3,
+                                        vec3_value = new Vector3(0, 0, 0),
+                                        inScope = true
+                                    };
+                                    scopeVariables[scopeVariables.Count - 1].Add(stringset);
+                                    vars.Add(stringset, temp);
+                                }
+                                if (inMethod)
+                                {
+                                    Code_Vec3Set eq = new Code_Vec3Set
+                                    {
+                                        output = stringset,
+                                        x = new Mathematics(),
+                                        y = new Mathematics(),
+                                        z = new Mathematics()
+                                    };
+                                    methods.Add(eq);
+                                }
+                            }
+                            else if (xyz.Count() != 3)
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "Invalid Vector3 format", lineNo);
+                            }
+                            else
+                            {
+
+                                int bracCount = 0;
+                                xyz[0] += ';';
+                                xyz[1] += ';';
+                                xyz[2] += ';';
+
+                                Mathematics mathsx = new Mathematics();
+                                Error e = MakeEquation(ref mathsx, ref xyz[0], lineNo, inMethod, ref bracCount);
+                                if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                                Mathematics mathsy = new Mathematics();
+                                e = MakeEquation(ref mathsy, ref xyz[1], lineNo, inMethod, ref bracCount);
+                                if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                                Mathematics mathsz = new Mathematics();
+                                e = MakeEquation(ref mathsz, ref xyz[2], lineNo, inMethod, ref bracCount);
+                                if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                                if (!vars.ContainsKey(stringset))
+                                {
+                                    Variable temp = new Variable()
+                                    {
+                                        type = Variable.VariableType.VEC3,
+                                        vec3_value = new Vector3(0, 0, 0),
+                                        inScope = true
+                                    };
+
+                                    if (!inMethod)
+                                    {
+                                        temp.vec3_value.x = mathsx.Calculate();
+                                        temp.vec3_value.y = mathsy.Calculate();
+                                        temp.vec3_value.z = mathsz.Calculate();
+                                    }
+
+                                    scopeVariables[scopeVariables.Count - 1].Add(stringset);
+                                    vars.Add(stringset, temp);
+                                }
+
+                                if (inMethod)
+                                {
+                                    Code_Vec3Set eq = new Code_Vec3Set
+                                    {
+                                        output = stringset,
+                                        x = mathsx,
+                                        y = mathsy,
+                                        z = mathsz
+                                    };
+                                    methods.Add(eq);
+                                }
+                            }
+                            curHaps = Happening.Starting;
+                            if (inMethod)
+                            {
+                                curHaps = Happening.InMethod;
+                            }
+                            else if (inClass)
+                            {
+                                curHaps = Happening.InClass;
+                            }
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
+                            character = -1;
+                            stringset = "";
                         }
                         break;
                     case Happening.ExpectEquation:
@@ -1271,7 +1405,7 @@ public class Controller : MonoBehaviour
                                     curHaps = Happening.ExpectFloat;
                                     break;
                                 case Happening.ExpectVec3:
-                                    curHaps = Happening.ExpectVec3;
+                                    curHaps = Happening.ExpectNew;
                                     break;
                                 case Happening.ExpectString:
                                     curHaps = Happening.ExpectString;
@@ -1422,7 +1556,7 @@ public class Controller : MonoBehaviour
                                 }
                                 else
                                 {
-                                    return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert variable type to float", lineNo);
+                                    return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert variable type to float or int", lineNo);
                                 }
 
                             }
@@ -1441,7 +1575,7 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                return new Error(Error.ErrorCodes.Mathematical, "Invalid characters in expected float", lineNo);
+                                return new Error(Error.ErrorCodes.Mathematical, "Invalid characters in expected float or int", lineNo);
                             }
                         }
                         if (words.Count() == 2)
@@ -1557,7 +1691,7 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert variable type to float", lineNo);
+                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert variable type to float or int", lineNo);
                             }
 
                         }
@@ -1576,7 +1710,7 @@ public class Controller : MonoBehaviour
                         }
                         else
                         {
-                            return new Error(Error.ErrorCodes.Mathematical, "Invalid characters in expected float", lineNo);
+                            return new Error(Error.ErrorCodes.Mathematical, "Invalid characters in expected float or int", lineNo);
                         }
                     }
                     if (words.Count() == 2)
@@ -1832,7 +1966,7 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value to float", lineNo);
+                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value to float or int", lineNo);
                             }
                         }
                     }

@@ -31,7 +31,7 @@ public class Error
 
     public override string ToString()
     {
-        string output = "ERROR CODE:" + errorCode + " " +  message;
+        string output = "ERROR CODE:" + errorCode + ": " +  message;
 
         if (output == "")
         {
@@ -39,7 +39,7 @@ public class Error
             switch (errorCode)
             {
                 case ErrorCodes.Syntax:
-                    output = "There is a typo in this code";
+                    output = "There is a typo in the code";
                     break;
             }
         }
