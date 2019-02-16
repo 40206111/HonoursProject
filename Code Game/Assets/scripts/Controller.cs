@@ -606,7 +606,7 @@ public class Controller : MonoBehaviour
                             stringset = word.Substring(0, word.Length - 1);
                             if (initialise && vars.ContainsKey(stringset))
                             {
-                                if (vars[stringset].inScope == true && next == Happening.Starting)
+                                if (vars[stringset].inScope == true && next != Happening.Starting)
                                 {
                                     return new Error(Error.ErrorCodes.Syntax, "cannot redefine \"" + stringset + "\"", lineNo);
                                 }
@@ -991,6 +991,7 @@ public class Controller : MonoBehaviour
                                             inScope = true,
                                             bool_value = value
                                         };
+                                        scopeVariables[scopeVariables.Count - 1].Add(stringset);
                                         vars.Add(stringset, temp);
                                         vars[stringset] = temp;
                                     }
@@ -1006,6 +1007,7 @@ public class Controller : MonoBehaviour
                                             set.changeType = true;
                                             set.newType = Variable.VariableType.BOOL;
                                         }
+                                        methods.Add(set);
                                     }
 
                                     complete = true;
@@ -1131,18 +1133,21 @@ public class Controller : MonoBehaviour
                                     vars.Add(stringset, temp);
                                 }
 
-                                Code_SimpleSet set = new Code_SimpleSet
+                                if (inMethod)
                                 {
-                                    input = word,
-                                    output = stringset
-                                };
+                                    Code_SimpleSet set = new Code_SimpleSet
+                                    {
+                                        input = word,
+                                        output = stringset
+                                    };
 
-                                if (vars[stringset].type != Variable.VariableType.STRING)
-                                {
-                                    set.changeType = true;
-                                    set.newType = Variable.VariableType.STRING;
+                                    if (vars[stringset].type != Variable.VariableType.STRING)
+                                    {
+                                        set.changeType = true;
+                                        set.newType = Variable.VariableType.STRING;
+                                    }
+                                    methods.Add(set);
                                 }
-                                methods.Add(set);
                             }
                             else if (word[0] == '\"' && word[word.Length - 1] == '\"')
                             {
@@ -1159,18 +1164,21 @@ public class Controller : MonoBehaviour
                                     vars.Add(stringset, temp);
                                 }
 
-                                Code_SimpleSet set = new Code_SimpleSet
+                                if (inMethod)
                                 {
-                                    sValue = word.Substring(1, word.Length - 2),
-                                    output = stringset
-                                };
+                                    Code_SimpleSet set = new Code_SimpleSet
+                                    {
+                                        sValue = word.Substring(1, word.Length - 2),
+                                        output = stringset
+                                    };
 
-                                if (vars[stringset].type != Variable.VariableType.STRING)
-                                {
-                                    set.changeType = true;
-                                    set.newType = Variable.VariableType.STRING;
+                                    if (vars[stringset].type != Variable.VariableType.STRING)
+                                    {
+                                        set.changeType = true;
+                                        set.newType = Variable.VariableType.STRING;
+                                    }
+                                    methods.Add(set);
                                 }
-                                methods.Add(set);
                             }
                             else
                             {

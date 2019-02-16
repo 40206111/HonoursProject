@@ -2182,7 +2182,7 @@ MonoBehaviour:
     INT = 32;\n\tbool BOOL = true;\n\tstring STRING = \"(\\\"test\\\")\\n\";\n\tVector3
     VEC3 = new Vector3( 6, 9, 3);\n\n\tpublic void Start()\n\t{\n\t\tINT = 6;\n\t\tint
     ADDITION = INT + 4;\n\t\tbool BOOL2 = false;\n\t\tVector3 VEC32 = new Vector3(1,2,3);\n\t\tstring
-    STRING = \"better naming schemes\";\n\t\tDebug.Log(\"test1\");\n\t\tDebug.Log(ADDITION);\n\t}\n}"
+    STRING2 = \"better naming schemes\";\n\t\tDebug.Log(\"test1\");\n\t\tDebug.Log(ADDITION);\n\t}\n}"
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2532,7 +2532,7 @@ MonoBehaviour:
     INT = 32;\n\tbool BOOL = true;\n\tstring STRING = \"(\\\"test\\\")\\n\";\n\tVector3
     VEC3 = new Vector3( 6, 9, 3);\n\n\tpublic void Start()\n\t{\n\t\tINT = 6;\n\t\tint
     ADDITION = INT + 4;\n\t\tbool BOOL2 = false;\n\t\tVector3 VEC32 = new Vector3(1,2,3);\n\t\tstring
-    STRING = \"better naming schemes\";\n\t\tDebug.Log(\"test1\");\n\t\tDebug.Log(ADDITION);\n\t}\n}\u200B"
+    STRING2 = \"better naming schemes\";\n\t\tDebug.Log(\"test1\");\n\t\tDebug.Log(ADDITION);\n\t}\n}\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bb17a26b7de130c498ea36c009469c3b, type: 2}
   m_sharedMaterial: {fileID: 21003833481397090, guid: bb17a26b7de130c498ea36c009469c3b,
@@ -2602,7 +2602,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1622086299}
-    characterCount: 380
+    characterCount: 381
     spriteCount: 0
     spaceCount: 84
     wordCount: 55
