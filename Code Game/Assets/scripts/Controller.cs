@@ -86,7 +86,8 @@ public class Controller : MonoBehaviour
         {"Vector3(", Happening.ExpectVec3 },
         {"Vector3 (", Happening.ExpectVec3 },
         {"new ", Happening.New },
-        {" new ", Happening.New }
+        {" new ", Happening.New },
+        {"Debug.Log(", Happening.DebugLog }
     };
 
     private List<List<string>> scopeVariables = new List<List<string>>();
@@ -122,7 +123,8 @@ public class Controller : MonoBehaviour
         ExpectVariableName,
         ExpectUsing,
         ExpectIf,
-        ExpectFor
+        ExpectFor,
+        DebugLog
     }
 
     private List<List<string>> allStrings = new List<List<string>>();
@@ -354,6 +356,117 @@ public class Controller : MonoBehaviour
             {
                 switch (curHaps)
                 {
+                    case Happening.DebugLog:
+                        if (expectCommand)
+                        {
+                            switch (c)
+                            {
+                                case '\\':
+                                    word = word.Substring(0, word.Length - 1);
+                                    break;
+                                case '\"':
+                                    word = word.Substring(0, word.Length - 2) + "\"";
+                                    break;
+                                case 'n':
+                                    word = word.Substring(0, word.Length - 2) + "\n";
+                                    break;
+                                case 't':
+                                    word = word.Substring(0, word.Length - 2) + "\t";
+                                    break;
+                                default:
+                                    return new Error(Error.ErrorCodes.Syntax, "Unexpected character after \\", lineNo);
+                            }
+                            expectCommand = false;
+                        }
+                        else if (c == '\\')
+                        {
+                            expectCommand = true;
+                        }
+                        else if (c == '\"' && inString < 2)
+                        {
+                            inString++;
+                        }
+                        else if (c == ';' && (inString == 2 || inString == 0))
+                        {
+                            if (word[word.Length - 2]  != ')')
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "Expected ) not found", lineNo);
+                            }
+                            word = word.Substring(0, word.Length - 2);
+                            word = word.Trim();
+                            if (vars.ContainsKey(word))
+                            {
+                                Code_Debug debug = new Code_Debug()
+                                {
+                                    variablename = word,
+                                };
+                                methods.Add(debug);
+                            }
+                            else if (inString == 2)
+                            {
+                                Code_Debug debug = new Code_Debug()
+                                {
+                                    content = word.Substring(1, word.Length -2),
+                                };
+                                methods.Add(debug);
+                            }
+                            else
+                            {
+                                string[] words = word.Split('.');
+                                if (words.Count() != 2) return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + word + "\" exsists", lineNo);
+
+                                if (vars.ContainsKey(words[0]))
+                                {
+                                    Code_Debug debug = new Code_Debug()
+                                    {
+                                        variablename = word,
+                                    };
+
+                                    if (words[1] == "x")
+                                    {
+                                        debug.vPart = Code_if.VectorPart.x;
+                                    }
+                                    else if (words[1] == "y")
+                                    {
+                                        debug.vPart = Code_if.VectorPart.y;
+                                    }
+                                    else if (words[1] == "z")
+                                    {
+                                        debug.vPart = Code_if.VectorPart.z;
+                                    }
+                                    else
+                                    {
+                                        return new Error(Error.ErrorCodes.Syntax, words[1] + " is not a part of " + words[0], lineNo);
+                                    }
+
+                                    methods.Add(debug);
+                                }
+                                else
+                                {
+                                    return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + words[0] + "\" exsists", lineNo);
+                                }
+                            }
+                            curHaps = Happening.Starting;
+                            if (inMethod)
+                            {
+                                curHaps = Happening.InMethod;
+                            }
+                            else if (inClass)
+                            {
+                                curHaps = Happening.InClass;
+                            }
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
+                            character = -1;
+                            stringset = "";
+                        }
+                        else if (inString > 2)
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "cannot output values", lineNo);
+                        }
+                        break;
                     case Happening.ExpectUsing:
                         if (character > 0 && c == ';')
                         {
