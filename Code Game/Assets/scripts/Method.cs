@@ -17,7 +17,7 @@ public class Code_Debug : Method
     public override bool Compute()
     {
         GM.console.text += "- ";
-        if (variablename != "")
+        if (variablename != null)
         {
             switch (Controller.vars[variablename].type)
             {

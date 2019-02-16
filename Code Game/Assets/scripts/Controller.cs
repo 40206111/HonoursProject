@@ -289,6 +289,8 @@ public class Controller : MonoBehaviour
 
         if (error.errorCode != Error.ErrorCodes.None)
             GM.console.text += "- " + error + "\n";
+        else
+            Run();
     }
 
     private Error TryCompile(ref int lineNo)
@@ -312,6 +314,7 @@ public class Controller : MonoBehaviour
         List<string> current = new List<string>(allStrings[(int)curHaps]);
         vars.Clear();
         scopeVariables.Clear();
+        methods.Clear();
 
         Happening next = Happening.ExpectInt;
 
@@ -356,6 +359,17 @@ public class Controller : MonoBehaviour
             {
                 switch (curHaps)
                 {
+                    case Happening.ExpectIf:
+                        if (c == '(')
+                        {
+                            lilBracket++;
+                        }
+                        else if (c ==')')
+                        {
+                            lilBracket--;
+                        }
+
+                        break;
                     case Happening.DebugLog:
                         if (expectCommand)
                         {
