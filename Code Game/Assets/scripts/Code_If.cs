@@ -34,7 +34,11 @@ public class Code_if : Method
 
     public override bool Compute()
     {
-        return getValue();
+        if (getValue())
+        {
+            Controller.MethodRun(methods);
+        }
+        return true;
     }
 
     public bool getValue()

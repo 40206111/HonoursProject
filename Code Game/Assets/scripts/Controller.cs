@@ -360,7 +360,15 @@ public class Controller : MonoBehaviour
                 switch (curHaps)
                 {
                     case Happening.ExpectIf:
-                        if (c == '(')
+                        if (c == ';')
+                        {
+                            if (lilBracket != 1)
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "brackets do not all complete", lineNo);
+                            }
+                            
+                        }
+                        else if (c == '(')
                         {
                             lilBracket++;
                         }
@@ -368,7 +376,6 @@ public class Controller : MonoBehaviour
                         {
                             lilBracket--;
                         }
-
                         break;
                     case Happening.DebugLog:
                         if (expectCommand)
@@ -1581,6 +1588,26 @@ public class Controller : MonoBehaviour
             return new Error(Error.ErrorCodes.Syntax, "Line not complete", lineNo);
         }
 
+        return new Error();
+    }
+
+    private void AddMethod(ref List<Method> meths, Method m)
+    {
+        if (methods.Count > 0)
+        {
+            if (methods[methods.Count - 1].GetType() == typeof(Code_if) ||
+                methods[methods.Count - 1].GetType() == typeof(Code_While))
+            {
+                AddMethod(ref methods[methods.Count - 1].methods, m);
+                return;
+            }
+        }
+        meths.Add(m);
+
+    }
+
+    private Error MakeIf(ref Code_if codeif, int lineNo)
+    {
         return new Error();
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class Method
 {
+    public List<Method> methods;
     public abstract bool Compute();
 
 }
@@ -57,13 +58,12 @@ public class Code_Debug : Method
 public class Code_While : Method
 {
     public Code_if checkCase;
-    List<Method> inside = new List<Method>();
 
     public override bool Compute()
     {
         while (checkCase.getValue())
         {
-            Controller.MethodRun(inside);
+            Controller.MethodRun(methods);
         }
         return true;
     }
