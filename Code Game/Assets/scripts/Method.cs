@@ -57,13 +57,13 @@ public class Code_Debug : Method
 
 public class Code_While : Method
 {
-    public Code_if checkCase;
+    public Code_if checkCase = new Code_if();
 
     public override bool Compute()
     {
         while (checkCase.getValue())
         {
-            Controller.MethodRun(methods);
+            checkCase.Compute();
         }
         return true;
     }

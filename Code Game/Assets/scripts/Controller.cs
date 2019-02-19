@@ -76,7 +76,7 @@ public class Controller : MonoBehaviour
         {"private ", Happening.PublicPrivate},
         {"}", Happening.Starting},
         {"if", Happening.ExpectIf},
-        {"while", Happening.ExpectIf},
+        {"while", Happening.ExpectWhile},
         {"for", Happening.ExpectFor},
         {"return", Happening.ExpectSemiColon},
         {"{", Happening.Starting},
@@ -124,6 +124,7 @@ public class Controller : MonoBehaviour
         ExpectVariableName,
         ExpectUsing,
         ExpectIf,
+        ExpectWhile,
         ExpectFor,
         DebugLog,
         AddElse
@@ -328,6 +329,33 @@ public class Controller : MonoBehaviour
             {
                 switch (curHaps)
                 {
+                    case Happening.ExpectWhile:
+                        if (c == ')' && lilBracket == 2)
+                        {
+                            word = word.Trim();
+                            word = word.Substring(1, word.Length - 1);
+                            Code_While thewhile = new Code_While();
+                            Error e = MakeIf(ref thewhile.checkCase, ref word, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+                            AddMethod(ref methods, thewhile);
+
+                            previous = curHaps;
+                            curHaps = Happening.ExpectBracket;
+                            allowWhiteSpace = true;
+                            word = "";
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            character = -1;
+                            lilBracket = 1;
+                        }
+                        else if (c == '(')
+                        {
+                            lilBracket++;
+                        }
+                        else if (c == ')')
+                        {
+                            lilBracket--;
+                        }
+                        break;
                     case Happening.AddElse:
                         if (c == '{' && lilBracket == 1)
                         {
@@ -1475,10 +1503,6 @@ public class Controller : MonoBehaviour
                             }
                             scopeVariables.Add(new List<string>());
                         }
-                        if (word == "else")
-                        {
-                            Debug.Log("bannananas in pajamas");
-                        }
 
                         if (word == "int ")
                         {
@@ -2081,6 +2105,10 @@ public class Controller : MonoBehaviour
                             codeif.hasRhs = true;
                         }
                     }
+                    else
+                    {
+                        return new Error(Error.ErrorCodes.Syntax, "Value can not be parsed", lineNo);
+                    }
 
                     if (c == ')')
                     {
@@ -2160,7 +2188,10 @@ public class Controller : MonoBehaviour
                     }
                     else
                     {
-                        word = "" + c;
+                        if (c != '<' && c != '>')
+                            word = "" + c;
+                        else
+                            word = "";
                     }
                 }
             }
