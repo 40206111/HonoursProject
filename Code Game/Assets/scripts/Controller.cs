@@ -1759,6 +1759,7 @@ public class Controller : MonoBehaviour
 
         while (eq != "")
         {
+            Variable.VariableType setType = Variable.VariableType.VEC3;
             char c = eq[0];
             eq = eq.Substring(1, eq.Length - 1);
             word += c;
@@ -1903,12 +1904,17 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) &&
                                     (codeif.compareValues != vars[words[0]].type ||
                                     (codeif.compareValues == Variable.VariableType.FLOAT && vars[words[0]].type == Variable.VariableType.INT)))
                                 {
                                     return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                                 }
+                                if (vars[words[0]].type == Variable.VariableType.STRING ||
+                                    vars[words[0]].type == Variable.VariableType.BOOL)
+                                    setType = vars[words[0]].type;
+                                else
+                                    setType = Variable.VariableType.FLOAT;
                                 codeif.rhs = word;
                                 codeif.hasRhs = true;
                             }
@@ -1961,11 +1967,16 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) &&
                                     codeif.compareValues != Variable.VariableType.FLOAT)
                                 {
                                     return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                                 }
+                                if (vars[words[0]].type == Variable.VariableType.STRING ||
+                                    vars[words[0]].type == Variable.VariableType.BOOL)
+                                    setType = vars[words[0]].type;
+                                else
+                                    setType = Variable.VariableType.FLOAT;
                                 codeif.rhs = words[0];
                                 codeif.hasRhs = true;
                             }
@@ -1986,11 +1997,12 @@ public class Controller : MonoBehaviour
                         }
                         else
                         {
-                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) &&
                                 codeif.compareValues != Variable.VariableType.STRING)
                             {
                                 return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                             }
+                            setType = Variable.VariableType.STRING;
                             codeif.str_rhsvalue = word.Substring(1, word.Length - 2);
                             codeif.hasRhs = true;
                         }
@@ -2001,23 +2013,25 @@ public class Controller : MonoBehaviour
                     {
                         int b = 0;
                         maths = new Mathematics();
+                        word += ';';
                         Error e = MakeEquation(ref maths, ref word, lineNo, true, ref b);
                         if (e.errorCode != Error.ErrorCodes.None) return e;
 
                         if (!codeif.hasLhs)
                         {
-                            codeif.compareValues = Variable.VariableType.STRING;
+                            codeif.compareValues = Variable.VariableType.FLOAT;
                             codeif.mathLHS = maths;
                             codeif.hasLhs = true;
                         }
                         else
                         {
-                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) &&
                                 codeif.compareValues != Variable.VariableType.FLOAT)
                             {
                                 return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                             }
-                            codeif.mathLHS = maths;
+                            setType = Variable.VariableType.FLOAT;
+                            codeif.mathRHS = maths;
                             codeif.hasRhs = true;
                         }
                         isMaths = false;
@@ -2037,6 +2051,7 @@ public class Controller : MonoBehaviour
                             {
                                 return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                             }
+                            setType = Variable.VariableType.FLOAT;
                             codeif.nbr_rhsvalue = value;
                             codeif.hasRhs = true;
                         }
@@ -2061,7 +2076,8 @@ public class Controller : MonoBehaviour
                             {
                                 return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                             }
-                            codeif.bl_lhsvalue = boolValue;
+                            setType = Variable.VariableType.BOOL;
+                            codeif.bl_rhsvalue = boolValue;
                             codeif.hasRhs = true;
                         }
                     }
@@ -2084,44 +2100,63 @@ public class Controller : MonoBehaviour
                         if (c == '>')
                         {
                             temp.ifType = Code_if.Logic.MORETHAN;
+                            temp.compareValues = setType;
+                            codeif.SetLHSToRHS(ref temp);
+                            Error e = MakeIf(ref temp, ref eq, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+                            codeif.ifRHS = temp;
                         }
                         else if (c == '<')
                         {
                             temp.ifType = Code_if.Logic.LESSTHAN;
+                            temp.compareValues = setType;
+                            codeif.SetLHSToRHS(ref temp);
+                            Error e = MakeIf(ref temp, ref eq, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+                            codeif.ifRHS = temp;
                         }
                         else if (word == "==")
                         {
                             temp.ifLHS = codeif;
                             temp.hasLhs = true;
                             temp.ifType = Code_if.Logic.EQUAL;
+                            temp.compareValues = Variable.VariableType.BOOL;
                             eq = eq.Substring(1, eq.Length - 1);
+                            codeif = temp;
                         }
                         else if (word == "!=")
                         {
                             temp.ifLHS = codeif;
                             temp.hasLhs = true;
                             temp.ifType = Code_if.Logic.NOT;
+                            temp.compareValues = Variable.VariableType.BOOL;
                             eq = eq.Substring(1, eq.Length - 1);
+                            codeif = temp;
                         }
                         else if (word == "||")
                         {
                             temp.ifLHS = codeif;
                             temp.hasLhs = true;
                             temp.ifType = Code_if.Logic.OR;
+                            temp.compareValues = Variable.VariableType.BOOL;
                             eq = eq.Substring(1, eq.Length - 1);
+                            codeif = temp;
                         }
                         else if (word == "&&")
                         {
                             temp.ifLHS = codeif;
                             temp.hasLhs = true;
                             temp.ifType = Code_if.Logic.AND;
+                            temp.compareValues = Variable.VariableType.BOOL;
                             eq = eq.Substring(1, eq.Length - 1);
+                            codeif = temp;
                         }
                         else
                         {
                             return new Error(Error.ErrorCodes.Syntax, "If operator not recognised", lineNo);
                         }
                         partCount = 0;
+                        word = "";
                     }
                     else
                     {

@@ -42,7 +42,7 @@ public class Code_if : Method
     public float nbr_rhsvalue = 0;
     public Mathematics mathLHS = null;
     public Mathematics mathRHS = null;
-    public Variable.VariableType compareValues = Variable.VariableType.BOOL;
+    public Variable.VariableType compareValues = Variable.VariableType.VEC3;
 
     public void SetLHSToRHS(ref Code_if theLHS)
     {
