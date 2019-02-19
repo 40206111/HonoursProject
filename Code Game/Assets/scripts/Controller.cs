@@ -515,20 +515,23 @@ public class Controller : MonoBehaviour
                                     content = word.Substring(1, word.Length - 2),
                                 };
                                 AddMethod(ref methods, debug);
+                                inString = 0;
                             }
                             else
                             {
                                 string[] words = word.Split('.');
-                                if (words.Count() != 2 || words.Count() != 3) return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + word + "\" exsists", lineNo);
+                                if (words.Count() != 2 && words.Count() != 4) return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + word + "\" exsists", lineNo);
 
-                                if (vars.ContainsKey(words[0]) || word.Substring(0, word.Length -2) == "gameobject.transform.position")
+                                int test = word.Length - 2;
+                                if (test < 0) test = 0;
+                                if (vars.ContainsKey(words[0]) || word.Substring(0, test) == "gameobject.transform.position")
                                 {
                                     Code_Debug debug = new Code_Debug()
                                     {
-                                        variablename = word,
+                                        variablename = word.Substring(0, word.Length - 2),
                                     };
 
-                                    if (words[words.Length -1] == "x")
+                                    if (words[words.Length - 1] == "x")
                                     {
                                         debug.vPart = Code_if.VectorPart.x;
                                     }
@@ -542,7 +545,7 @@ public class Controller : MonoBehaviour
                                     }
                                     else
                                     {
-                                        return new Error(Error.ErrorCodes.Syntax, words[1] + " is not a part of " + words[0], lineNo);
+                                        return new Error(Error.ErrorCodes.Syntax, words[words.Length - 1] + " is not a part of " + words[0], lineNo);
                                     }
 
                                     AddMethod(ref methods, debug);
@@ -916,21 +919,20 @@ public class Controller : MonoBehaviour
                                 return new Error(Error.ErrorCodes.Syntax, "No value found", lineNo);
                             }
 
+                            float value;
                             word = word.Substring(0, word.Length - 1);
+                            word = word.Trim();
                             string[] words = word.Split('.');
-                            if (word.Substring(0, word.Length - 2) == "gameobject.transform.position")
+                            int test = word.Length - 2;
+                            if (test < 0) test = 0;
+                            if (word.Substring(0, test) == "gameobject.transform.position")
                             {
+                                word = word.Substring(0, word.Length - 2);
                                 if (!inMethod)
                                 {
                                     return new Error(Error.ErrorCodes.Compiler, "Cannot initialise variable to variable outside of method", lineNo);
                                 }
                                 Code_SimpleSet temp = new Code_SimpleSet();
-
-
-                                if (vars[word].type != Variable.VariableType.VEC3)
-                                {
-                                    return new Error(Error.ErrorCodes.TypeMismatch, words[1] + " is not part of " + words[0], lineNo);
-                                }
 
                                 if (words[words.Count() - 1] == "x")
                                 {
@@ -946,7 +948,7 @@ public class Controller : MonoBehaviour
                                 }
                                 else
                                 {
-                                    return new Error(Error.ErrorCodes.TypeMismatch, word[1] + "is not a part of " + word[0], lineNo);
+                                    return new Error(Error.ErrorCodes.TypeMismatch, words[words.Count() - 1] + "is not a part of " + words[0], lineNo);
                                 }
                                 if (vars[stringset].type != Variable.VariableType.FLOAT)
                                 {
@@ -961,8 +963,7 @@ public class Controller : MonoBehaviour
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Too many decimal points found", lineNo);
                             }
-                            float value;
-                            if (vars.ContainsKey(words[0]))
+                            else if (vars.ContainsKey(words[0]))
                             {
                                 if (!inMethod)
                                 {
@@ -1973,7 +1974,9 @@ public class Controller : MonoBehaviour
                     {
                         word = word.Substring(0, word.Length - 1);
                     }
-                    if (vars.ContainsKey(words[0]))
+                    int test = word.Length - 2;
+                    if (test < 0) test = 0;
+                    if (vars.ContainsKey(words[0]) || word.Substring(0, test) == "gameobject.transform.position")
                     {
                         if (words.Count() == 1)
                         {
@@ -2002,9 +2005,9 @@ public class Controller : MonoBehaviour
                                 codeif.hasRhs = true;
                             }
                         }
-                        else if (words.Count() == 2)
+                        else if (words.Count() == 2 || words.Count() == 4)
                         {
-                            if (words[1] == "x")
+                            if (words[words.Length - 1] == "x")
                             {
                                 if (!codeif.hasLhs)
                                 {
@@ -2015,7 +2018,7 @@ public class Controller : MonoBehaviour
                                     codeif.rightV = Code_if.VectorPart.x;
                                 }
                             }
-                            else if (words[1] == "y")
+                            else if (words[words.Length - 1] == "y")
                             {
                                 if (!codeif.hasLhs)
                                 {
@@ -2026,7 +2029,7 @@ public class Controller : MonoBehaviour
                                     codeif.rightV = Code_if.VectorPart.y;
                                 }
                             }
-                            else if (words[1] == "z")
+                            else if (words[1] == "words.Length - z")
                             {
                                 if (!codeif.hasLhs)
                                 {
@@ -2039,13 +2042,14 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                return new Error(Error.ErrorCodes.Syntax, word[1] + " is not a part of " + word[0], lineNo);
+                                return new Error(Error.ErrorCodes.Syntax, words[words.Length - 1] + " is not a part of " + words[0], lineNo);
                             }
 
                             if (!codeif.hasLhs)
                             {
                                 codeif.compareValues = Variable.VariableType.FLOAT;
-                                codeif.lhs = words[0];
+                                if (word.Substring(0, test) == "gameobject.transform.position") codeif.lhs = word.Substring(0, test);
+                                else codeif.lhs = words[0];
                                 codeif.hasLhs = true;
                             }
                             else
@@ -2055,12 +2059,15 @@ public class Controller : MonoBehaviour
                                 {
                                     return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
                                 }
-                                if (vars[words[0]].type == Variable.VariableType.STRING ||
-                                    vars[words[0]].type == Variable.VariableType.BOOL)
-                                    setType = vars[words[0]].type;
-                                else
-                                    setType = Variable.VariableType.FLOAT;
-                                codeif.rhs = words[0];
+                                setType = Variable.VariableType.FLOAT;
+                                if (word.Substring(0, test) != "gameobject.transform.position")
+                                {
+                                    if (vars[words[0]].type == Variable.VariableType.STRING ||
+                                        vars[words[0]].type == Variable.VariableType.BOOL)
+                                        setType = vars[words[0]].type;
+                                }
+                                if (word.Substring(0, test) == "gameobject.transform.position") codeif.rhs = word.Substring(0, test);
+                                else codeif.rhs = words[0];
                                 codeif.hasRhs = true;
                             }
                         }
@@ -2166,7 +2173,7 @@ public class Controller : MonoBehaviour
                     }
                     else
                     {
-                        return new Error(Error.ErrorCodes.Syntax, "Value can not be parsed", lineNo);
+                        return new Error(Error.ErrorCodes.Syntax, "Value cannot be parsed", lineNo);
                     }
 
                     if (c == ')')
@@ -2318,7 +2325,7 @@ public class Controller : MonoBehaviour
             {
                 word = word.Trim();
                 string[] words = word.Split('.');
-                if (words.Count() > 2)
+                if (words.Count() > 2 && words.Count() != 4)
                 {
                     return new Error(Error.ErrorCodes.Mathematical, "Too many decimal places", lineNo);
                 }
@@ -2327,9 +2334,11 @@ public class Controller : MonoBehaviour
                     (maths.op == Mathematics.Operator.DIVIDE && c == '*') ||
                     ((maths.op == Mathematics.Operator.TIMES || maths.op == Mathematics.Operator.DIVIDE) && (c == '+' || c == '-'))) && maths.op != Mathematics.Operator.NONE)
                 {
-                    Mathematics temp = new Mathematics();
-                    temp.lhs = maths.rhs;
-                    temp.lhsComplete = maths.rhsComplete;
+                    Mathematics temp = new Mathematics
+                    {
+                        lhs = maths.rhs,
+                        lhsComplete = maths.rhsComplete
+                    };
                     if (c == '+')
                     {
                         temp.op = Mathematics.Operator.PLUS;
@@ -2391,36 +2400,40 @@ public class Controller : MonoBehaviour
                                 return new Error(Error.ErrorCodes.Mathematical, "Invalid characters in expected float or int", lineNo);
                             }
                         }
-                        if (words.Count() == 2)
+                        if (words.Count() == 2 || words.Count() == 4)
                         {
-                            if (vars.ContainsKey(words[0]))
+                            int test = word.Length - 2;
+                            if (test < 0) test = 0;
+                            if (vars.ContainsKey(words[0]) || word.Substring(0, test) == "gameobject.transform.position")
                             {
                                 if (!inMethod)
                                 {
                                     return new Error(Error.ErrorCodes.Compiler, "Cannot initialise variable with a variable outside of method", lineNo);
                                 }
 
-                                if (vars[words[0]].type == Variable.VariableType.VEC3)
+                                if (vars[words[0]].type == Variable.VariableType.VEC3 || word.Substring(0, test) == "gameobject.transform.position")
                                 {
                                     if (temp.lhsComplete)
                                     {
                                         temp.rhsComplete = true;
-                                        temp.varRHS = words[0];
-                                        if (words[1] == "x")
+                                        if (word.Substring(0, test) == "gameobject.transform.position") temp.varRHS = word.Substring(0, word.Length - 2);
+                                        else temp.varRHS = words[0];
+
+                                        if (words[word.Length - 1] == "x")
                                         {
                                             temp.vectorRHS = Code_if.VectorPart.x;
                                         }
-                                        else if (words[1] == "y")
+                                        else if (words[word.Length - 1] == "y")
                                         {
                                             temp.vectorRHS = Code_if.VectorPart.y;
                                         }
-                                        else if (words[1] == "z")
+                                        else if (words[word.Length - 1] == "z")
                                         {
                                             temp.vectorRHS = Code_if.VectorPart.z;
                                         }
                                         else
                                         {
-                                            return new Error(Error.ErrorCodes.InGame, words[1] + "is not part of " + words[0], lineNo);
+                                            return new Error(Error.ErrorCodes.InGame, words[word.Length - 1] + "is not part of " + words[0], lineNo);
                                         }
                                     }
                                     else
@@ -2534,49 +2547,53 @@ public class Controller : MonoBehaviour
                             {
                                 return new Error(Error.ErrorCodes.Compiler, "Cannot initialise variable with a variable outside of method", lineNo);
                             }
-
-                            if (vars[words[0]].type == Variable.VariableType.VEC3)
+                            int test = word.Length - 2;
+                            if (test < 0) test = 0;
+                            if (vars[words[0]].type == Variable.VariableType.VEC3 || word.Substring(0, test) == "gameobject.transform.position")
                             {
                                 if (maths.lhsComplete)
                                 {
                                     maths.rhsComplete = true;
-                                    maths.varRHS = words[0];
-                                    if (words[1] == "x")
+                                    if (word.Substring(0, test) == "gameobject.transform.position") maths.varRHS = word.Substring(0, word.Length - 2);
+                                    else maths.varRHS = words[0];
+
+                                    if (words[word.Length - 1] == "x")
                                     {
                                         maths.vectorRHS = Code_if.VectorPart.x;
                                     }
-                                    else if (words[1] == "y")
+                                    else if (words[word.Length - 1] == "y")
                                     {
                                         maths.vectorRHS = Code_if.VectorPart.y;
                                     }
-                                    else if (words[1] == "z")
+                                    else if (words[word.Length - 1] == "z")
                                     {
                                         maths.vectorRHS = Code_if.VectorPart.z;
                                     }
                                     else
                                     {
-                                        return new Error(Error.ErrorCodes.InGame, words[1] + "is not part of " + words[0], lineNo);
+                                        return new Error(Error.ErrorCodes.InGame, words[word.Length - 1] + "is not part of " + words[0], lineNo);
                                     }
                                 }
                                 else
                                 {
                                     maths.lhsComplete = true;
-                                    maths.varLHS = words[0];
-                                    if (words[1] == "x")
+                                    if (word.Substring(0, test) == "gameobject.transform.position") maths.varLHS = word.Substring(0, word.Length - 2);
+                                    else maths.varLHS = words[0];
+                                    if (words[word.Length - 1] == "x")
                                     {
                                         maths.vectorLHS = Code_if.VectorPart.x;
                                     }
-                                    else if (words[1] == "y")
+                                    else if (words[word.Length - 1] == "y")
                                     {
                                         maths.vectorLHS = Code_if.VectorPart.y;
                                     }
-                                    else if (words[1] == "z")
+                                    else if (words[word.Length - 1] == "z")
                                     {
                                         maths.vectorLHS = Code_if.VectorPart.z;
                                     }
                                     else
                                     {
-                                        return new Error(Error.ErrorCodes.InGame, words[1] + "is not part of " + words[0], lineNo);
+                                        return new Error(Error.ErrorCodes.InGame, words[word.Length - 1] + "is not part of " + words[0], lineNo);
                                     }
                                 }
                             }
@@ -2650,20 +2667,22 @@ public class Controller : MonoBehaviour
                 if (word != "")
                 {
                     string[] words = word.Split('.');
-                    if (words.Count() > 2)
+                    if (words.Count() > 2 && words.Count() != 4)
                     {
                         return new Error(Error.ErrorCodes.TypeMismatch, "Too many decimal points", lineNo);
                     }
-                    if (vars.ContainsKey(words[0]))
+                    int test = word.Length - 2;
+                    if (test < 0) test = 0;
+                    if (vars.ContainsKey(words[0]) || word.Substring(0, test) == "gameobject.transform.position")
                     {
                         if (!inMethod)
                         {
                             return new Error(Error.ErrorCodes.Compiler, "Cannot initialise variable with a variable outside of method", lineNo);
                         }
 
-                        if (vars[words[0]].type == Variable.VariableType.VEC3)
+                        if (word.Substring(0, test) == "gameobject.transform.position" || vars[words[0]].type == Variable.VariableType.VEC3)
                         {
-                            if (words.Count() != 2)
+                            if (words.Count() != 2 && words.Count() != 4)
                             {
                                 return new Error(Error.ErrorCodes.Mathematical, "cannot convert vector3 into float", lineNo);
                             }
@@ -2671,37 +2690,40 @@ public class Controller : MonoBehaviour
                             if (maths.lhsComplete)
                             {
                                 maths.rhsComplete = true;
-                                maths.varRHS = words[0];
-                                if (words[1] == "x")
+                                if (word.Substring(0, test) == "gameobject.transform.position") maths.varRHS = word.Substring(0, word.Length - 2);
+                                else maths.varRHS = words[0];
+
+                                if (words[words.Length - 1] == "x")
                                 {
                                     maths.vectorRHS = Code_if.VectorPart.x;
                                 }
-                                else if (words[1] == "y")
+                                else if (words[words.Length - 1] == "y")
                                 {
                                     maths.vectorRHS = Code_if.VectorPart.y;
                                 }
-                                else if (words[1] == "z")
+                                else if (words[words.Length - 1] == "z")
                                 {
                                     maths.vectorRHS = Code_if.VectorPart.z;
                                 }
                                 else
                                 {
-                                    return new Error(Error.ErrorCodes.InGame, words[1] + "is not part of " + words[0], lineNo);
+                                    return new Error(Error.ErrorCodes.InGame, words[words.Length - 1] + "is not part of " + words[0], lineNo);
                                 }
                             }
                             else
                             {
                                 maths.lhsComplete = true;
-                                maths.varLHS = words[0];
-                                if (words[1] == "x")
+                                if (word.Substring(0, test) == "gameobject.transform.position") maths.varLHS = word.Substring(0, word.Length - 2);
+                                else maths.varLHS = words[0];
+                                if (words[word.Length - 1] == "x")
                                 {
                                     maths.vectorLHS = Code_if.VectorPart.x;
                                 }
-                                else if (words[1] == "y")
+                                else if (words[word.Length - 1] == "y")
                                 {
                                     maths.vectorLHS = Code_if.VectorPart.y;
                                 }
-                                else if (words[1] == "z")
+                                else if (words[word.Length - 1] == "z")
                                 {
                                     maths.vectorLHS = Code_if.VectorPart.z;
                                 }
