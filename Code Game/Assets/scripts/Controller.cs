@@ -48,8 +48,15 @@ public class Controller : MonoBehaviour
     List<Method> methods = new List<Method>();
     //Variables
     public static IDictionary<string, Variable> vars = new Dictionary<string, Variable>();
+    Variable zomble = new Variable()
+    {
+        type = Variable.VariableType.VEC3,
+        vec3_value = new Vector3(0, 0, 0),
+        inScope = true
+    };
     Happening curHaps = Happening.Starting;
     Happening previous = Happening.Starting;
+    public static int currentZomb = 0;
 
     private readonly IDictionary<string, Happening> keys = new Dictionary<string, Happening>
     {
@@ -88,7 +95,9 @@ public class Controller : MonoBehaviour
         {"new ", Happening.New },
         {" new ", Happening.New },
         {"Debug.Log(", Happening.DebugLog },
-        {"else", Happening.AddElse }
+        {"else", Happening.AddElse },
+        {"gameobject.transform.position=",  Happening.ZombieStuff },
+        {"gameobject.transform.position =", Happening.ZombieStuff }
     };
 
     private List<List<string>> scopeVariables = new List<List<string>>();
@@ -127,7 +136,8 @@ public class Controller : MonoBehaviour
         ExpectWhile,
         ExpectFor,
         DebugLog,
-        AddElse
+        AddElse,
+        ZombieStuff
     }
 
     private List<List<string>> allStrings = new List<List<string>>();
@@ -154,7 +164,7 @@ public class Controller : MonoBehaviour
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "public ", "private ", "int ", "string ", "bool ", "float ", "Vector3 ", "}", "//", "/*" });  //InClass
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "Vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{", "Debug.Log(", "else" });  //InMethod
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "Vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{", "Debug.Log(", "else", "gameObject.transform.position=", "gameobject.transform.position =" });  //InMethod
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "{", "//", "/*" });  //ExpectBracket
         allStrings.Add(new List<string>());
@@ -180,7 +190,15 @@ public class Controller : MonoBehaviour
 
     public void Run()
     {
-        MethodRun(methods);
+        while (currentZomb < 3)
+        {
+            Variable temp = vars["gameobject.transform.position"];
+            temp.vec3_value = GM.zombie[currentZomb].transform.position;
+            vars["gameobject.transform.position"] = temp;
+            MethodRun(methods);
+            currentZomb++;
+        }
+        currentZomb = 0;
     }
 
     public static void MethodRun(List<Method> ms)
@@ -283,8 +301,10 @@ public class Controller : MonoBehaviour
         curHaps = Happening.Starting;
         List<string> current = new List<string>(allStrings[(int)curHaps]);
         vars.Clear();
+        vars.Add("gameobject.transform.position", zomble);
         scopeVariables.Clear();
         methods.Clear();
+
 
         Happening next = Happening.ExpectInt;
 
@@ -499,24 +519,24 @@ public class Controller : MonoBehaviour
                             else
                             {
                                 string[] words = word.Split('.');
-                                if (words.Count() != 2) return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + word + "\" exsists", lineNo);
+                                if (words.Count() != 2 || words.Count() != 3) return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + word + "\" exsists", lineNo);
 
-                                if (vars.ContainsKey(words[0]))
+                                if (vars.ContainsKey(words[0]) || word.Substring(0, word.Length -2) == "gameobject.transform.position")
                                 {
                                     Code_Debug debug = new Code_Debug()
                                     {
                                         variablename = word,
                                     };
 
-                                    if (words[1] == "x")
+                                    if (words[words.Length -1] == "x")
                                     {
                                         debug.vPart = Code_if.VectorPart.x;
                                     }
-                                    else if (words[1] == "y")
+                                    else if (words[words.Length - 1] == "y")
                                     {
                                         debug.vPart = Code_if.VectorPart.y;
                                     }
-                                    else if (words[1] == "z")
+                                    else if (words[words.Length - 1] == "z")
                                     {
                                         debug.vPart = Code_if.VectorPart.z;
                                     }
@@ -898,7 +918,46 @@ public class Controller : MonoBehaviour
 
                             word = word.Substring(0, word.Length - 1);
                             string[] words = word.Split('.');
-                            if (words.Count() > 2)
+                            if (word.Substring(0, word.Length - 2) == "gameobject.transform.position")
+                            {
+                                if (!inMethod)
+                                {
+                                    return new Error(Error.ErrorCodes.Compiler, "Cannot initialise variable to variable outside of method", lineNo);
+                                }
+                                Code_SimpleSet temp = new Code_SimpleSet();
+
+
+                                if (vars[word].type != Variable.VariableType.VEC3)
+                                {
+                                    return new Error(Error.ErrorCodes.TypeMismatch, words[1] + " is not part of " + words[0], lineNo);
+                                }
+
+                                if (words[words.Count() - 1] == "x")
+                                {
+                                    temp.inPart = Code_if.VectorPart.x;
+                                }
+                                else if (words[words.Count() - 1] == "y")
+                                {
+                                    temp.inPart = Code_if.VectorPart.y;
+                                }
+                                else if (words[words.Count() - 1] == "z")
+                                {
+                                    temp.inPart = Code_if.VectorPart.z;
+                                }
+                                else
+                                {
+                                    return new Error(Error.ErrorCodes.TypeMismatch, word[1] + "is not a part of " + word[0], lineNo);
+                                }
+                                if (vars[stringset].type != Variable.VariableType.FLOAT)
+                                {
+                                    temp.changeType = true;
+                                    temp.newType = Variable.VariableType.FLOAT;
+                                }
+                                temp.output = stringset;
+                                temp.input = word;
+                                AddMethod(ref methods, temp);
+                            }
+                            else if (words.Count() > 2)
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Too many decimal points found", lineNo);
                             }

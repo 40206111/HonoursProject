@@ -76,33 +76,16 @@ public class Code_EndIf : Method
         return true;
     }
 }
-
 public class Code_SetZombie : Method
 {
-    string variable = "";
-    Mathematics x = null;
-    Mathematics y = null;
-    Mathematics z = null;
-    float xMove = 0;
-    float yMove = 0;
-    float zMove = 0;
+    public string variable = "";
 
     public override bool Compute()
     {
-        if (variable != "")
-        {
-            xMove = Controller.vars[variable].vec3_value.x;
-            yMove = Controller.vars[variable].vec3_value.y;
-            zMove = Controller.vars[variable].vec3_value.z;
-        }
-        else
-        {
-            if (x != null) xMove = x.Calculate();
-            if (y != null) yMove = y.Calculate();
-            if (z != null) zMove = z.Calculate();
-        }
-
-
+        GM.zombie[Controller.currentZomb].transform.position = Controller.vars[variable].vec3_value;
+        Variable temp = Controller.vars["gameobject.transform.position"];
+        temp.vec3_value = Controller.vars[variable].vec3_value;
+        Controller.vars["gameobject.transform.position"] = temp;
         return false;
     }
 }
