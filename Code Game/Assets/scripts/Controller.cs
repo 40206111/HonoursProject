@@ -51,7 +51,7 @@ public class Controller : MonoBehaviour
     Happening curHaps = Happening.Starting;
     Happening previous = Happening.Starting;
 
-    private IDictionary<string, Happening> keys = new Dictionary<string, Happening>
+    private readonly IDictionary<string, Happening> keys = new Dictionary<string, Happening>
     {
         {"//", Happening.Ignore},
         {"/*", Happening.SuperIgnore},
@@ -87,7 +87,8 @@ public class Controller : MonoBehaviour
         {"Vector3 (", Happening.ExpectVec3 },
         {"new ", Happening.New },
         {" new ", Happening.New },
-        {"Debug.Log(", Happening.DebugLog }
+        {"Debug.Log(", Happening.DebugLog },
+        {"else", Happening.AddElse }
     };
 
     private List<List<string>> scopeVariables = new List<List<string>>();
@@ -124,7 +125,8 @@ public class Controller : MonoBehaviour
         ExpectUsing,
         ExpectIf,
         ExpectFor,
-        DebugLog
+        DebugLog,
+        AddElse
     }
 
     private List<List<string>> allStrings = new List<List<string>>();
@@ -151,7 +153,7 @@ public class Controller : MonoBehaviour
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "public ", "private ", "int ", "string ", "bool ", "float ", "Vector3 ", "}", "//", "/*" });  //InClass
         allStrings.Add(new List<string>());
-        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "Vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{", "Debug.Log(" });  //InMethod
+        allStrings[allStrings.Count - 1] = new List<string>(new string[] { "int ", "string ", "bool ", "float", "Vector3 ", "if", "while", "return", "for", "}", "//", "/*", "{", "Debug.Log(", "else" });  //InMethod
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "{", "//", "/*" });  //ExpectBracket
         allStrings.Add(new List<string>());
@@ -182,45 +184,12 @@ public class Controller : MonoBehaviour
 
     public static void MethodRun(List<Method> ms)
     {
-        bool wait = false;
-
         for (int i = 0; i < ms.Count(); ++i)
         {
-            Type waitType = null;
-            Type countType = null;
-            int count = 0;
-            if (!wait)
+            bool output = ms[i].Compute();
+            if (!output)
             {
-                bool output = ms[i].Compute();
-
-                if (!output)
-                {
-                    if (ms[i].GetType() == typeof(Code_if))
-                    {
-                        wait = true;
-                        count = 0;
-                        waitType = typeof(Code_EndIf);
-                        countType = typeof(Code_if);
-                    }
-                }
-            }
-            else
-            {
-                if (ms[i].GetType() == waitType)
-                {
-                    if (count == 0)
-                    {
-                        wait = false;
-                    }
-                    else
-                    {
-                        count--;
-                    }
-                }
-                else if (ms[i].GetType() == countType)
-                {
-                    count++;
-                }
+                Debug.Log("false method output");
             }
         }
     }
@@ -359,20 +328,88 @@ public class Controller : MonoBehaviour
             {
                 switch (curHaps)
                 {
-                    case Happening.ExpectIf:
-                        if (c == ';')
+                    case Happening.AddElse:
+                        if (c == '{' && lilBracket == 1)
                         {
-                            if (lilBracket != 1)
+                            bracket++;
+                            scopeVariables.Add(new List<string>());
+
+                            Code_if codeif = new Code_if()
                             {
-                                return new Error(Error.ErrorCodes.Syntax, "brackets do not all complete", lineNo);
-                            }
-                            
+                                compareValues = Variable.VariableType.BOOL,
+                                bl_lhsvalue = true,
+                                bl_rhsvalue = true,
+                                ifType = Code_if.Logic.EQUAL
+                            };
+
+                            Error e = AddElse(ref methods, codeif, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                            previous = curHaps;
+                            curHaps = Happening.InMethod;
+                            allowWhiteSpace = true;
+                            lineUnfinished = false;
+                            word = "";
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            character = -1;
+                        }
+                        else if (c == ')' && lilBracket == 2)
+                        {
+                            word = word.Trim();
+                            word = word.Substring(2, word.Length - 2);
+                            word = word.Trim();
+                            word = word.Substring(1, word.Length - 1);
+
+                            Code_if theif = new Code_if();
+                            Error e = MakeIf(ref theif, ref word, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+                            e = AddElse(ref methods, theif, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                            previous = curHaps;
+                            curHaps = Happening.ExpectBracket;
+                            allowWhiteSpace = true;
+                            word = "";
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            character = -1;
+                            lilBracket = 1;
                         }
                         else if (c == '(')
                         {
                             lilBracket++;
                         }
-                        else if (c ==')')
+                        else if (c == ')')
+                        {
+                            lilBracket--;
+                        }
+                        if (lilBracket == 1)
+                        {
+                            character = -1;
+                        }
+                        break;
+                    case Happening.ExpectIf:
+                        if (c == ')' && lilBracket == 2)
+                        {
+                            word = word.Trim();
+                            word = word.Substring(1, word.Length - 1);
+                            Code_if theif = new Code_if();
+                            Error e = MakeIf(ref theif, ref word, lineNo);
+                            if (e.errorCode != Error.ErrorCodes.None) return e;
+                            AddMethod(ref methods, theif);
+
+                            previous = curHaps;
+                            curHaps = Happening.ExpectBracket;
+                            allowWhiteSpace = true;
+                            word = "";
+                            current = new List<string>(allStrings[(int)curHaps]);
+                            character = -1;
+                            lilBracket = 1;
+                        }
+                        else if (c == '(')
+                        {
+                            lilBracket++;
+                        }
+                        else if (c == ')')
                         {
                             lilBracket--;
                         }
@@ -409,7 +446,7 @@ public class Controller : MonoBehaviour
                         }
                         else if (c == ';' && (inString == 2 || inString == 0))
                         {
-                            if (word[word.Length - 2]  != ')')
+                            if (word[word.Length - 2] != ')')
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Expected ) not found", lineNo);
                             }
@@ -421,15 +458,15 @@ public class Controller : MonoBehaviour
                                 {
                                     variablename = word,
                                 };
-                                methods.Add(debug);
+                                AddMethod(ref methods, debug);
                             }
                             else if (inString == 2)
                             {
                                 Code_Debug debug = new Code_Debug()
                                 {
-                                    content = word.Substring(1, word.Length -2),
+                                    content = word.Substring(1, word.Length - 2),
                                 };
-                                methods.Add(debug);
+                                AddMethod(ref methods, debug);
                             }
                             else
                             {
@@ -460,7 +497,7 @@ public class Controller : MonoBehaviour
                                         return new Error(Error.ErrorCodes.Syntax, words[1] + " is not a part of " + words[0], lineNo);
                                     }
 
-                                    methods.Add(debug);
+                                    AddMethod(ref methods, debug);
                                 }
                                 else
                                 {
@@ -588,7 +625,7 @@ public class Controller : MonoBehaviour
                                             set.newType = Variable.VariableType.STRING;
                                             break;
                                     }
-                                    methods.Add(set);
+                                    AddMethod(ref methods, set);
                                 }
                                 else
                                 {
@@ -758,7 +795,7 @@ public class Controller : MonoBehaviour
                                     temp.changeType = true;
                                     temp.newType = Variable.VariableType.INT;
                                 }
-                                methods.Add(temp);
+                                AddMethod(ref methods, temp);
                             }
                             else if (Int32.TryParse(word, out value))
                             {
@@ -786,7 +823,7 @@ public class Controller : MonoBehaviour
                                         set.newType = Variable.VariableType.FLOAT;
                                     }
 
-                                    methods.Add(set);
+                                    AddMethod(ref methods, set);
                                 }
                             }
 
@@ -881,7 +918,7 @@ public class Controller : MonoBehaviour
                                 }
                                 temp.output = stringset;
                                 temp.input = word;
-                                methods.Add(temp);
+                                AddMethod(ref methods, temp);
                             }
                             else if (word[word.Length - 1] != 'f')
                             {
@@ -914,7 +951,7 @@ public class Controller : MonoBehaviour
                                             set.newType = Variable.VariableType.FLOAT;
                                         }
 
-                                        methods.Add(set);
+                                        AddMethod(ref methods, set);
                                     }
                                 }
                                 else return new Error(Error.ErrorCodes.TypeMismatch, "Expected float value", lineNo);
@@ -947,7 +984,7 @@ public class Controller : MonoBehaviour
                                         set.newType = Variable.VariableType.FLOAT;
                                     }
 
-                                    methods.Add(set);
+                                    AddMethod(ref methods, set);
                                 }
                             }
                             else
@@ -1028,7 +1065,7 @@ public class Controller : MonoBehaviour
                                             set.changeType = true;
                                             set.newType = Variable.VariableType.BOOL;
                                         }
-                                        methods.Add(set);
+                                        AddMethod(ref methods, set);
                                     }
 
                                     complete = true;
@@ -1167,7 +1204,7 @@ public class Controller : MonoBehaviour
                                         set.changeType = true;
                                         set.newType = Variable.VariableType.STRING;
                                     }
-                                    methods.Add(set);
+                                    AddMethod(ref methods, set);
                                 }
                             }
                             else if (word[0] == '\"' && word[word.Length - 1] == '\"')
@@ -1198,7 +1235,7 @@ public class Controller : MonoBehaviour
                                         set.changeType = true;
                                         set.newType = Variable.VariableType.STRING;
                                     }
-                                    methods.Add(set);
+                                    AddMethod(ref methods, set);
                                 }
                             }
                             else
@@ -1227,7 +1264,6 @@ public class Controller : MonoBehaviour
                         }
                         break;
                     case Happening.ExpectVec3:
-                        ///////CHECK BRAKET COUNT ADJAWDAWOPNMD AWOWMD AWNM
                         if (c == '(')
                         {
                             lilBracket++;
@@ -1263,7 +1299,7 @@ public class Controller : MonoBehaviour
                                         y = new Mathematics(),
                                         z = new Mathematics()
                                     };
-                                    methods.Add(eq);
+                                    AddMethod(ref methods, eq);
                                 }
                             }
                             else if (xyz.Count() != 3)
@@ -1319,7 +1355,7 @@ public class Controller : MonoBehaviour
                                         y = mathsy,
                                         z = mathsz
                                     };
-                                    methods.Add(eq);
+                                    AddMethod(ref methods, eq);
                                 }
                             }
                             curHaps = Happening.Starting;
@@ -1367,7 +1403,7 @@ public class Controller : MonoBehaviour
                                         eq.changeType = true;
                                         eq.newType = Variable.VariableType.FLOAT;
                                     }
-                                    methods.Add(eq);
+                                    AddMethod(ref methods, eq);
                                 }
                                 else
                                 {
@@ -1439,6 +1475,10 @@ public class Controller : MonoBehaviour
                             }
                             scopeVariables.Add(new List<string>());
                         }
+                        if (word == "else")
+                        {
+                            Debug.Log("bannananas in pajamas");
+                        }
 
                         if (word == "int ")
                         {
@@ -1486,6 +1526,11 @@ public class Controller : MonoBehaviour
                                 inMethod = false;
                             }
 
+                            if (bracket < 0)
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, "Curly brackets do not all match up", lineNo);
+                            }
+                            AddMethod(ref methods, new Code_EndIf());
                             foreach (string s in scopeVariables[scopeVariables.Count - 1])
                             {
                                 Variable temp = vars[s];
@@ -1529,6 +1574,9 @@ public class Controller : MonoBehaviour
                                 allowWhiteSpace = true;
                                 break;
                             case Happening.ExpectBracket:
+                                allowWhiteSpace = true;
+                                break;
+                            case Happening.AddElse:
                                 allowWhiteSpace = true;
                                 break;
                         }
@@ -1591,23 +1639,501 @@ public class Controller : MonoBehaviour
         return new Error();
     }
 
+    private void DownElses(ref Code_if a, Code_if b)
+    {
+        if (a.elses == null)
+        {
+            a.elses = b;
+        }
+        else
+        {
+            DownElses(ref a.elses, b);
+        }
+    }
+
+    private Error AddElse(ref List<Method> meths, Code_if codeif, int lineNo)
+    {
+        if (meths.Count > 0)
+        {
+            if (meths[meths.Count - 1].GetType() == typeof(Code_EndIf))
+            {
+                meths.Remove(meths[meths.Count - 1]);
+
+                if (meths[meths.Count - 1].GetType() == typeof(Code_if))
+                {
+                    Code_if temp = (Code_if)meths[meths.Count - 1];
+                    DownElses(ref temp, codeif);
+                    meths[meths.Count - 1] = temp;
+                }
+                else if (meths[meths.Count - 1].GetType() == typeof(Code_While))
+                {
+                    Code_While temp = (Code_While)meths[meths.Count - 1];
+                    DownElses(ref temp.checkCase, codeif);
+
+                    meths[meths.Count - 1] = temp;
+                }
+                else
+                {
+                    return new Error(Error.ErrorCodes.Syntax, "No if to add else to", lineNo);
+                }
+            }
+            else if (meths[meths.Count - 1].GetType() == typeof(Code_if) ||
+                meths[meths.Count - 1].GetType() == typeof(Code_While))
+            {
+                return AddElse(ref meths[meths.Count - 1].methods, codeif, lineNo);
+            }
+            else
+            {
+                return new Error(Error.ErrorCodes.Syntax, "No if to add else to", lineNo);
+            }
+        }
+        else
+        {
+            return new Error(Error.ErrorCodes.Syntax, "No if to add else to", lineNo);
+        }
+        return new Error();
+    }
+
+    private void AddElsesMethod(ref Code_if codeif, Method m)
+    {
+        if (codeif.elses == null)
+        {
+            codeif.methods.Add(m);
+        }
+        else
+        {
+            AddElsesMethod(ref codeif.elses, m);
+        }
+    }
+
     private void AddMethod(ref List<Method> meths, Method m)
     {
-        if (methods.Count > 0)
+        if (m.GetType() == typeof(Code_EndIf))
         {
-            if (methods[methods.Count - 1].GetType() == typeof(Code_if) ||
-                methods[methods.Count - 1].GetType() == typeof(Code_While))
+            if (meths.Count > 0)
             {
-                AddMethod(ref methods[methods.Count - 1].methods, m);
-                return;
+                if (meths[meths.Count - 1].methods.Count > 0)
+                {
+                    if (meths[meths.Count - 1].methods[meths[meths.Count - 1].methods.Count - 1].GetType() == typeof(Code_if) ||
+                    meths[meths.Count - 1].methods[meths[meths.Count - 1].methods.Count - 1].GetType() == typeof(Code_While))
+                    {
+                        AddMethod(ref meths[meths.Count - 1].methods, m);
+                        return;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (meths.Count > 0)
+            {
+                if (meths[meths.Count - 1].GetType() == typeof(Code_if))
+                {
+                    Code_if temp = (Code_if)meths[meths.Count - 1];
+
+                    AddElsesMethod(ref temp, m);
+                    meths[meths.Count - 1] = temp;
+                    return;
+                }
+                if (meths[meths.Count - 1].GetType() == typeof(Code_While))
+                {
+                    Code_While temp = (Code_While)meths[meths.Count - 1];
+
+                    AddElsesMethod(ref temp.checkCase, m);
+                    meths[meths.Count - 1] = temp;
+                    return;
+                }
             }
         }
         meths.Add(m);
-
     }
 
-    private Error MakeIf(ref Code_if codeif, int lineNo)
+    private Error MakeIf(ref Code_if codeif, ref string eq, int lineNo)
     {
+        int partCount = 0;
+        string word = "";
+        bool isMaths = false;
+        Mathematics maths = new Mathematics();
+        bool expectCommand = false;
+        int inString = 0;
+
+        while (eq != "")
+        {
+            char c = eq[0];
+            eq = eq.Substring(1, eq.Length - 1);
+            word += c;
+            if (inString != 1 && c == '(')
+            {
+                Error e;
+                if (!codeif.hasLhs)
+                {
+                    codeif.ifLHS = new Code_if();
+                    codeif.compareValues = Variable.VariableType.BOOL;
+                    e = MakeIf(ref codeif.ifLHS, ref eq, lineNo);
+                    codeif.hasLhs = true;
+                }
+                else
+                {
+                    if (codeif.compareValues != Variable.VariableType.BOOL)
+                    {
+                        return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare value with bool", lineNo);
+                    }
+                    codeif.ifRHS = new Code_if();
+                    e = MakeIf(ref codeif.ifRHS, ref eq, lineNo);
+                    codeif.hasRhs = true;
+                }
+                if (e.errorCode != Error.ErrorCodes.None)
+                {
+                    return e;
+                }
+                word = "";
+            }
+            if (inString == 1 && expectCommand)
+            {
+                switch (c)
+                {
+                    case '\\':
+                        break;
+                    case '\"':
+                        word = word.Substring(0, word.Length - 2) + "\"";
+                        break;
+                    case 'n':
+                        word = word.Substring(0, word.Length - 2) + "\n";
+                        break;
+                    case 't':
+                        word = word.Substring(0, word.Length - 2) + "\t";
+                        break;
+                    default:
+                        return new Error(Error.ErrorCodes.Syntax, "unexpected character after \\", lineNo);
+                }
+                expectCommand = false;
+            }
+            else if (c == '\\' && inString == 1)
+            {
+                expectCommand = true;
+            }
+            else if (c == '\"')
+            {
+                inString++;
+                if (inString > 2)
+                {
+                    return new Error(Error.ErrorCodes.Syntax, "Too many speach marks found", lineNo);
+                }
+            }
+            else if (c == '=' || c == '!' || c == '|' || c == '&' || c == '>' || c == '<' || c == ')')
+            {
+                float value = 0;
+                partCount++;
+                if (partCount == 2)
+                {
+                    if (word == "==")
+                    {
+                        codeif.ifType = Code_if.Logic.EQUAL;
+                    }
+                    else if (word == "!=")
+                    {
+                        codeif.ifType = Code_if.Logic.NOT;
+                    }
+                    else if (word == "||")
+                    {
+                        if (codeif.compareValues == Variable.VariableType.FLOAT || codeif.compareValues == Variable.VariableType.STRING)
+                        {
+                            return new Error(Error.ErrorCodes.TypeMismatch, "Value type does not work with this if operator", lineNo);
+                        }
+                        codeif.ifType = Code_if.Logic.OR;
+                    }
+                    else if (word == "&&")
+                    {
+                        if (codeif.compareValues == Variable.VariableType.FLOAT || codeif.compareValues == Variable.VariableType.STRING)
+                        {
+                            return new Error(Error.ErrorCodes.TypeMismatch, "Value type does not work with this if operator", lineNo);
+                        }
+                        codeif.ifType = Code_if.Logic.AND;
+                    }
+                    else
+                    {
+                        return new Error(Error.ErrorCodes.Syntax, "If operator not recognised", lineNo);
+                    }
+                    partCount = 0;
+                    word = "";
+                }
+                else
+                {
+                    word = word.Substring(0, word.Length - 1);
+                    if (c == '>' && codeif.ifType == Code_if.Logic.NONE)
+                    {
+                        if (codeif.compareValues == Variable.VariableType.BOOL || codeif.compareValues == Variable.VariableType.STRING)
+                        {
+                            return new Error(Error.ErrorCodes.TypeMismatch, "Value type does not work with this if operator", lineNo);
+                        }
+                        codeif.ifType = Code_if.Logic.MORETHAN;
+                        partCount = 0;
+                    }
+                    else if (c == '<' && codeif.ifType == Code_if.Logic.NONE)
+                    {
+                        if (codeif.compareValues == Variable.VariableType.BOOL || codeif.compareValues == Variable.VariableType.STRING)
+                        {
+                            return new Error(Error.ErrorCodes.TypeMismatch, "Value type does not work with this if operator", lineNo);
+                        }
+                        codeif.ifType = Code_if.Logic.LESSTHAN;
+                        partCount = 0;
+                    }
+                    word = word.Trim();
+                    string[] words = word.Split('.');
+
+                    if (float.TryParse(word, out value) && words.Count() == 2)
+                    {
+                        return new Error(Error.ErrorCodes.TypeMismatch, "do not understand type", lineNo);
+                    }
+                    if (float.TryParse(word.Substring(0, word.Length - 1), out value) && words.Count() == 2 && word[word.Length - 1] == 'f')
+                    {
+                        word = word.Substring(0, word.Length - 1);
+                    }
+                    if (vars.ContainsKey(words[0]))
+                    {
+                        if (words.Count() == 1)
+                        {
+                            if (!codeif.hasLhs)
+                            {
+                                if (vars[words[0]].type == Variable.VariableType.FLOAT ||
+                                    vars[words[0]].type == Variable.VariableType.INT)
+                                    codeif.compareValues = Variable.VariableType.FLOAT;
+                                codeif.lhs = word;
+                                codeif.hasLhs = true;
+                            }
+                            else
+                            {
+                                if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                    (codeif.compareValues != vars[words[0]].type ||
+                                    (codeif.compareValues == Variable.VariableType.FLOAT && vars[words[0]].type == Variable.VariableType.INT)))
+                                {
+                                    return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
+                                }
+                                codeif.rhs = word;
+                                codeif.hasRhs = true;
+                            }
+                        }
+                        else if (words.Count() == 2)
+                        {
+                            if (words[1] == "x")
+                            {
+                                if (!codeif.hasLhs)
+                                {
+                                    codeif.leftV = Code_if.VectorPart.x;
+                                }
+                                else
+                                {
+                                    codeif.rightV = Code_if.VectorPart.x;
+                                }
+                            }
+                            else if (words[1] == "y")
+                            {
+                                if (!codeif.hasLhs)
+                                {
+                                    codeif.leftV = Code_if.VectorPart.y;
+                                }
+                                else
+                                {
+                                    codeif.rightV = Code_if.VectorPart.y;
+                                }
+                            }
+                            else if (words[1] == "z")
+                            {
+                                if (!codeif.hasLhs)
+                                {
+                                    codeif.leftV = Code_if.VectorPart.z;
+                                }
+                                else
+                                {
+                                    codeif.rightV = Code_if.VectorPart.z;
+                                }
+                            }
+                            else
+                            {
+                                return new Error(Error.ErrorCodes.Syntax, word[1] + " is not a part of " + word[0], lineNo);
+                            }
+
+                            if (!codeif.hasLhs)
+                            {
+                                codeif.compareValues = Variable.VariableType.FLOAT;
+                                codeif.lhs = words[0];
+                                codeif.hasLhs = true;
+                            }
+                            else
+                            {
+                                if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                    codeif.compareValues != Variable.VariableType.FLOAT)
+                                {
+                                    return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
+                                }
+                                codeif.rhs = words[0];
+                                codeif.hasRhs = true;
+                            }
+                        }
+                    }
+                    else if (word[0] == '\"' && word[word.Length - 1] == '\"')
+                    {
+                        if (inString > 2)
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "Too many speach marks found", lineNo);
+                        }
+
+                        codeif.compareValues = Variable.VariableType.STRING;
+                        if (!codeif.hasLhs)
+                        {
+                            codeif.str_lhsvalue = word.Substring(1, word.Length - 2);
+                            codeif.hasLhs = true;
+                        }
+                        else
+                        {
+                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                codeif.compareValues != Variable.VariableType.STRING)
+                            {
+                                return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
+                            }
+                            codeif.str_rhsvalue = word.Substring(1, word.Length - 2);
+                            codeif.hasRhs = true;
+                        }
+
+                        inString = 0;
+                    }
+                    else if (isMaths)
+                    {
+                        int b = 0;
+                        maths = new Mathematics();
+                        Error e = MakeEquation(ref maths, ref word, lineNo, true, ref b);
+                        if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                        if (!codeif.hasLhs)
+                        {
+                            codeif.compareValues = Variable.VariableType.STRING;
+                            codeif.mathLHS = maths;
+                            codeif.hasLhs = true;
+                        }
+                        else
+                        {
+                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                codeif.compareValues != Variable.VariableType.FLOAT)
+                            {
+                                return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
+                            }
+                            codeif.mathLHS = maths;
+                            codeif.hasRhs = true;
+                        }
+                        isMaths = false;
+                    }
+                    else if (float.TryParse(word, out value))
+                    {
+                        if (!codeif.hasLhs)
+                        {
+                            codeif.compareValues = Variable.VariableType.FLOAT;
+                            codeif.nbr_lhsvalue = value;
+                            codeif.hasLhs = true;
+                        }
+                        else
+                        {
+                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                codeif.compareValues != Variable.VariableType.FLOAT)
+                            {
+                                return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
+                            }
+                            codeif.nbr_rhsvalue = value;
+                            codeif.hasRhs = true;
+                        }
+                    }
+                    else if (word == "true" || word == "false")
+                    {
+                        bool boolValue = false;
+                        if (word == "true")
+                        {
+                            boolValue = true;
+                        }
+                        if (!codeif.hasLhs)
+                        {
+                            codeif.bl_lhsvalue = boolValue;
+                            codeif.nbr_lhsvalue = value;
+                            codeif.hasLhs = true;
+                        }
+                        else
+                        {
+                            if (((c == '<' || c == '>') && codeif.compareValues != Variable.VariableType.BOOL) ||
+                                codeif.compareValues != Variable.VariableType.BOOL)
+                            {
+                                return new Error(Error.ErrorCodes.TypeMismatch, "cannot compare these values of different types", lineNo);
+                            }
+                            codeif.bl_lhsvalue = boolValue;
+                            codeif.hasRhs = true;
+                        }
+                    }
+
+                    if (c == ')')
+                    {
+                        if (codeif.ifType == Code_if.Logic.NONE)
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "If operator not found", lineNo);
+                        }
+
+                        return new Error();
+                    }
+                    else if (codeif.hasLhs && codeif.hasRhs)
+                    {
+                        Code_if temp = new Code_if();
+
+                        word = "" + c + eq[0];
+
+                        if (c == '>')
+                        {
+                            temp.ifType = Code_if.Logic.MORETHAN;
+                        }
+                        else if (c == '<')
+                        {
+                            temp.ifType = Code_if.Logic.LESSTHAN;
+                        }
+                        else if (word == "==")
+                        {
+                            temp.ifLHS = codeif;
+                            temp.hasLhs = true;
+                            temp.ifType = Code_if.Logic.EQUAL;
+                            eq = eq.Substring(1, eq.Length - 1);
+                        }
+                        else if (word == "!=")
+                        {
+                            temp.ifLHS = codeif;
+                            temp.hasLhs = true;
+                            temp.ifType = Code_if.Logic.NOT;
+                            eq = eq.Substring(1, eq.Length - 1);
+                        }
+                        else if (word == "||")
+                        {
+                            temp.ifLHS = codeif;
+                            temp.hasLhs = true;
+                            temp.ifType = Code_if.Logic.OR;
+                            eq = eq.Substring(1, eq.Length - 1);
+                        }
+                        else if (word == "&&")
+                        {
+                            temp.ifLHS = codeif;
+                            temp.hasLhs = true;
+                            temp.ifType = Code_if.Logic.AND;
+                            eq = eq.Substring(1, eq.Length - 1);
+                        }
+                        else
+                        {
+                            return new Error(Error.ErrorCodes.Syntax, "If operator not recognised", lineNo);
+                        }
+                        partCount = 0;
+                    }
+                    else
+                    {
+                        word = "" + c;
+                    }
+                }
+            }
+            else if (c == '+' || c == '-' || c == '/' || c == '*' || c == ')')
+            {
+                isMaths = true;
+            }
+        }
         return new Error();
     }
 

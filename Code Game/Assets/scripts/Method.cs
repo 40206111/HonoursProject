@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class Method
 {
-    public List<Method> methods;
+    public List<Method> methods = new List<Method>();
     public abstract bool Compute();
 
 }

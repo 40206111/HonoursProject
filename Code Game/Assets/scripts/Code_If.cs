@@ -5,8 +5,9 @@ using UnityEngine;
 public class Code_if : Method
 {
 
-    private enum Logic
+    public enum Logic
     {
+        NONE,
         AND,
         OR,
         NOT,
@@ -23,14 +24,37 @@ public class Code_if : Method
         z
     }
 
-    private Logic ifType = Logic.EQUAL;
+    public Code_if elses = null;
+    public Logic ifType = Logic.NONE;
     public Code_if ifLHS = null;
     public Code_if ifRHS = null;
-    public string lhs;
-    public string rhs;
+    public string lhs = "";
+    public string rhs = "";
     public VectorPart rightV;
     public VectorPart leftV;
+    public bool hasLhs = false;
+    public bool hasRhs = false;
+    public bool bl_lhsvalue = false;
+    public bool bl_rhsvalue = false;
+    public string str_lhsvalue = "";
+    public string str_rhsvalue = "";
+    public float nbr_lhsvalue = 0;
+    public float nbr_rhsvalue = 0;
+    public Mathematics mathLHS = null;
+    public Mathematics mathRHS = null;
+    public Variable.VariableType compareValues = Variable.VariableType.BOOL;
 
+    public void SetLHSToRHS(ref Code_if theLHS)
+    {
+        theLHS.bl_lhsvalue = bl_rhsvalue;
+        theLHS.hasLhs = hasRhs;
+        theLHS.ifLHS = ifRHS;
+        theLHS.leftV = rightV;
+        theLHS.str_lhsvalue = str_rhsvalue;
+        theLHS.mathLHS = mathRHS;
+        theLHS.nbr_lhsvalue = nbr_rhsvalue;
+        theLHS.lhs = rhs;
+    }
 
     public override bool Compute()
     {
@@ -38,44 +62,64 @@ public class Code_if : Method
         {
             Controller.MethodRun(methods);
         }
+        else if (elses != null)
+        {
+            elses.Compute();
+        }
         return true;
     }
 
     public bool getValue()
     {
-        if (Controller.vars[lhs].type == Variable.VariableType.BOOL || ifLHS != null)    //compare booleans
+        if (ifType == Logic.NONE)
+        {
+            return ifLHS.getValue();
+        }
+
+        if (compareValues == Variable.VariableType.BOOL)    //compare booleans
         {
             return CompareBools();
         }
-        else if (Controller.vars[lhs].type == Variable.VariableType.FLOAT || //Compare numbers
-            Controller.vars[lhs].type == Variable.VariableType.INT ||
-            Controller.vars[rhs].type == Variable.VariableType.FLOAT ||
-            Controller.vars[rhs].type == Variable.VariableType.INT)
+        else if (compareValues == Variable.VariableType.FLOAT) //compare float, int or vec3
         {
-                return CompareFloats(LhsValue(), RhsValue());
-        }
-        else if (Controller.vars[lhs].type == Variable.VariableType.VEC3)    //compare vec3s
-        {
-            if (leftV != VectorPart.none)
+            if (lhs != "")
             {
-                return CompareFloats(LhsValue(), RhsValue());
+                nbr_lhsvalue = LhsValue();
             }
+            else if (mathLHS != null)
+            {
+                nbr_lhsvalue = mathLHS.Calculate();
+            }
+
+            if (rhs != "")
+            {
+                nbr_rhsvalue = RhsValue();
+            }
+            else if (mathRHS != null)
+            {
+                nbr_rhsvalue = mathRHS.Calculate();
+            }
+
+            return CompareFloats(nbr_lhsvalue, nbr_rhsvalue);
+        }
+        else if (compareValues == Variable.VariableType.STRING)  //compare strings
+        {
+            if (lhs != "")
+            {
+                str_lhsvalue = Controller.vars[lhs].str_value;
+            }
+
+            if (rhs != "")
+            {
+                str_rhsvalue = Controller.vars[rhs].str_value;
+            }
+
             switch (ifType)
             {
                 case Logic.EQUAL:
-                    return (Controller.vars[lhs].vec3_value == Controller.vars[rhs].vec3_value);
+                    return (str_lhsvalue == str_rhsvalue);
                 case Logic.NOT:
-                    return (Controller.vars[lhs].vec3_value != Controller.vars[rhs].vec3_value);
-            }
-        }
-        else if (Controller.vars[lhs].type == Variable.VariableType.STRING)  //compare strings
-        {
-            switch (ifType)
-            {
-                case Logic.EQUAL:
-                    return (Controller.vars[lhs].str_value == Controller.vars[rhs].str_value);
-                case Logic.NOT:
-                    return (Controller.vars[lhs].str_value != Controller.vars[rhs].str_value);
+                    return (str_lhsvalue != str_rhsvalue);
             }
         }
 
@@ -92,6 +136,10 @@ public class Code_if : Method
         {
             boolLHS = ifLHS.getValue();
         }
+        else if (lhs == "")
+        {
+            boolLHS = bl_lhsvalue;
+        }
         else
         {
             boolLHS = Controller.vars[lhs].bool_value;
@@ -102,6 +150,10 @@ public class Code_if : Method
         if (ifRHS != null)
         {
             boolRHS = ifRHS.getValue();
+        }
+        else if (rhs == "")
+        {
+            boolRHS = bl_rhsvalue;
         }
         else
         {
