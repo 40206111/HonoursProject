@@ -45,9 +45,10 @@ public class Controller : MonoBehaviour
     private static float number_center;
 
     //Methods
-    List<Method> methods = new List<Method>();
+    IDictionary<string, List<Method>> methods = new Dictionary<string, List<Method>>();
     //Variables
     public static IDictionary<string, Variable> vars = new Dictionary<string, Variable>();
+    public static List<IDictionary<string, Variable>> allVars = new List<IDictionary<string, Variable>>();
     Variable zomble = new Variable()
     {
         type = Variable.VariableType.VEC3,
@@ -96,14 +97,17 @@ public class Controller : MonoBehaviour
         {" new ", Happening.New },
         {"Debug.Log(", Happening.DebugLog },
         {"else", Happening.AddElse },
-        {"gameobject.transform.position=",  Happening.ZombieStuff },
-        {"gameobject.transform.position =", Happening.ZombieStuff }
+        {"gameobject.transform.position=",  Happening.ExpectNew },
+        {"gameobject.transform.position =", Happening.ExpectNew }
     };
 
     private List<List<string>> scopeVariables = new List<List<string>>();
 
     //monospace tag
     const string monostring = "<noparse>";
+
+    private bool compile = false;
+    static public bool stop = false;
 
 
     private enum Happening
@@ -136,8 +140,7 @@ public class Controller : MonoBehaviour
         ExpectWhile,
         ExpectFor,
         DebugLog,
-        AddElse,
-        ZombieStuff
+        AddElse
     }
 
     private List<List<string>> allStrings = new List<List<string>>();
@@ -145,6 +148,8 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        methods.Add("Update()", new List<Method>());
+        methods.Add("Start()", new List<Method>());
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "using ", "public ", "//", "/*" }); //Starting
         allStrings.Add(new List<string>());
@@ -183,22 +188,48 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckContent();
-        LineNumbers();
-        ScrollNumbers();
+        //CheckContent();
+        //LineNumbers();
+        //ScrollNumbers();
     }
 
     public void Run()
     {
+        GM.stop.interactable = true;
+        GM.run.interactable = false;
+        GM.cnr.interactable = false;
+        if (!compile) return;
+        allVars.Clear();
+        allVars.Add(new Dictionary<string, Variable>(vars));
+        allVars.Add(new Dictionary<string, Variable>(vars));
+        allVars.Add(new Dictionary<string, Variable>(vars));
         while (currentZomb < 3)
         {
-            Variable temp = vars["gameobject.transform.position"];
+            Variable temp = allVars[currentZomb]["gameobject.transform.position"];
             temp.vec3_value = GM.zombie[currentZomb].transform.position;
             vars["gameobject.transform.position"] = temp;
-            MethodRun(methods);
+            MethodRun(methods["Start()"]);
             currentZomb++;
         }
+        StartCoroutine(RunHelp());
         currentZomb = 0;
+    }
+
+    IEnumerator RunHelp()
+    {
+        while (!stop)
+        {
+            while (currentZomb < 3)
+            {
+                Variable temp = allVars[currentZomb]["gameobject.transform.position"];
+                temp.vec3_value = GM.zombie[currentZomb].transform.position;
+                vars["gameobject.transform.position"] = temp;
+                MethodRun(methods["Start()"]);
+                currentZomb++;
+            }
+            currentZomb = 0;
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     public static void MethodRun(List<Method> ms)
@@ -272,17 +303,35 @@ public class Controller : MonoBehaviour
         GM.console.text = "- Compile Button Pressed\n";
         Debug.Log("Compile Button Pressed");
         int currentLine = 1;
+        GM.stop.interactable = false;
+        GM.run.interactable = false;
+        GM.cnr.interactable = false;
 
         Error error = TryCompile(ref currentLine);
 
         if (error.errorCode != Error.ErrorCodes.None)
+        {
+            GM.stop.interactable = false;
+            GM.run.interactable = false;
+            GM.cnr.interactable = true;
+            compile = false;
             GM.console.text += "- " + error + "\n";
+        }
         else
+        {
+            compile = true;
             Run();
+        }
     }
 
     private Error TryCompile(ref int lineNo)
     {
+        stop = false;
+        string methodType = "Start()";
+        for (int i = 0; i < 3; ++i)
+        {
+            GM.zombie[i].transform.position = GM.zombieStart[i];
+        }
         string stringset = "";
         bool ignore = false;
         bool superIgnore = false;
@@ -303,7 +352,8 @@ public class Controller : MonoBehaviour
         vars.Clear();
         vars.Add("gameobject.transform.position", zomble);
         scopeVariables.Clear();
-        methods.Clear();
+        methods["Update()"].Clear();
+        methods["Start()"].Clear();
 
 
         Happening next = Happening.ExpectInt;
@@ -357,7 +407,9 @@ public class Controller : MonoBehaviour
                             Code_While thewhile = new Code_While();
                             Error e = MakeIf(ref thewhile.checkCase, ref word, lineNo);
                             if (e.errorCode != Error.ErrorCodes.None) return e;
-                            AddMethod(ref methods, thewhile);
+                            List<Method> temp = methods[methodType];
+                            AddMethod(ref temp, thewhile);
+                            methods[methodType] = temp;
 
                             previous = curHaps;
                             curHaps = Happening.ExpectBracket;
@@ -389,8 +441,9 @@ public class Controller : MonoBehaviour
                                 bl_rhsvalue = true,
                                 ifType = Code_if.Logic.EQUAL
                             };
-
-                            Error e = AddElse(ref methods, codeif, lineNo);
+                            List<Method> temp = methods[methodType];
+                            Error e = AddElse(ref temp, codeif, lineNo);
+                            methods[methodType] = temp;
                             if (e.errorCode != Error.ErrorCodes.None) return e;
 
                             previous = curHaps;
@@ -411,7 +464,9 @@ public class Controller : MonoBehaviour
                             Code_if theif = new Code_if();
                             Error e = MakeIf(ref theif, ref word, lineNo);
                             if (e.errorCode != Error.ErrorCodes.None) return e;
-                            e = AddElse(ref methods, theif, lineNo);
+                            List<Method> temp = methods[methodType];
+                            e = AddElse(ref temp, theif, lineNo);
+                            methods[methodType] = temp;
                             if (e.errorCode != Error.ErrorCodes.None) return e;
 
                             previous = curHaps;
@@ -443,7 +498,9 @@ public class Controller : MonoBehaviour
                             Code_if theif = new Code_if();
                             Error e = MakeIf(ref theif, ref word, lineNo);
                             if (e.errorCode != Error.ErrorCodes.None) return e;
-                            AddMethod(ref methods, theif);
+                            List<Method> temp = methods[methodType];
+                            AddMethod(ref temp, theif);
+                            methods[methodType] = temp;
 
                             previous = curHaps;
                             curHaps = Happening.ExpectBracket;
@@ -506,7 +563,9 @@ public class Controller : MonoBehaviour
                                 {
                                     variablename = word,
                                 };
-                                AddMethod(ref methods, debug);
+                                List<Method> temp = methods[methodType];
+                                AddMethod(ref temp, debug);
+                                methods[methodType] = temp;
                             }
                             else if (inString == 2)
                             {
@@ -514,7 +573,9 @@ public class Controller : MonoBehaviour
                                 {
                                     content = word.Substring(1, word.Length - 2),
                                 };
-                                AddMethod(ref methods, debug);
+                                List<Method> temp = methods[methodType];
+                                AddMethod(ref temp, debug);
+                                methods[methodType] = temp;
                                 inString = 0;
                             }
                             else
@@ -548,7 +609,9 @@ public class Controller : MonoBehaviour
                                         return new Error(Error.ErrorCodes.Syntax, words[words.Length - 1] + " is not a part of " + words[0], lineNo);
                                     }
 
-                                    AddMethod(ref methods, debug);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, debug);
+                                    methods[methodType] = temp;
                                 }
                                 else
                                 {
@@ -676,7 +739,9 @@ public class Controller : MonoBehaviour
                                             set.newType = Variable.VariableType.STRING;
                                             break;
                                     }
-                                    AddMethod(ref methods, set);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, set);
+                                    methods[methodType] = temp;
                                 }
                                 else
                                 {
@@ -846,7 +911,9 @@ public class Controller : MonoBehaviour
                                     temp.changeType = true;
                                     temp.newType = Variable.VariableType.INT;
                                 }
-                                AddMethod(ref methods, temp);
+                                List<Method> mtemp = methods[methodType];
+                                AddMethod(ref mtemp, temp);
+                                methods[methodType] = mtemp;
                             }
                             else if (Int32.TryParse(word, out value))
                             {
@@ -874,7 +941,9 @@ public class Controller : MonoBehaviour
                                         set.newType = Variable.VariableType.FLOAT;
                                     }
 
-                                    AddMethod(ref methods, set);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, set);
+                                    methods[methodType] = temp;
                                 }
                             }
 
@@ -957,7 +1026,9 @@ public class Controller : MonoBehaviour
                                 }
                                 temp.output = stringset;
                                 temp.input = word;
-                                AddMethod(ref methods, temp);
+                                List<Method> mtemp = methods[methodType];
+                                AddMethod(ref mtemp, temp);
+                                methods[methodType] = mtemp;
                             }
                             else if (words.Count() > 2)
                             {
@@ -1006,7 +1077,9 @@ public class Controller : MonoBehaviour
                                 }
                                 temp.output = stringset;
                                 temp.input = word;
-                                AddMethod(ref methods, temp);
+                                List<Method> mtemp = methods[methodType];
+                                AddMethod(ref mtemp, temp);
+                                methods[methodType] = mtemp;
                             }
                             else if (word[word.Length - 1] != 'f')
                             {
@@ -1039,7 +1112,9 @@ public class Controller : MonoBehaviour
                                             set.newType = Variable.VariableType.FLOAT;
                                         }
 
-                                        AddMethod(ref methods, set);
+                                        List<Method> temp = methods[methodType];
+                                        AddMethod(ref temp, set);
+                                        methods[methodType] = temp;
                                     }
                                 }
                                 else return new Error(Error.ErrorCodes.TypeMismatch, "Expected float value", lineNo);
@@ -1072,7 +1147,9 @@ public class Controller : MonoBehaviour
                                         set.newType = Variable.VariableType.FLOAT;
                                     }
 
-                                    AddMethod(ref methods, set);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, set);
+                                    methods[methodType] = temp;
                                 }
                             }
                             else
@@ -1153,7 +1230,9 @@ public class Controller : MonoBehaviour
                                             set.changeType = true;
                                             set.newType = Variable.VariableType.BOOL;
                                         }
-                                        AddMethod(ref methods, set);
+                                        List<Method> temp = methods[methodType];
+                                        AddMethod(ref temp, set);
+                                        methods[methodType] = temp;
                                     }
 
                                     complete = true;
@@ -1292,7 +1371,9 @@ public class Controller : MonoBehaviour
                                         set.changeType = true;
                                         set.newType = Variable.VariableType.STRING;
                                     }
-                                    AddMethod(ref methods, set);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, set);
+                                    methods[methodType] = temp;
                                 }
                             }
                             else if (word[0] == '\"' && word[word.Length - 1] == '\"')
@@ -1323,7 +1404,9 @@ public class Controller : MonoBehaviour
                                         set.changeType = true;
                                         set.newType = Variable.VariableType.STRING;
                                     }
-                                    AddMethod(ref methods, set);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, set);
+                                    methods[methodType] = temp;
                                 }
                             }
                             else
@@ -1363,6 +1446,7 @@ public class Controller : MonoBehaviour
                         else if (c == ';' && lilBracket == 0)
                         {
                             word = word.Substring(0, word.Length - 2);
+                            word = word.Trim();
                             string[] xyz = word.Split(',');
                             lilBracket = 1;
                             if (word == "")
@@ -1387,7 +1471,54 @@ public class Controller : MonoBehaviour
                                         y = new Mathematics(),
                                         z = new Mathematics()
                                     };
-                                    AddMethod(ref methods, eq);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, eq);
+                                    methods[methodType] = temp;
+                                }
+                            }
+                            else if (xyz.Count() == 1)
+                            {
+                                if (!vars.ContainsKey(word))
+                                {
+                                    return new Error(Error.ErrorCodes.Syntax, "Variable does not exist", lineNo);
+                                }
+
+                                if (!vars.ContainsKey(stringset))
+                                {
+                                    Variable temp = new Variable()
+                                    {
+                                        type = Variable.VariableType.VEC3,
+                                        vec3_value = vars[word].vec3_value,
+                                        inScope = true
+                                    };
+
+                                    scopeVariables[scopeVariables.Count - 1].Add(stringset);
+                                    vars.Add(stringset, temp);
+                                }
+
+                                if (inMethod)
+                                {
+                                    if (stringset == "gameobject.transform.position")
+                                    {
+                                        Code_SetZombie eq = new Code_SetZombie
+                                        {
+                                            variable = word,
+                                        };
+                                        List<Method> temp = methods[methodType];
+                                        AddMethod(ref temp, eq);
+                                        methods[methodType] = temp;
+                                    }
+                                    else
+                                    {
+                                        Code_Vec3Set eq = new Code_Vec3Set
+                                        {
+                                            output = stringset,
+                                            input = word,
+                                        };
+                                        List<Method> temp = methods[methodType];
+                                        AddMethod(ref temp, eq);
+                                        methods[methodType] = temp;
+                                    }
                                 }
                             }
                             else if (xyz.Count() != 3)
@@ -1443,7 +1574,9 @@ public class Controller : MonoBehaviour
                                         y = mathsy,
                                         z = mathsz
                                     };
-                                    AddMethod(ref methods, eq);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, eq);
+                                    methods[methodType] = temp;
                                 }
                             }
                             curHaps = Happening.Starting;
@@ -1491,7 +1624,9 @@ public class Controller : MonoBehaviour
                                         eq.changeType = true;
                                         eq.newType = Variable.VariableType.FLOAT;
                                     }
-                                    AddMethod(ref methods, eq);
+                                    List<Method> temp = methods[methodType];
+                                    AddMethod(ref temp, eq);
+                                    methods[methodType] = temp;
                                 }
                                 else
                                 {
@@ -1560,10 +1695,16 @@ public class Controller : MonoBehaviour
                             else if (previous == Happening.ExpectMethodName)
                             {
                                 inMethod = true;
+                                if (word == "Start()") methodType = word;
+                                if (word == "Update()") methodType = word;
                             }
                             scopeVariables.Add(new List<string>());
                         }
 
+                        if (word == "gameobject.transform.position =" || word == "gameobject.transform.position=")
+                        {
+                            stringset = "gameobject.transform.position";
+                        }
                         if (word == "int ")
                         {
                             next = Happening.ExpectInt;
@@ -1614,7 +1755,9 @@ public class Controller : MonoBehaviour
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Curly brackets do not all match up", lineNo);
                             }
-                            AddMethod(ref methods, new Code_EndIf());
+                            List<Method> mtemp = methods[methodType];
+                            AddMethod(ref mtemp, new Code_EndIf());
+                            methods[methodType] = mtemp;
                             foreach (string s in scopeVariables[scopeVariables.Count - 1])
                             {
                                 Variable temp = vars[s];

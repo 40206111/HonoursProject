@@ -20,29 +20,29 @@ public class Code_Debug : Method
         GM.console.text += "- ";
         if (variablename != null)
         {
-            switch (Controller.vars[variablename].type)
+            switch (Controller.allVars[Controller.currentZomb][variablename].type)
             {
                 case Variable.VariableType.BOOL:
-                    GM.console.text += Controller.vars[variablename].bool_value + "\n";
+                    GM.console.text += Controller.allVars[Controller.currentZomb][variablename].bool_value + "\n";
                     break;
                 case Variable.VariableType.FLOAT:
-                    GM.console.text += Controller.vars[variablename].flt_value + "\n";
+                    GM.console.text += Controller.allVars[Controller.currentZomb][variablename].flt_value + "\n";
                     break;
                 case Variable.VariableType.INT:
-                    GM.console.text += Controller.vars[variablename].int_value + "\n";
+                    GM.console.text += Controller.allVars[Controller.currentZomb][variablename].int_value + "\n";
                     break;
                 case Variable.VariableType.STRING:
-                    GM.console.text += Controller.vars[variablename].str_value + "\n";
+                    GM.console.text += Controller.allVars[Controller.currentZomb][variablename].str_value + "\n";
                     break;
                 case Variable.VariableType.VEC3:
                     if (vPart == Code_if.VectorPart.none)
-                        GM.console.text += Controller.vars[variablename].vec3_value + "\n";
+                        GM.console.text += Controller.allVars[Controller.currentZomb][variablename].vec3_value + "\n";
                     else if (vPart == Code_if.VectorPart.x)
-                        GM.console.text += Controller.vars[variablename].vec3_value.x + "\n";
+                        GM.console.text += Controller.allVars[Controller.currentZomb][variablename].vec3_value.x + "\n";
                     else if (vPart == Code_if.VectorPart.y)
-                        GM.console.text += Controller.vars[variablename].vec3_value.y + "\n";
+                        GM.console.text += Controller.allVars[Controller.currentZomb][variablename].vec3_value.y + "\n";
                     else if (vPart == Code_if.VectorPart.z)
-                        GM.console.text += Controller.vars[variablename].vec3_value.z + "\n";
+                        GM.console.text += Controller.allVars[Controller.currentZomb][variablename].vec3_value.z + "\n";
                     break;
 
             }
@@ -61,7 +61,7 @@ public class Code_While : Method
 
     public override bool Compute()
     {
-        while (checkCase.getValue())
+        while (checkCase.getValue() && !Controller.stop)
         {
             checkCase.Compute();
         }
@@ -82,10 +82,10 @@ public class Code_SetZombie : Method
 
     public override bool Compute()
     {
-        GM.zombie[Controller.currentZomb].transform.position = Controller.vars[variable].vec3_value;
-        Variable temp = Controller.vars["gameobject.transform.position"];
-        temp.vec3_value = Controller.vars[variable].vec3_value;
-        Controller.vars["gameobject.transform.position"] = temp;
+        GM.zombie[Controller.currentZomb].transform.position = Controller.allVars[Controller.currentZomb][variable].vec3_value;
+        Variable temp = Controller.allVars[Controller.currentZomb]["gameobject.transform.position"];
+        temp.vec3_value = Controller.allVars[Controller.currentZomb][variable].vec3_value;
+        Controller.allVars[Controller.currentZomb]["gameobject.transform.position"] = temp;
         return false;
     }
 }
@@ -100,7 +100,7 @@ public class Code_Equation : Method
 
     public override bool Compute()
     {
-        Variable temp = Controller.vars[output];
+        Variable temp = Controller.allVars[Controller.currentZomb][output];
         if (changeType)
         {
             temp.type = newType;
@@ -128,7 +128,7 @@ public class Code_Equation : Method
                 }
                 break;
         }
-        Controller.vars[output] = temp;
+        Controller.allVars[Controller.currentZomb][output] = temp;
 
         return true;
     }
@@ -140,17 +140,21 @@ public class Code_Vec3Set : Method
     public Mathematics x = null;
     public Mathematics y = null;
     public Mathematics z = null;
+    public string input = "";
 
     public override bool Compute()
     {
-        Variable temp = Controller.vars[output];
+        Variable temp = Controller.allVars[Controller.currentZomb][output];
 
         if (x != null) temp.vec3_value.x = x.Calculate();
+        else temp.vec3_value.x = Controller.allVars[Controller.currentZomb][input].vec3_value.x;
         if (y != null) temp.vec3_value.y = y.Calculate();
+        else temp.vec3_value.y = Controller.allVars[Controller.currentZomb][input].vec3_value.y;
         if (z != null) temp.vec3_value.z = z.Calculate();
+        else temp.vec3_value.z = Controller.allVars[Controller.currentZomb][input].vec3_value.z;
         temp.type = Variable.VariableType.VEC3;
 
-        Controller.vars[output] = temp;
+        Controller.allVars[Controller.currentZomb][output] = temp;
 
         return true;
     }
@@ -171,7 +175,7 @@ public class Code_SimpleSet : Method
 
     public override bool Compute()
     {
-        Variable temp = Controller.vars[output];
+        Variable temp = Controller.allVars[Controller.currentZomb][output];
         if (changeType)
         {
             temp.type = newType;
@@ -186,7 +190,7 @@ public class Code_SimpleSet : Method
                 }
                 else
                 {
-                    temp.bool_value = Controller.vars[input].bool_value;
+                    temp.bool_value = Controller.allVars[Controller.currentZomb][input].bool_value;
                 }
                 break;
             case Variable.VariableType.FLOAT:
@@ -248,31 +252,31 @@ public class Code_SimpleSet : Method
                 }
                 else
                 {
-                    temp.str_value = Controller.vars[input].str_value;
+                    temp.str_value = Controller.allVars[Controller.currentZomb][input].str_value;
                 }
                 break;
         }
 
-        Controller.vars[output] = temp;
+        Controller.allVars[Controller.currentZomb][output] = temp;
         return true;
     }
 
     private float InputValue()
     {
-        if (Controller.vars[input].type == Variable.VariableType.FLOAT)
-            return Controller.vars[input].flt_value;
-        else if (Controller.vars[input].type == Variable.VariableType.INT)
-            return Controller.vars[input].int_value;
-        else if (Controller.vars[input].type == Variable.VariableType.VEC3)
+        if (Controller.allVars[Controller.currentZomb][input].type == Variable.VariableType.FLOAT)
+            return Controller.allVars[Controller.currentZomb][input].flt_value;
+        else if (Controller.allVars[Controller.currentZomb][input].type == Variable.VariableType.INT)
+            return Controller.allVars[Controller.currentZomb][input].int_value;
+        else if (Controller.allVars[Controller.currentZomb][input].type == Variable.VariableType.VEC3)
         {
             switch (inPart)
             {
                 case Code_if.VectorPart.x:
-                    return Controller.vars[input].vec3_value.x;
+                    return Controller.allVars[Controller.currentZomb][input].vec3_value.x;
                 case Code_if.VectorPart.y:
-                    return Controller.vars[input].vec3_value.y;
+                    return Controller.allVars[Controller.currentZomb][input].vec3_value.y;
                 case Code_if.VectorPart.z:
-                    return Controller.vars[input].vec3_value.z;
+                    return Controller.allVars[Controller.currentZomb][input].vec3_value.z;
             }
         }
 

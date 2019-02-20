@@ -9,6 +9,9 @@ TagManager:
   - Health
   - input
   - console
+  - run
+  - cnr
+  - stop
   layers:
   - Default
   - TransparentFX
