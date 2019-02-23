@@ -188,9 +188,9 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //CheckContent();
-        //LineNumbers();
-        //ScrollNumbers();
+        CheckContent();
+        LineNumbers();
+        ScrollNumbers();
     }
 
     public void Run()
@@ -224,7 +224,7 @@ public class Controller : MonoBehaviour
                 Variable temp = allVars[currentZomb]["gameobject.transform.position"];
                 temp.vec3_value = GM.zombie[currentZomb].transform.position;
                 vars["gameobject.transform.position"] = temp;
-                MethodRun(methods["Start()"]);
+                MethodRun(methods["Update()"]);
                 currentZomb++;
             }
             currentZomb = 0;
@@ -328,10 +328,6 @@ public class Controller : MonoBehaviour
     {
         stop = false;
         string methodType = "Start()";
-        for (int i = 0; i < 3; ++i)
-        {
-            GM.zombie[i].transform.position = GM.zombieStart[i];
-        }
         string stringset = "";
         bool ignore = false;
         bool superIgnore = false;
@@ -791,7 +787,7 @@ public class Controller : MonoBehaviour
                             }
                             if (!initialise && !vars.ContainsKey(stringset))
                             {
-                                return new Error(Error.ErrorCodes.Syntax, "\"" + stringset + "\" does not exsist to be set", lineNo);
+                                return new Error(Error.ErrorCodes.Syntax, "\"" + stringset + "\" does not exist to be set", lineNo);
                             }
                             previous = next;
                             if (next == Happening.Starting)
@@ -814,7 +810,7 @@ public class Controller : MonoBehaviour
                                 }
                                 else if (vars[stringset].type == Variable.VariableType.VEC3)
                                 {
-                                    next = Happening.ExpectVec3;
+                                    next = Happening.ExpectNew;
                                 }
                             }
                             curHaps = Happening.ExpectEquals;
@@ -828,6 +824,7 @@ public class Controller : MonoBehaviour
                         else if (character > 0 && c == 61)
                         {
                             stringset = word.Substring(0, word.Length - 1);
+                            stringset = stringset.Trim();
                             if (initialise && vars.ContainsKey(stringset))
                             {
                                 if (vars[stringset].inScope == true)
@@ -1567,16 +1564,23 @@ public class Controller : MonoBehaviour
 
                                 if (inMethod)
                                 {
-                                    Code_Vec3Set eq = new Code_Vec3Set
+                                    if (stringset == "gameobject.transform.position")
                                     {
-                                        output = stringset,
-                                        x = mathsx,
-                                        y = mathsy,
-                                        z = mathsz
-                                    };
-                                    List<Method> temp = methods[methodType];
-                                    AddMethod(ref temp, eq);
-                                    methods[methodType] = temp;
+                                        return new Error(Error.ErrorCodes.Compiler, "position must be set with exsisting variable", lineNo);
+                                    }
+                                    else
+                                    {
+                                        Code_Vec3Set eq = new Code_Vec3Set
+                                        {
+                                            output = stringset,
+                                            x = mathsx,
+                                            y = mathsy,
+                                            z = mathsz
+                                        };
+                                        List<Method> temp = methods[methodType];
+                                        AddMethod(ref temp, eq);
+                                        methods[methodType] = temp;
+                                    }
                                 }
                             }
                             curHaps = Happening.Starting;
@@ -1684,6 +1688,12 @@ public class Controller : MonoBehaviour
                     }
                     else if (word == current[i])
                     {
+                        if (curHaps == Happening.ExpectMethodName)
+                        {
+
+                            if (word == "Start()") methodType = word;
+                            if (word == "Update()") methodType = word;
+                        }
                         if (word == "{")
                         {
                             bracket++;
@@ -1695,8 +1705,6 @@ public class Controller : MonoBehaviour
                             else if (previous == Happening.ExpectMethodName)
                             {
                                 inMethod = true;
-                                if (word == "Start()") methodType = word;
-                                if (word == "Update()") methodType = word;
                             }
                             scopeVariables.Add(new List<string>());
                         }
@@ -2722,21 +2730,21 @@ public class Controller : MonoBehaviour
                                     maths.lhsComplete = true;
                                     if (word.Substring(0, test) == "gameobject.transform.position") maths.varLHS = word.Substring(0, word.Length - 2);
                                     else maths.varLHS = words[0];
-                                    if (words[word.Length - 1] == "x")
+                                    if (words[words.Length - 1] == "x")
                                     {
                                         maths.vectorLHS = Code_if.VectorPart.x;
                                     }
-                                    else if (words[word.Length - 1] == "y")
+                                    else if (words[words.Length - 1] == "y")
                                     {
                                         maths.vectorLHS = Code_if.VectorPart.y;
                                     }
-                                    else if (words[word.Length - 1] == "z")
+                                    else if (words[words.Length - 1] == "z")
                                     {
                                         maths.vectorLHS = Code_if.VectorPart.z;
                                     }
                                     else
                                     {
-                                        return new Error(Error.ErrorCodes.InGame, words[word.Length - 1] + "is not part of " + words[0], lineNo);
+                                        return new Error(Error.ErrorCodes.InGame, words[words.Length - 1] + "is not part of " + words[0], lineNo);
                                     }
                                 }
                             }
@@ -2858,15 +2866,15 @@ public class Controller : MonoBehaviour
                                 maths.lhsComplete = true;
                                 if (word.Substring(0, test) == "gameobject.transform.position") maths.varLHS = word.Substring(0, word.Length - 2);
                                 else maths.varLHS = words[0];
-                                if (words[word.Length - 1] == "x")
+                                if (words[words.Length - 1] == "x")
                                 {
                                     maths.vectorLHS = Code_if.VectorPart.x;
                                 }
-                                else if (words[word.Length - 1] == "y")
+                                else if (words[words.Length - 1] == "y")
                                 {
                                     maths.vectorLHS = Code_if.VectorPart.y;
                                 }
-                                else if (words[word.Length - 1] == "z")
+                                else if (words[words.Length - 1] == "z")
                                 {
                                     maths.vectorLHS = Code_if.VectorPart.z;
                                 }

@@ -35,6 +35,10 @@ public class GM : MonoBehaviour
 
     public void Stop()
     {
+        for (int i = 0; i < 3; ++i)
+        {
+            GM.zombie[i].transform.position = GM.zombieStart[i];
+        }
         Controller.stop = true;
         stop.interactable = false;
         run.interactable = true;
