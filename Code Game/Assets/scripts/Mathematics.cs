@@ -67,21 +67,21 @@ public class Mathematics
         }
         else if (varLHS != "")
         {
-            switch (Controller.vars[varLHS].type)
+            switch (Controller.allVars[Controller.currentZomb][varLHS].type)
             {
                 case Variable.VariableType.FLOAT:
-                    return Controller.vars[varLHS].flt_value;
+                    return Controller.allVars[Controller.currentZomb][varLHS].flt_value;
                 case Variable.VariableType.INT:
-                    return Controller.vars[varLHS].int_value;
+                    return Controller.allVars[Controller.currentZomb][varLHS].int_value;
                 case Variable.VariableType.VEC3:
                     switch (vectorLHS)
                     {
                         case Code_if.VectorPart.x:
-                            return Controller.vars[varLHS].vec3_value.x;
+                            return Controller.allVars[Controller.currentZomb][varLHS].vec3_value.x;
                         case Code_if.VectorPart.y:
-                            return Controller.vars[varLHS].vec3_value.y;
+                            return Controller.allVars[Controller.currentZomb][varLHS].vec3_value.y;
                         case Code_if.VectorPart.z:
-                            return Controller.vars[varLHS].vec3_value.z;
+                            return Controller.allVars[Controller.currentZomb][varLHS].vec3_value.z;
                     }
                     break;
             }
@@ -97,21 +97,21 @@ public class Mathematics
         }
         else if (varRHS != "")
         {
-            switch (Controller.vars[varRHS].type)
+            switch (Controller.allVars[Controller.currentZomb][varRHS].type)
             {
                 case Variable.VariableType.FLOAT:
-                    return Controller.vars[varRHS].flt_value;
+                    return Controller.allVars[Controller.currentZomb][varRHS].flt_value;
                 case Variable.VariableType.INT:
-                    return Controller.vars[varRHS].int_value;
+                    return Controller.allVars[Controller.currentZomb][varRHS].int_value;
                 case Variable.VariableType.VEC3:
                     switch (vectorRHS)
                     {
                         case Code_if.VectorPart.x:
-                            return Controller.vars[varRHS].vec3_value.x;
+                            return Controller.allVars[Controller.currentZomb][varRHS].vec3_value.x;
                         case Code_if.VectorPart.y:
-                            return Controller.vars[varRHS].vec3_value.y;
+                            return Controller.allVars[Controller.currentZomb][varRHS].vec3_value.y;
                         case Code_if.VectorPart.z:
-                            return Controller.vars[varRHS].vec3_value.z;
+                            return Controller.allVars[Controller.currentZomb][varRHS].vec3_value.z;
                     }
                     break;
             }

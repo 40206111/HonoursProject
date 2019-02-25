@@ -207,7 +207,7 @@ public class Controller : MonoBehaviour
         {
             Variable temp = allVars[currentZomb]["gameobject.transform.position"];
             temp.vec3_value = GM.zombie[currentZomb].transform.position;
-            vars["gameobject.transform.position"] = temp;
+            allVars[currentZomb]["gameobject.transform.position"] = temp;
             MethodRun(methods["Start()"]);
             currentZomb++;
         }
@@ -223,7 +223,7 @@ public class Controller : MonoBehaviour
             {
                 Variable temp = allVars[currentZomb]["gameobject.transform.position"];
                 temp.vec3_value = GM.zombie[currentZomb].transform.position;
-                vars["gameobject.transform.position"] = temp;
+                allVars[currentZomb]["gameobject.transform.position"] = temp;
                 MethodRun(methods["Update()"]);
                 currentZomb++;
             }
@@ -862,7 +862,7 @@ public class Controller : MonoBehaviour
                             }
                             if (next == Happening.ExpectVec3)
                             {
-                                curHaps = Happening.New;
+                                curHaps = Happening.ExpectNew;
                                 current = new List<string>(allStrings[(int)curHaps]);
                             }
                             else
