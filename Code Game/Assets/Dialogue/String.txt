@@ -1,1 +1,26 @@
-GW:This will be help with whta strings are
+GWEr:What even is a string?!
+GWHa:Well... imagine you're holding a piece of string in your hand.
+And on it you thread some letters and numbers...
+GWCat:That's what a string is.
+It's a bunch of letters and numbers strung together.
+GWHa:We can start a new string by writing
+string variableName = "";
+string tells the computer it should be expecting a string.
+variableName is what we will type when we want to use this variable later.
+GW:So it can be whatever we want.
+GWHa:But it's best to keep it as something we remember what it does...
+like catName.
+what we want the variable to be needs to be written between the ""
+string catName = "Molly";
+GWEr:If it's not written between the "" the computer will expect it to be a variable name.
+GWHa:Which is fine if you are within a method.
+You could have two strings...
+string catName = "Molly";
+and a new one...
+string newCat = catName;
+both of these will have the value "Molly"
+If you ever want to change what is stored in a variable just do the same as before but don't write string.
+catName = "Mollie";
+string only needs to be written the first time.
+GWCat:That should be all you need to know.
+GW:Just remember the ; at the end or it wont work.

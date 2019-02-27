@@ -118,4 +118,58 @@ public class UIMaster : MonoBehaviour
         over.dialogueFile = "SemiColon";
         over.Read();
     }
+
+    public void ErrorHelp()
+    {
+        over.dialogueFile = "Error";
+        over.Read();
+    }
+
+    public void UnityHelp()
+    {
+        over.dialogueFile = "Unity";
+        over.Read();
+    }
+
+    public void IntHelp()
+    {
+        over.dialogueFile = "Int";
+        over.Read();
+    }
+
+    public void IfHelp()
+    {
+        over.dialogueFile = "If";
+        over.Read();
+    }
+
+    public void WhileHelp()
+    {
+        over.dialogueFile = "While";
+        over.Read();
+    }
+
+    public void MathsHelp()
+    {
+        over.dialogueFile = "Maths";
+        over.Read();
+    }
+
+    public void FloatHelp()
+    {
+        over.dialogueFile = "Float";
+        over.Read();
+    }
+
+    public void Vec3Help()
+    {
+        over.dialogueFile = "Vec3";
+        over.Read();
+    }
+
+    public void BoolHelp()
+    {
+        over.dialogueFile = "Bool";
+        over.Read();
+    }
 }

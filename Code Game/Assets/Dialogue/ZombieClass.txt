@@ -1,1 +1,14 @@
-GW:This will explain classes
+GWEr:Larry left a lot of stuff written in the code that he didn't explain.
+GWCat:Have no fear though. That is why I am here!
+GWHa:In order for code to work it must be written inside a class.
+This is just where the computer expects it to be.
+Zombie is the name of the class.
+GWCat:Generally you can call this whatever your heart desires.
+GWEr:But in this game it is called Zombie and will throw and error if you change it.
+GWHa: classes are written public class Zombie{}
+and everything written between the {} is within the class.
+the : Monobehaviour we have in our code means it is part of another class called Monobehaviour.
+This lets us use the methods Start and Update.
+GW:Monobehaviour is a Unity class meaning this will only work if you use it in Unity.
+GWCat:But you can make your classes part of other classes you make yourself
+GWEr:Outside this game that is...

@@ -1,1 +1,10 @@
-GW:This will be help with whta compiling does and means
+GWEr:ERROR CODE:Syntax: Too much white space found between commands at line number: 9
+The error type Syntax in this error tells you that it's confused by something you typed...
+or didn't type.
+GWHa:The line number lets you know where in your code the computer thinks it got confused.
+You should look around that area for your error.
+Generally this error means you've missed the ; from the end of a line.
+GWEr:It could mean you've put too many spaces between words...
+Or that you've pressed enter in the middle of a line and caused it to be on 2 lines.
+Or forgotten to put in your second " in a string.
+GW:Have a good hard look. I'm sure you can work out what the problem is.

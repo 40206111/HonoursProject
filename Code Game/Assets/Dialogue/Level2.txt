@@ -1,0 +1,17 @@
+AvaWet:So...
+...When do I get to raise the dead?
+Larry:Soon.
+How about I teach you 2 things this lesson to speed it up?
+Ava:Yeah!
+Larry:OK. So you know about strings.
+Ava:I do!
+Larry:Now lets talk about numbers.
+If you want to store a number in a variable you store it as an int.
+Int is short for integer which means whole number.
+You would write...
+int catAge = 14;
+where catAge can be whatever you want as it's the variable name.
+And 14 is the number we're storing.
+I've also added an if statement this time.
+See if you can work out how it's working.
+If you need help make sure and ask the Glitch Witch by pressing the "Help" button.

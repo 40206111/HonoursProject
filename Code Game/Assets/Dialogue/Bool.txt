@@ -1,0 +1,6 @@
+GWHa:a bool (short for boolean) is a true or false value
+These can be helpful for use in ifs and whiles
+GW:A bool can be started by writing...
+bool done = false;
+GWHa:where done is the variable name and can be whatever you want
+And where it says false it could say true if you so wish it.

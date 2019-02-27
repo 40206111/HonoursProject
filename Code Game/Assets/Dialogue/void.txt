@@ -1,1 +1,24 @@
-GW:This will explain methods
+GWHa:Methods are written public void MethodName(){}
+GWEr:What public and void do is more complex than we will get into this game.
+GW:The short version is public can be public or private.
+This depends on whether something needs to call it from a different class.
+In this case something does so we need to leave them as public.
+Void is the return type.
+Void means it doesn't return anything.
+This can be string, int, bool or any variable type.
+But because we get Start and Update from Monobehaviour they need to be void.
+GWHa:MethodName can be anything we want, normally.
+GWEr:But here we are only using the Unity methods Start and Update.
+GWHa:Method names always need to be followed by ().
+There's a reason for this but I won't go into it as it isn't important.
+Everything inside a method needs to be written inbetween {}
+GWEr:If you make a variable in one method you wont then be able to use it in the a different one.
+This is because of scope.
+You can only use variables in the same scope.
+That is between the same set of {}
+GWHa:The last thing you need to know is that variables can only be set to other variables within methods.
+For example...
+int example = example + 1;
+This is because actual commands don't work outside of methods.
+The only thing you are able to do outside methods is start variables.
+int example = 7;

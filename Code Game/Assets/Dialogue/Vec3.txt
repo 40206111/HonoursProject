@@ -1,0 +1,16 @@
+GW:Vector3s are made up of 3 float values.
+An x value, a y value, and a z value.
+GWHa:They are generally used to tell you where something is.
+With the x being how far left or right it is.
+The y being how far up or down it is.
+And the z being how far back or forwards it is.
+We can start a vector 3 variable by writing..
+GW:Vector3 vec3Val = new Vector3();
+If we don't put anything between the brackets our Vector3 is (0,0,0).
+GWHa:Instead we can put three values within the ()
+These can be int or float values
+Vector3 vec3Val = new Vector3(intVal, floatVal, 1.7f);
+GW:We can also set a Vector3 to a Vector3 by writing the variable name in the ()
+Vector3 vec3Val = new Vector3(otherVec3);
+GWHa:Once we have a Vector3 we can use the values with in it by putting .x, .y or .z at the end of the variable name.
+float newFloat = vec3Val.x + vec3Val.y + vec3Val.z;

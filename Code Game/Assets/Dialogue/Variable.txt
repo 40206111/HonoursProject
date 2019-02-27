@@ -1,1 +1,14 @@
-GW:This will be help with whta compiling does and means
+GWHa:If your getting the error that a variable doesn't exsist it means you haven't started it anywhere.
+The line number at the end of the message will give you a vague idea what line the variable you haven't started is on.
+Remember you need the variable's type to start a variable
+string catName = "Molly";
+GW:or...
+int catAge = 11;
+GWEr:If you're pretty sure you have started it there are a few things you should check.
+GWHa:Did you start it above where it is being asked for?
+GWEr:If it isn't above it the computer doesn't know it exsists.
+GWHa:Is it started in a different method?
+If you want to use the same variable across multiple methods you need to start outside of any methods
+or you can start it in both methods if you don't need to keep the value;
+Did you write the variable name correctly both times?
+GWEr:Typing mystakes can be a real issue for programmers so make sure to double check.

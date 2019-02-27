@@ -1,1 +1,20 @@
-GW:This will explain escape characters
+GWHa:You may have noticed there is seemingly no way to make a new line within a string.
+GWEr:And what if we wanted our cat's name to be Mo"lly?
+Can we not do that either?
+GWCat:GOOD NEWS!
+we can do all these things and more!
+GWHa: when we write a string "abcdefg" we can write a \ where we want our special character.
+This tells the computer to insert a special character we can't normally put in our strings.
+What character depends on what letter is written after the \
+\n is a new line.
+This will work like you pressing the enter key on your keyboard.
+\" will let you put speachmarks in the middle of strings.
+\t will add a tab character.
+This is the same as you pressing tab on your keyboard.
+any other letter after the \ will give you an Error.
+GWEr:But then how do we write \ in our strings I hear you cry?
+GWCat:Simple. You just write \\ so your second character is a slash.
+GWHa:This means that...
+GWHa:"\tHello\"World\\"
+Will output as
+GWHa:	Hello"World\

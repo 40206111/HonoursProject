@@ -1,1 +1,5 @@
-GW:This will be help with whta compiling does and means
+GWHa:{} are used to tell the computer what is in a class and what is in a method.
+Anything written between {} exsists to the computer only within the curly brackets.
+GWEr:This means it doesn't understand anything written outside of all of them.
+And you can't access a variable you started in another method.
+As far as the computer is concerned it doesn't exsist.

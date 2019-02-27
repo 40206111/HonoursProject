@@ -1,0 +1,9 @@
+Ava:Is it time?
+Larry:It's time!
+Ava:Hooray!!
+Larry:So for the zombies you'll need to know about gameobject.transform.position
+AvaWet:huh?
+Larry:It works like a variable but it gets and sets the zombie's position.
+It's a little complicated because you can't work with it directly you need to change a different variable
+And then set gameobject.transform.position to that
+I've written a little program to try and explain

@@ -1,0 +1,11 @@
+GWHa:Floats are set just like ints
+float floatVal = 6;
+GW:The only difference is that floats can have decimal points in them
+float floatVal = 6.5f;
+GWHa:But they don't have to.
+If you're putting a decimal point make sure you put the f at the end.
+GWEr:Otherwise you'll get an error.
+GWHa:This is because in full C# there is a type called double that the computer thinks the value is if you don't put the f.
+GWHa:Floats are generally better to use though as they take up less computer memory than double.
+This is because they can't be quite as large a value.
+We rarely need our numbers to be that large though so we use floats.

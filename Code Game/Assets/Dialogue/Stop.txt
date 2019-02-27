@@ -1,1 +1,14 @@
-GW:This will explain stopping
+GWEr:Sometimes it may look like stop has no effect.
+That pressing stop is just a nuisance you have to go through before you can compile your code again.
+GW:But this is not the case!
+Once you've run your program it will keep running until you tell it to stop.
+GWHa:This is so when your code is written in the Update method it can keep running.
+This is how video games work. The program needs to run until someone tells it not to.
+Otherwise video games would just close on us after a while.
+GWEr:Additionally you can sometimes run into a problem in code with "infinite loops".
+This is where you write a while loop that is always true.
+GWCat:In this game you can stop an infinite loop by pressing the stop button.
+GW:BE WARNED HOWEVER!
+If you have decide to transfer your programming skills to the real world this will not be the case.
+Infinite loops will crash your program and you will lose everything you hadn't saved.
+GWHa:So be careful.

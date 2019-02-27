@@ -1,0 +1,32 @@
+GWHa:If's allow you to do different things depending on a value of a variable.
+They are written...
+if (variable1 == variable2){}
+What is written between () is the case...
+and everything between the {} is what will happen if the case is true.
+Cases are written (variable1 == variable2)
+where variable 1 and 2 can be a variable, a number, a word or another case.
+GW:Lets look at this example...
+if (catAge == 7)
+GWHa:This asks if catAge is equal to 7.
+We use two = when we are comparing values which is why it is ==
+GW:Another example is...
+if (catAge < 7)
+GWHa:This checks if catAge is less than 7.
+If we use > instead it checks if catAge is more than 7.
+GW:And then there's...
+if (catName != "Molly")
+GWHa:!= checks if something is not equal to something else.
+So this happens when catName is NOT equal to "Molly".
+GW:Finally there's
+if ((catName != "Molly") && (catAge > 7))
+GWHa:This will check if both cases are true
+If you use && both cases need to be true
+You can instead use || (which are found by pressing shift + the button to the left of your z key)
+This will check if either case is true
+So if catName NOT EQUAL "Molly" OR catAge MORE THAN 7.
+If you want something to happen only if the previous if is not true we write else
+if (catAge > 7){} else{}
+GWCat:And if  we want a condition for that as well we write else if
+if (catAge > 7){} else if (catAge == 7){}
+GW:We can write as many of these as we want
+if (catAge > 7){} else if (catAge == 7){} else if (catName != "Molly"){} else{}

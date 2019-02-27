@@ -1,0 +1,27 @@
+Ava:Zombies! Zombies! Zombies! Zombies!
+Larry:Next time.
+There's just 2 more types of variables I'd like to show you before we get to zombies.
+AvaWet:...ok
+Larry:First of you need to know about floats.
+Floats are started like any other variable...
+float floatValue = 5;
+We can actually set it exactly the same way we set and int but with the word float instead of the word int.
+Ava:So... why is it different to an int?
+Larry:Floats can have decimal places...
+float floatValue = 5.7f;
+Ava:Oh cool! but what's with the f?
+Larry:The f tells the computer it is a float without the f it will give you an error.
+Ava:Oh ok.
+So what's the other variable type I need to know?
+Larry:Vector3.
+Vector 3s are set different from other variables.
+They are also different in that the word Vector3 begins with a capital letter.
+Vector3s store 3 float values within them.
+Vector3 vec3 = new Vector3();
+Writing that will create an empty Vector3 with values (0,0,0).
+Vector3 vec3 = new Vector3(1, 2.3f, 7);
+Writing that will create a vector 3 with values (1, 2.3, 7).
+That should be enough to get you going for now.
+I added another variable into the code for you to have a look at.
+I will explain it next time.
+Ava:LETS GO!

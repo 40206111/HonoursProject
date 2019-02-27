@@ -1,0 +1,16 @@
+GWEr:Maths can be difficult.
+GWCat:So in programming we get the computer to do all the maths for us.
+GWHa:When we make an equation we can use variable names but only ones that are int, float or Vector3
+If we're using a Vector3 we must make sure to specify what part of the Vector we want to use.
+When we write our equation + is plus, - is minus, * is multiply and / is divide.
+GW:So we can write...
+int ourVariable = intVariable + 7 * 6/2;
+and then if we wanted to take a float variable away from all of that we would write
+int ourVariable = (intVariable + 7 * 6/2) - floatVariable;
+GWHa:Anything in brackets will be done first.
+Remember that because ourVariable is an int the result of the equation will be rounded to a whole number.
+If we want to use our Vector3 variable in our equation we could write
+float outVariable = intVariable + Vec3Variable.x - Vec3Variable.z;
+GWEr:If some of these things don't make sense to you...
+GWCat:You might not have been taught them yet.
+So be patient.

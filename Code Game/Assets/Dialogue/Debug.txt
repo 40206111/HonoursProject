@@ -1,1 +1,10 @@
-GW:This will be help with whta compiling does and means
+GWHa:Debug.Log() is Unity's method for outputting things to console.
+The console is the bit on the right you are making text appear in.
+it's called Debug.Log because it's a log to help you debug your program.
+That means look for errors that aren't found by the computer.
+Like checking if the program ever gets into an if statement.
+What you want to output must be written between the ()
+GWHa:Debug.Log(catName);
+If you want it to output words rather than a variable you must write the word between "".
+GWHa:Debug.Log("my debug test");
+GW:Make sure you have the ; at the end of the line.

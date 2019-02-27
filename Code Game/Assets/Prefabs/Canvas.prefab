@@ -434,7 +434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6634782961059298636
 RectTransform:
   m_ObjectHideFlags: 0
@@ -552,7 +552,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8089913519852664700
 RectTransform:
   m_ObjectHideFlags: 0
@@ -649,7 +649,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6079743529342272039}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: UnityHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &569251198987168677
@@ -828,7 +839,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5532798269745507957
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1131,7 +1142,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1161832985530288829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1823,7 +1834,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2093799898906236000
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2228,7 +2239,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &120633809396581984
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2346,7 +2357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &216402822410475637
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2751,7 +2762,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5199898586283110379
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3077,7 +3088,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6649486792282278969
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3353,7 +3364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4732354573625203551
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3660,7 +3671,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: '"Debug.Log"?'
 --- !u!1 &4348439759653401042
 GameObject:
   m_ObjectHideFlags: 0
@@ -3739,7 +3750,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '"\n"?'
+  m_Text: Explain strings
 --- !u!1 &4519637643054062647
 GameObject:
   m_ObjectHideFlags: 0
@@ -4105,7 +4116,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: why are there //?
 --- !u!1 &5538893413692487204
 GameObject:
   m_ObjectHideFlags: 0
@@ -5250,7 +5261,7 @@ MonoBehaviour:
   m_HideMobileInput: 0
   m_CharacterValidation: 0
   m_RegexValue: 
-  m_GlobalPointSize: 22.4
+  m_GlobalPointSize: 20
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
@@ -5872,7 +5883,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5879434291052682021}
   m_HandleRect: {fileID: 5879434291052682027}
   m_Direction: 3
-  m_Value: 0.14956006
+  m_Value: 0.044896193
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6107,8 +6118,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7307,8 +7318,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -33.02736}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -12.5}
+  m_SizeDelta: {x: 0, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5879434291686908393
 CanvasRenderer:
@@ -7371,8 +7382,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 22.4
-  m_fontSizeBase: 22.4
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7470,7 +7481,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1170342323458670220
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7567,7 +7578,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6754612383831428745}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: BracketHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &5974307214265076866
@@ -7648,7 +7670,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: What's Unity?
 --- !u!1 &6013724240789116511
 GameObject:
   m_ObjectHideFlags: 0
@@ -7667,7 +7689,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3405390734294853112
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7845,7 +7867,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: '"Error: Variable does not exsist"?'
 --- !u!1 &6583176810937943242
 GameObject:
   m_ObjectHideFlags: 0
@@ -7864,7 +7886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5795129094349321796
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8121,7 +8143,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: '"Too much white space"?'
 --- !u!1 &7341104383539146856
 GameObject:
   m_ObjectHideFlags: 0
@@ -8140,7 +8162,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3702284972821150260
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8237,7 +8259,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2305814471344831258}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: CommentHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &7367817794944186556
@@ -8643,7 +8676,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: I don't know why I have an Error.
 --- !u!1 &7662920011216385647
 GameObject:
   m_ObjectHideFlags: 0
@@ -8662,7 +8695,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7926820685977628386
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8759,7 +8792,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 306237259080948337}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: VaraibleHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &7678911411170478841
@@ -8780,7 +8824,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8626981950194007184
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8877,7 +8921,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7676636781818786822}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: DebugHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &7775857093289545963
@@ -8898,7 +8953,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2459553235163536951
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8995,7 +9050,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8885768900889938567}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: StringHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &7851405844610432974
@@ -9016,7 +9082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5456021787142824478
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9113,7 +9179,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6598661376897130161}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: SemiColonHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &7892829221474279381
@@ -9134,7 +9211,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7839399107869566422
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9252,7 +9329,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8867279388300571582
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9449,7 +9526,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &942800397359166269
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9546,7 +9623,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6109638713015248117}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1277720723}
+        m_MethodName: ErrorHelp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &8190566289411774137
@@ -9646,7 +9734,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2758160511620661387
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9764,7 +9852,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4444424176322630355
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10150,7 +10238,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: What does "Stop" do?
+  m_Text: Importance of {}?
 --- !u!1 &9061432638170492565
 GameObject:
   m_ObjectHideFlags: 0
@@ -10169,7 +10257,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7329027794452628204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10281,6 +10369,51 @@ PrefabInstance:
       propertyPath: m_Name
       value: Overlay
       objectReference: {fileID: 0}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: ava.Array.data[0]
+      value: 
+      objectReference: {fileID: 7518353321504231832}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: ava.Array.data[1]
+      value: 
+      objectReference: {fileID: 7518353322003626109}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: larry.Array.data[0]
+      value: 
+      objectReference: {fileID: 7518353321683529247}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: gw.Array.data[0]
+      value: 
+      objectReference: {fileID: 7518353322294892089}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: gw.Array.data[1]
+      value: 
+      objectReference: {fileID: 7518353322481263972}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: gw.Array.data[2]
+      value: 
+      objectReference: {fileID: 7518353322430423861}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: gw.Array.data[3]
+      value: 
+      objectReference: {fileID: 7518353321978638993}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: nameplate
+      value: 
+      objectReference: {fileID: 7518353321413340187}
+    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+        type: 3}
+      propertyPath: content
+      value: 
+      objectReference: {fileID: 7518353321515089753}
     - target: {fileID: 7518353322167605696, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10386,49 +10519,14 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+    - target: {fileID: 7518353322239432924, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
         type: 3}
-      propertyPath: ava.Array.data[0]
-      value: 
-      objectReference: {fileID: 7518353321504231832}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: ava.Array.data[1]
-      value: 
-      objectReference: {fileID: 7518353322003626109}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: larry.Array.data[0]
-      value: 
-      objectReference: {fileID: 7518353321683529247}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: gw.Array.data[0]
-      value: 
-      objectReference: {fileID: 7518353322294892089}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: gw.Array.data[1]
-      value: 
-      objectReference: {fileID: 7518353322481263972}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: gw.Array.data[2]
-      value: 
-      objectReference: {fileID: 7518353322430423861}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: gw.Array.data[3]
-      value: 
-      objectReference: {fileID: 7518353321978638993}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: nameplate
+      propertyPath: m_textInfo.textComponent
       value: 
       objectReference: {fileID: 7518353321413340187}
-    - target: {fileID: 7518353322167605699, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
+    - target: {fileID: 7518353321795849118, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
         type: 3}
-      propertyPath: content
+      propertyPath: m_textInfo.textComponent
       value: 
       objectReference: {fileID: 7518353321515089753}
     - target: {fileID: 7518353321965312731, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
@@ -10452,16 +10550,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 8d0a8a94314e8b449bd6f83a7da72615,
         type: 3}
-    - target: {fileID: 7518353322239432924, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: m_textInfo.textComponent
-      value: 
-      objectReference: {fileID: 7518353321413340187}
-    - target: {fileID: 7518353321795849118, guid: 1e8a1f7fe5d20b94695876c7c77e6d06,
-        type: 3}
-      propertyPath: m_textInfo.textComponent
-      value: 
-      objectReference: {fileID: 7518353321515089753}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e8a1f7fe5d20b94695876c7c77e6d06, type: 3}
 --- !u!224 &7518353321348852999 stripped

@@ -1,1 +1,14 @@
-GW:This will explain usings
+GWHa:You've probably noticed the word "using" at the beggining of your code.
+If you've been particularly adventurous you may have even deleted these lines.
+If you did that you will have found it made seemingly no difference to the program
+GW:This is because...
+GWEr:..It makes no difference to the program...
+Or at least it doesn't within this game.
+GWHa:In the real world usings in the language C# (that's what we're using)
+usings tell the computer what commands you want to use.
+This means it doesn't have to look through all of the possible ones
+GWEr:There are a lot... and that would take a long time.
+GWHa:For example using UnityEngine is what allows us to write Debug.Log
+As this is a Unity feature.
+For this game Larry thought it'd be good to let you see what it looks like with usings.
+GWEr:However they do in fact have no effect.

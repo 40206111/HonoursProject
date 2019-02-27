@@ -193,6 +193,11 @@ public class Controller : MonoBehaviour
         ScrollNumbers();
     }
 
+    public void BeginWhile(Code_While w)
+    {
+        StartCoroutine(w.NotInfinite());
+    }
+
     public void Run()
     {
         GM.stop.interactable = true;
@@ -810,7 +815,7 @@ public class Controller : MonoBehaviour
                                 }
                                 else if (vars[stringset].type == Variable.VariableType.VEC3)
                                 {
-                                    next = Happening.ExpectNew;
+                                    next = Happening.ExpectVec3;
                                 }
                             }
                             curHaps = Happening.ExpectEquals;
@@ -1209,7 +1214,8 @@ public class Controller : MonoBehaviour
                                         Variable temp = new Variable
                                         {
                                             inScope = true,
-                                            bool_value = value
+                                            bool_value = value,
+                                            type = Variable.VariableType.BOOL
                                         };
                                         scopeVariables[scopeVariables.Count - 1].Add(stringset);
                                         vars.Add(stringset, temp);
@@ -1257,7 +1263,8 @@ public class Controller : MonoBehaviour
                                         Variable temp = new Variable
                                         {
                                             inScope = true,
-                                            bool_value = vars[word].bool_value
+                                            bool_value = vars[word].bool_value,
+                                            type = Variable.VariableType.BOOL
                                         };
                                         vars.Add(stringset, temp);
                                         vars[stringset] = temp;
@@ -1408,7 +1415,7 @@ public class Controller : MonoBehaviour
                             }
                             else
                             {
-                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value int string", lineNo);
+                                return new Error(Error.ErrorCodes.TypeMismatch, "Cannot convert value int to string", lineNo);
                             }
                             curHaps = Happening.Starting;
                             if (inMethod)
@@ -2136,6 +2143,7 @@ public class Controller : MonoBehaviour
                                 if (vars[words[0]].type == Variable.VariableType.FLOAT ||
                                     vars[words[0]].type == Variable.VariableType.INT)
                                     codeif.compareValues = Variable.VariableType.FLOAT;
+                                else codeif.compareValues = vars[word].type;
                                 codeif.lhs = word;
                                 codeif.hasLhs = true;
                             }
@@ -2180,7 +2188,7 @@ public class Controller : MonoBehaviour
                                     codeif.rightV = Code_if.VectorPart.y;
                                 }
                             }
-                            else if (words[1] == "words.Length - z")
+                            else if (words[words.Length - 1] == "z")
                             {
                                 if (!codeif.hasLhs)
                                 {

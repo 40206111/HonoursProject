@@ -61,11 +61,17 @@ public class Code_While : Method
 
     public override bool Compute()
     {
+        GameObject.FindObjectOfType<Controller>().BeginWhile(this);
+        return true;
+    }
+
+    public IEnumerator NotInfinite()
+    {
         while (checkCase.getValue() && !Controller.stop)
         {
             checkCase.Compute();
+            yield return new WaitForEndOfFrame();
         }
-        return true;
     }
 }
 

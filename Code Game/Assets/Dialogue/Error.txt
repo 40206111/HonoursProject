@@ -1,0 +1,27 @@
+GWEr:ERROR CODE:Type: Error Message at line number: line number
+GWHa:That should be the format your error message was given in.
+The first thing to look at is the line number.
+This will give you an idea where to look in your code for the error.
+Next read the error message.
+This will give you a clue what the computer didn't like.
+Finally look at the Error code.
+The ERROR CODE tells you what type of error the computer thinks it is.
+Normally this will be Syntax
+This means you have made an error in typing, spelt something wrong, added too many spaces etc.
+Good things to check with syntax errors are...
+GWCat:Your capitalisation.
+What letters are capitals and what aren't is very important.
+Make sure you're ending the line.
+Most lines except ifs, whiles, classes and methods need to end in an ;
+GWHa:The Error Code: Mathematical happens when there is a problem with your equations.
+Look carefully and make sure all your brackets match up.
+Compiler Errors are ones where what you are trying just isn't something the computer can do.
+For example starting variables with another variable outside of a method.
+Type Mismatch Errors happen when you are trying to set a variable to be something it's not.
+For example...
+GWEr:int example = "five";
+GWHa:Would be a Type Mismatch because example is being started as an int.
+But it's being set to a string, "five".
+The Final type of Error Code you can get is InGame.
+This means that what you tried is possible in normal C#...
+GWEr:But can't be done in this game.

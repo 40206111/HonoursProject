@@ -1,0 +1,13 @@
+GWHa:Whiles are very similar to ifs.
+But where an if will only run its code once, whiles will keep running their code until their condition is false.
+in the line...
+while (counter < 10){}
+Everything between the {} will be run until counter is more than 10
+GW:If the counter is never greater than 10 it will run forever.
+GWEr:This is fine to do in this game
+But outside of it this with crash your program.
+GW:You can also check if bool values are true...
+while (done == false){}
+GWHa:This will run until the bool variable done is true
+GWEr:If you haven't been taught what bools are yet...
+GWCat:Don't worry we will get to that

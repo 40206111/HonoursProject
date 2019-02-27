@@ -1,0 +1,26 @@
+AvaWet:...
+...
+...
+Larry:...Not quite yet Ava.
+AvaWet:...ok...
+Larry:This time we're gonna use whiles and ifs
+ifs have a check case and if it's true they run the code within their {}
+for example...
+if (counter == 5){}
+Checks if counter is equal to 5
+== means equal to
+Whiles also have check cases
+But if theirs are true they run all the code in the {} until the case in the while is not true
+Ava:I think I get it... but give me an example!
+Larry:Ok...
+while(counter < 10){counter = counter + 1}
+This checks if counter is less than 10 (> would mean more than)
+Then counter is increased by 1
+The check will then be tested again
+This will keep happening until counter is more than 10
+Ava:ooh! Neat!
+Ava:so I can have my program count as high as I want?
+Larry:You can indeed.
+Larry:Go try it out
+And make sure you talk to the Glitch Witch by pressing the "Help" button
+She will explain things in much more detail

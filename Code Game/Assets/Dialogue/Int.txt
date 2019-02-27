@@ -1,0 +1,16 @@
+GWEr:What even is an int?!
+GWHa:Well... int is short for integer
+Integer means whole number.
+So thats numbers like; 0, 1, 2, 3, 4, 5, 6.....1000000...
+GWEr:And not numbers like 1.5, 0.4, 2.3
+GWHa:ints can also be negative if you want; -1000000.....-6, -5, -4, -3, -2, -1...
+You start an int very similarly to how you start a string
+int catAge = 14;
+int tells the computer to expect a number.
+catAge is the variable which can be whatever we want
+GW:int GlitchWitchIsDaBest = 42;
+GWHa:if you want
+GWEr:But it's best to keep it sensible.
+GWHa:14 is the value we're setting it too.
+It's not between "" like it would be for a string beacuase it is just a number.
+GWCat:And the computer understands what to do when it's given a number.

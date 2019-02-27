@@ -1,1 +1,19 @@
-GW:This will be help with whta compiling does and means
+GWHa:Pressing compile and run gives all the code that's been written to the computer.
+The computer then reads it (using it's compiler) and checks it can understand it.
+The computer understands C# in this case.
+This is the language it speaks. Computers can speak lots of different languages
+GW:C++, Java, Python, Ruby, C, Bash, F#, Haskell, Machine code, Pascal, R, Visual Basic... to name a few.
+GWHa:but we're using C# for this.
+If the computer doesn't understand.
+GWEr:It will give back an Error.
+And you will have to look through your code to find what it's having problems with.
+GWCat:If, however, it understands all the code.
+GW:The computer will run the code you gave it.
+GWHa: it runs what it's been given in order, top to bottom.
+Everything written in the Start method will run once.
+Everything written in the Stop method will run until the program is stopped.
+GWEr:But you may have noticed that even when written in Start your program runs 3 times.
+GWHa:This is because there are 3 Zombies within the Scene.
+Every zombie is running the code once.
+If you can't see any zombies.
+GWCat:Well you'll just have to keep playing.
