@@ -1,0 +1,22 @@
+AvaWet:I'm soooo bored.
+Nothing ever happens here.
+Larry:You could make something happen.
+AvaWet:What do you mean?
+Larry:You can make whatever you want, be the creator of worlds, OF LIFE.
+Ava: OF LIFE?!
+Larry:That's right.
+Ava:I want to make, unicorns... no no dragons... no no...
+I want to raise the dead!
+Larry:You want to raise the dead?
+Ava:Gonna have a zombie dance partaaayy!
+AvaWet:...how do I do that?
+Larry:Programming!
+Larry:You can make whatever you want if you know how to program.
+AvaWet:But... I don't.
+Larry:I shall teach you then.
+Ava:Great!
+Larry:To start with I'll write some code for you too look at.
+Nothing too complicated but don't worry if you don't understand. I will explain later.
+Press "Compile and Run" to see what the program does and "Stop" to stop it.
+Try changing some of the code and see what happens.
+Press "continue" when you're ready to move on.

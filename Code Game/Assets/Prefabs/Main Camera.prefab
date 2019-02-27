@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4292477053837834353}
   - component: {fileID: 4292477053837834352}
   - component: {fileID: 4292477053837834351}
+  - component: {fileID: 1155459065}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -27,7 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4292477053837834349}
-  m_LocalRotation: {x: 0.029907135, y: -0, z: -0, w: 0.9995527}
+  m_LocalRotation: {x: 0.029910503, y: 0, z: 0, w: 0.9995526}
   m_LocalPosition: {x: 0, y: 11.900002, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -114,3 +115,12 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!45 &1155459065
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4292477053837834349}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}

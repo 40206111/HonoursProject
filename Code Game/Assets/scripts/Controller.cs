@@ -196,7 +196,7 @@ public class Controller : MonoBehaviour
     public void Run()
     {
         GM.stop.interactable = true;
-        GM.run.interactable = false;
+        //GM.run.interactable = false;
         GM.cnr.interactable = false;
         if (!compile) return;
         allVars.Clear();
@@ -304,7 +304,7 @@ public class Controller : MonoBehaviour
         Debug.Log("Compile Button Pressed");
         int currentLine = 1;
         GM.stop.interactable = false;
-        GM.run.interactable = false;
+        //GM.run.interactable = false;
         GM.cnr.interactable = false;
 
         Error error = TryCompile(ref currentLine);
@@ -312,7 +312,7 @@ public class Controller : MonoBehaviour
         if (error.errorCode != Error.ErrorCodes.None)
         {
             GM.stop.interactable = false;
-            GM.run.interactable = false;
+            //GM.run.interactable = false;
             GM.cnr.interactable = true;
             compile = false;
             GM.console.text += "- " + error + "\n";

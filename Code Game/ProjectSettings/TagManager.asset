@@ -12,6 +12,7 @@ TagManager:
   - run
   - cnr
   - stop
+  - Overlay
   layers:
   - Default
   - TransparentFX

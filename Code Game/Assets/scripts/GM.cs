@@ -11,7 +11,7 @@ public class GM : MonoBehaviour
     public static GameObject[] zombie;
     public static List<Vector3> zombieStart = new List<Vector3>();
     public static Button cnr;
-    public static Button run;
+    //public static Button run;
     public static Button stop;
 
     // Start is called before the first frame update
@@ -21,7 +21,7 @@ public class GM : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         zombie = GameObject.FindGameObjectsWithTag("Zombie");
         cnr = GameObject.FindGameObjectWithTag("cnr").GetComponent<Button>();
-        run = GameObject.FindGameObjectWithTag("run").GetComponent<Button>();
+        //run = GameObject.FindGameObjectWithTag("run").GetComponent<Button>();
         stop = GameObject.FindGameObjectWithTag("stop").GetComponent<Button>();
         zombieStart.Add(zombie[0].transform.position);
         zombieStart.Add(zombie[1].transform.position);
@@ -41,7 +41,7 @@ public class GM : MonoBehaviour
         }
         Controller.stop = true;
         stop.interactable = false;
-        run.interactable = true;
+        //run.interactable = true;
         cnr.interactable = true;
     }
 }
