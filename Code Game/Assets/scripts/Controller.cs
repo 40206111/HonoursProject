@@ -41,7 +41,7 @@ public class Controller : MonoBehaviour
     [SerializeField]
     private TMP_InputField input;
     [SerializeField] UnityEngine.UI.Scrollbar scroll;
-    private static int lines = 1;
+    private int lines = 1;
     private static float number_center;
 
     //Methods

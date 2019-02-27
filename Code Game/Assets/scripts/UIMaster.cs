@@ -82,4 +82,40 @@ public class UIMaster : MonoBehaviour
         over.dialogueFile = "void";
         over.Read();
     }
+
+    public void StringHelp()
+    {
+        over.dialogueFile = "String";
+        over.Read();
+    }
+
+    public void DebugHelp()
+    {
+        over.dialogueFile = "Debug";
+        over.Read();
+    }
+
+    public void VaraibleHelp()
+    {
+        over.dialogueFile = "Variable";
+        over.Read();
+    }
+
+    public void CommentHelp()
+    {
+        over.dialogueFile = "Comment";
+        over.Read();
+    }
+
+    public void BracketHelp()
+    {
+        over.dialogueFile = "Brackets";
+        over.Read();
+    }
+
+    public void SemiColonHelp()
+    {
+        over.dialogueFile = "SemiColon";
+        over.Read();
+    }
 }

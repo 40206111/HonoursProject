@@ -1,3 +1,33 @@
 AvaWet:I thought I was gonna raise the dead...
 That looked like it was about cats...
 Larry:We'll get to that. It's better if we start small and build up.
+Larry:Shall I explain what I did?
+AvaWet:I guess
+Larry:I can print out any words I want using "Debug.Log()"
+Debug.Log() on it's own wont do anything so we put what we want to print between the brackets.
+Debug.Log("Hello World!");
+What we want to print needs to be between " or the computer will think it's a variable.
+Ava:Wait wait... hold up...
+what's a variable?
+Larry:A variable is a container that stores information.
+AvaWet:...
+Larry:They're like boxes you can put things in, but different kinds of boxes store different things.
+Lets look at the line: string catName = "Molly";
+the word string means it contains letters.
+catName is our variable name, that can be anything we want
+Ava:Absolutley anything?!
+Larry:As long as it's one word and doens't start with a number
+Ava:SUPERCALIFRAGILISTICEXPALIDOCIOUS?
+Larry:...
+Yes... but it's best to keep it sensible.
+Finally our cat's name "Molly" needs to be in " so the computer understands that it's letters.
+AvaWet:But wait... what does this have to do with Debug.Log?
+Larry:Well... now that our cat's name is a variable we can use it anywhere without having to write "Molly" every single time.
+Larry:Debug.Log(catName);
+And then if we want to change it from Molly, to say "Smokey" we can do that anytime.
+After making our variable we can change it by writing the same thing again but removing the string.
+catName = "Insert cat name here";
+Ava:OK I think I get it. Let me try!
+Larry:OK, but this is a lot to take in at once so if you want something explained press the "Help" button.
+The Glitch Witch will be happy to help you out.
+Ava:Got it!
