@@ -1,0 +1,15 @@
+GWEr:Oh... you did it.
+You did everything Larry and I had planned for you...
+GWCat:CONGRADULATIONS!
+GWHa:Hopefully you have a much better understanding of how to program now.
+There are a whole bunch of things you can try in game now...
+See if you can get the zombies to move in different directions
+GW:Hint: You'll need to use if statements based on their positions
+GWHa:You could try and make a triangle by outputting the same letter different amounts of times.
+GWCat:And of course you should make sure you've gone through all my explanations
+There's a lot of extra detail in them that Larry skimmed over.
+GW:And if you're looking for an extra challenge...
+You should see if you can try some real world programming
+GWHa:When you can, download the latest version of Unity
+Look up a tutorial to get you started
+GWCat:And start making some cool stuff!

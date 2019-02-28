@@ -106,12 +106,12 @@ public class Code_if : Method
         {
             if (lhs != "")
             {
-                str_lhsvalue = Controller.vars[lhs].str_value;
+                str_lhsvalue = Controller.allVars[Controller.currentZomb][lhs].str_value;
             }
 
             if (rhs != "")
             {
-                str_rhsvalue = Controller.vars[rhs].str_value;
+                str_rhsvalue = Controller.allVars[Controller.currentZomb][rhs].str_value;
             }
 
             switch (ifType)
@@ -142,7 +142,7 @@ public class Code_if : Method
         }
         else
         {
-            boolLHS = Controller.vars[lhs].bool_value;
+            boolLHS = Controller.allVars[Controller.currentZomb][lhs].bool_value;
         }
 
         //get rhs bool
@@ -157,7 +157,7 @@ public class Code_if : Method
         }
         else
         {
-            boolRHS = Controller.vars[rhs].bool_value;
+            boolRHS = Controller.allVars[Controller.currentZomb][rhs].bool_value;
         }
 
         //compare bools
@@ -195,44 +195,44 @@ public class Code_if : Method
     //helper method to get numeric value of right hand side
     private float RhsValue()
     {
-        if (Controller.vars[rhs].type == Variable.VariableType.VEC3)
+        if (Controller.allVars[Controller.currentZomb][rhs].type == Variable.VariableType.VEC3)
         {
             switch (rightV)
             {
                 case VectorPart.x:
-                    return Controller.vars[rhs].vec3_value.x;
+                    return Controller.allVars[Controller.currentZomb][rhs].vec3_value.x;
                 case VectorPart.y:
-                    return Controller.vars[rhs].vec3_value.y;
+                    return Controller.allVars[Controller.currentZomb][rhs].vec3_value.y;
                 case VectorPart.z:
-                    return Controller.vars[rhs].vec3_value.z;
+                    return Controller.allVars[Controller.currentZomb][rhs].vec3_value.z;
             }
         }
-        else if (Controller.vars[rhs].type == Variable.VariableType.INT)
+        else if (Controller.allVars[Controller.currentZomb][rhs].type == Variable.VariableType.INT)
         {
-            return Controller.vars[rhs].int_value;
+            return Controller.allVars[Controller.currentZomb][rhs].int_value;
         }
-        return Controller.vars[rhs].flt_value;
+        return Controller.allVars[Controller.currentZomb][rhs].flt_value;
     }
 
     //helper method to get numeric value of left hand side
     private float LhsValue()
     {
-        if (Controller.vars[lhs].type == Variable.VariableType.VEC3)
+        if (Controller.allVars[Controller.currentZomb][lhs].type == Variable.VariableType.VEC3)
         {
             switch (leftV)
             {
                 case VectorPart.x:
-                    return Controller.vars[lhs].vec3_value.x;
+                    return Controller.allVars[Controller.currentZomb][lhs].vec3_value.x;
                 case VectorPart.y:
-                    return Controller.vars[lhs].vec3_value.y;
+                    return Controller.allVars[Controller.currentZomb][lhs].vec3_value.y;
                 case VectorPart.z:
-                    return Controller.vars[lhs].vec3_value.z;
+                    return Controller.allVars[Controller.currentZomb][lhs].vec3_value.z;
             }
         }
-        else if (Controller.vars[lhs].type == Variable.VariableType.INT)
+        else if (Controller.allVars[Controller.currentZomb][lhs].type == Variable.VariableType.INT)
         {
-            return Controller.vars[lhs].int_value;
+            return Controller.allVars[Controller.currentZomb][lhs].int_value;
         }
-        return Controller.vars[lhs].flt_value;
+        return Controller.allVars[Controller.currentZomb][lhs].flt_value;
     }
 }

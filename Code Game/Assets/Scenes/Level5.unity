@@ -606,6 +606,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5879434290354808084, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
@@ -613,7 +623,7 @@ PrefabInstance:
         UnityEngine;\n\npublic class Zombie : MonoBehaviour\n{\n\tbool stop = false;\n\n\tpublic
         void Start()\n\t{\n\twhile (stop != true)\n\t{\n\tVector3 pos = new Vector3(gameobject.transform.position);\n\tpos
         = new Vector3(pos.x, pos.y, pos.z - 0.1f);\n\tgameobject.transform.position
-        = new Vector3(pos);\n\t\t\t\n\t\tif(pos.z < -85)\n\t\t{\n\t\t\tstop = true;\n\t\t}\n\t\t}\n\t}\n}"
+        = new Vector3(pos);\n\t\t\t\n\t\tif(pos.z < 190)\n\t\t{\n\t\t\tstop = true;\n\t\t}\n\t\t}\n\t}\n}"
       objectReference: {fileID: 0}
     - target: {fileID: 5879434290354808084, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
@@ -772,16 +782,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5879434290226411577, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -842,20 +842,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 253.2
       objectReference: {fileID: 0}
-    - target: {fileID: 5879434291686908399, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -12.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5879434291686908399, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 7518353321348852998, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7518353321348852996, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
@@ -960,42 +950,12 @@ PrefabInstance:
     - target: {fileID: 7892829221474279381, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7903911622842366550, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1203313308}
-    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: BoolHelp
-      objectReference: {fileID: 0}
-    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5350107213939790100, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
@@ -1023,36 +983,6 @@ PrefabInstance:
       value: MathsHelp
       objectReference: {fileID: 0}
     - target: {fileID: 5350107213939790100, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1203313308}
-    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: Vec3Help
-      objectReference: {fileID: 0}
-    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
@@ -1147,6 +1077,141 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 8682617625381838774, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Text
+      value: How do you do maths in programming?
+      objectReference: {fileID: 0}
+    - target: {fileID: 5455229279260434042, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Text
+      value: Explain ints
+      objectReference: {fileID: 0}
+    - target: {fileID: 5436640719570070949, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Text
+      value: How do ifs work?
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708961937441845069, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Text
+      value: How do whiles work?
+      objectReference: {fileID: 0}
+    - target: {fileID: 5879434291686908399, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -12.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5879434291686908399, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1203313308}
+    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: BoolHelp
+      objectReference: {fileID: 0}
+    - target: {fileID: 365213628519105252, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1203313308}
+    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Vec3Help
+      objectReference: {fileID: 0}
+    - target: {fileID: 7012961210594971735, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1203313308}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: TransformHelp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.6156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.9529412
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362789595661163229, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.59607846
+      objectReference: {fileID: 0}
     - target: {fileID: 5294440108729446097, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -1177,40 +1242,25 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    - target: {fileID: 8682617625381838774, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_Text
-      value: How do you do maths in programming?
-      objectReference: {fileID: 0}
     - target: {fileID: 8977681564533283195, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
       value: Explain bool
       objectReference: {fileID: 0}
-    - target: {fileID: 5455229279260434042, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+    - target: {fileID: 6744615219338425354, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
-      value: Explain ints
+      value: gameobject.transform.position
       objectReference: {fileID: 0}
     - target: {fileID: 7351760465029088145, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
       value: Explain floats
       objectReference: {fileID: 0}
-    - target: {fileID: 5436640719570070949, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_Text
-      value: How do ifs work?
-      objectReference: {fileID: 0}
     - target: {fileID: 8283441411501101198, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
       value: Explain Vector3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3708961937441845069, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_Text
-      value: How do whiles work?
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75551e5831fc78e4d9ff555d06b8c50f, type: 3}

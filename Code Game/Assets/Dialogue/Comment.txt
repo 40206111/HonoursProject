@@ -3,7 +3,3 @@ it allows you to write whatever you want without the computer trying to understa
 GWHa:This means you can leave comments reminding yourself what certain lines are for.
 Or you can put them at the start of a line of code rather than delete it.
 GWCat:This means you can easily put it back later if you need to.
-GW:If you're really excited about // you're gonna love /**/
-Anything written between /* and */ is ignored.
-This means you can temporarilly remove large chuncks of code.
-Or write long comments without starting each line with //

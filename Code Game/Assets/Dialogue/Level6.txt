@@ -1,0 +1,7 @@
+Ava:So how do I make my zombie dance party dream a reality?
+Larry:Well I would reccomend the use of the update method.
+AvaWet:What's that?
+Larry:Up until now we've been writing most of our code in the Start() method.
+This runs once when the program is started.
+The Update() method will keep running until you stop the program.
+Try running this program and see what you think.

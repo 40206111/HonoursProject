@@ -11,6 +11,17 @@ public class UIMaster : MonoBehaviour
     [SerializeField]
     GameObject helpscreen;
 
+    public void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "Credits")
+        {
+            if (Input.anyKeyDown)
+            {
+                Continue();
+            }
+        }
+    }
+
     public void Begin()
     {
         SceneManager.LoadScene(NoDestroy.sceneNumber);
@@ -28,7 +39,8 @@ public class UIMaster : MonoBehaviour
     }
 
     public void Menu()
-    {        SceneManager.LoadScene("MainMenu");
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void Help()
@@ -170,6 +182,30 @@ public class UIMaster : MonoBehaviour
     public void BoolHelp()
     {
         over.dialogueFile = "Bool";
+        over.Read();
+    }
+
+    public void TransformHelp()
+    {
+        over.dialogueFile = "ZombiePos";
+        over.Read();
+    }
+
+    public void StartHelp()
+    {
+        over.dialogueFile = "StartMethod";
+        over.Read();
+    }
+
+    public void UpdateHelp()
+    {
+        over.dialogueFile = "UpdateMethod";
+        over.Read();
+    }
+
+    public void EndHelp()
+    {
+        over.dialogueFile = "theEnd";
         over.Read();
     }
 }

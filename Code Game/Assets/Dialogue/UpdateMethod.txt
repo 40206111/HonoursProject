@@ -1,0 +1,4 @@
+GWHa:The Update method is written
+public void Update(){}
+Where everything within the {} is part of our update method.
+All the code within the update method will continue to run until stopped.

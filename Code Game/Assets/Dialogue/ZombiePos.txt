@@ -1,0 +1,28 @@
+GW:gameobject.transform.position is the most complicated thing I'm going to try and explain to you.
+So buckle in.
+GWHa:gameobject.transform.position is a built in variable
+It stores the position of the zombie it is currently attached to.
+It stores the position as three numbers
+x which is how far left or right it is.
+y which is how far up or down it is.
+And z which is how far back or forward it is.
+In the form (x,y,z).
+For example a gameobject.transform.position of (1,2,3)...
+Is 1 unit to the left or right, 2 units up or down and 3 units back or forward.
+We can set gameobject.transform.position.
+GWEr:But only to another vector3
+GWHa:So first we set a Vector3 to gameobject.transform.position...
+Vector3 pos = new Vector3(gameobject.transform.position);
+GW:Then we change the value of our new Vector3...
+pos = new Vector3(pos.x, pos.y, pos.z - 1);
+GWHa:We use the vector .x .y or .z when we don't want the position to change or...
+we want the change to be based on its previous position
+pos = new Vector3(pos.x, pos.y, pos.z + 1); will move the zombie backwards.
+pos = new Vector3(pos.x + 1, pos.y, pos.z); will move the zombie to the right.
+pos = new Vector3(pos.x, pos.y + 1, pos.z); will move the zombie up.
+GWCat:Or we can take away values to make them go in the other direction.
+GWHa:We can also use it like other Vector3 variables,
+For example...
+GWHa:Debug.Log(gameobject.transform.position);
+GWHa:or...
+float newFloat = gameObject.transform.position.y;

@@ -1,0 +1,4 @@
+GWHa:The Start method is written
+public void Start(){}
+Where everything within the {} is part of our start method.
+All the code within the Start method will run once for each Zombie

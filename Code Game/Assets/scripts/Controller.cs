@@ -1919,10 +1919,16 @@ public class Controller : MonoBehaviour
                     return new Error(Error.ErrorCodes.Syntax, "No if to add else to", lineNo);
                 }
             }
-            else if (meths[meths.Count - 1].GetType() == typeof(Code_if) ||
-                meths[meths.Count - 1].GetType() == typeof(Code_While))
+            else if (meths[meths.Count - 1].GetType() == typeof(Code_if))
             {
                 return AddElse(ref meths[meths.Count - 1].methods, codeif, lineNo);
+            }
+            else if (meths[meths.Count - 1].GetType() == typeof(Code_While))
+            {
+                Code_While temp = (Code_While)meths[meths.Count - 1];
+                Error e = AddElse(ref temp.checkCase.methods, codeif, lineNo);
+                meths[meths.Count - 1] = temp;
+                return e;
             }
             else
             {
@@ -1954,7 +1960,22 @@ public class Controller : MonoBehaviour
         {
             if (meths.Count > 0)
             {
-                if (meths[meths.Count - 1].methods.Count > 0)
+                if (meths[meths.Count - 1].GetType() == typeof(Code_While))
+                {
+                    Code_While temp = (Code_While)meths[meths.Count - 1];
+
+                    if (temp.checkCase.methods.Count > 0)
+                    {
+                        if (temp.checkCase.methods[temp.checkCase.methods.Count - 1].GetType() == typeof(Code_if) ||
+                        temp.checkCase.methods[temp.checkCase.methods.Count - 1].GetType() == typeof(Code_While))
+                        {
+                            AddMethod(ref temp.checkCase.methods, m);
+                            meths[meths.Count - 1] = temp;
+                            return;
+                        }
+                    }
+                }
+                else if (meths[meths.Count - 1].methods.Count > 0)
                 {
                     if (meths[meths.Count - 1].methods[meths[meths.Count - 1].methods.Count - 1].GetType() == typeof(Code_if) ||
                     meths[meths.Count - 1].methods[meths[meths.Count - 1].methods.Count - 1].GetType() == typeof(Code_While))
@@ -1981,7 +2002,7 @@ public class Controller : MonoBehaviour
                 {
                     Code_While temp = (Code_While)meths[meths.Count - 1];
 
-                    AddElsesMethod(ref temp.checkCase, m);
+                    AddMethod(ref temp.checkCase.methods, m);
                     meths[meths.Count - 1] = temp;
                     return;
                 }

@@ -6,7 +6,14 @@ Everything between the {} will be run until counter is more than 10
 GW:If the counter is never greater than 10 it will run forever.
 GWEr:This is fine to do in this game
 But outside of it this with crash your program.
-GW:You can also check if bool values are true...
+GW:Because I've stopped the while loop from running infinitely you'll notice slightly odd behaviour with the while loop.
+GWEr:Each zombie will run the while loop once and then only one will run the rest.
+So if you are counting up to 10 it will probably look something like this...
+0 0 0 1 2 3 4 5 6 7 8 9 10
+GW:Allowing you to write infinite loops that work like in the real world would cause the game to crash.
+GWEr:And that would be a problem.
+GWCat:So that is our compromise.
+GWHa:You can also check if bool values are true...
 while (done == false){}
 GWHa:This will run until the bool variable done is true
 GWEr:If you haven't been taught what bools are yet...

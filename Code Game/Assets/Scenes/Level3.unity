@@ -606,15 +606,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5879434290354808084, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
       value: "<noparse>using System.Collections;\r\nusing System.Collections.Generic;\r\nusing
         UnityEngine;\n\npublic class Zombie : MonoBehaviour\n{\n\t//Start an int called
         counter\n\n\tpublic void Start()\n\t{\n\t\t//See if you can create a while
-        that will print from 10 to 0\n\t\twhile (counter < 10)\n\t\t{\n\t\t\tif (counter
-        == 5)\n\t\t\t{\n\t\t\t\tDebug.Log(\"HALF WAY!\");\n\t\t\t}\n\t\t\tcounter
-        = counter + 1;\n\t\t\tDebug.Log(counter);\n\t\t}\n\t}\n}"
+        that will\n\t\t//print from 10 to 0\n\t\twhile (counter < 10)\n\t\t{\n\t\t\tif
+        (counter == 5)\n\t\t\t{\n\t\t\t\tDebug.Log(\"HALF WAY!\");\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\tDebug.Log(counter);\n\t\t\t}\n\t\t\tcounter
+        = counter + 1;\n\t\t}\n\t}\n}"
       objectReference: {fileID: 0}
     - target: {fileID: 5879434291686908394, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
@@ -752,16 +762,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5879434290226411577, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -825,7 +825,7 @@ PrefabInstance:
     - target: {fileID: 7518353321348852998, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7518353321348852996, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
@@ -967,6 +967,21 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 5350107213939790100, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.6156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 5350107213939790100, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.9529412
+      objectReference: {fileID: 0}
+    - target: {fileID: 5350107213939790100, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.59607846
+      objectReference: {fileID: 0}
     - target: {fileID: 6297961975156671183, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -1026,6 +1041,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327196088766755200, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.6156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327196088766755200, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.9529412
+      objectReference: {fileID: 0}
+    - target: {fileID: 8327196088766755200, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.59607846
       objectReference: {fileID: 0}
     - target: {fileID: 8126044431418719672, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}

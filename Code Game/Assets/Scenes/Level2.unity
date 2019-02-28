@@ -606,6 +606,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5879434290354808084, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_Text
@@ -752,16 +762,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5879434291640277348, guid: 75551e5831fc78e4d9ff555d06b8c50f,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5879434290226411577, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
@@ -968,6 +968,21 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 6297961975156671183, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.6156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 6297961975156671183, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.9529412
+      objectReference: {fileID: 0}
+    - target: {fileID: 6297961975156671183, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.59607846
+      objectReference: {fileID: 0}
     - target: {fileID: 8126044431418719672, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -997,6 +1012,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126044431418719672, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.6156863
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126044431418719672, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.9529412
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126044431418719672, guid: 75551e5831fc78e4d9ff555d06b8c50f,
+        type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.59607846
       objectReference: {fileID: 0}
     - target: {fileID: 5455229279260434042, guid: 75551e5831fc78e4d9ff555d06b8c50f,
         type: 3}
