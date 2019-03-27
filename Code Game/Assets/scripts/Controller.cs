@@ -5,8 +5,10 @@ using TMPro;
 using System.Linq;
 using System;
 
+//Struct for variables
 public struct Variable
 {
+    //enum of variable types
     public enum VariableType
     {
         STRING,
@@ -16,31 +18,31 @@ public struct Variable
         BOOL
     }
 
+    //possible variable values
     public string str_value;
     public int int_value;
     public float flt_value;
     public Vector3 vec3_value;
     public bool bool_value;
+    //variable type
     public VariableType type;
     public bool inScope;
 }
 
+//class to parse user inutted code
 public class Controller : MonoBehaviour
 {
-    private enum MethodType
-    {
-        None,
-        Start,
-        Update
-    }
-
+    //objects from the unity scene
     [SerializeField]
     private TMP_Text numbers;
     [SerializeField]
     private TMP_Text theText;
     [SerializeField]
     private TMP_InputField input;
-    [SerializeField] UnityEngine.UI.Scrollbar scroll;
+    [SerializeField]
+    UnityEngine.UI.Scrollbar scroll;
+
+    //variables for line numbers
     private int lines = 1;
     private static float number_center;
 
@@ -59,6 +61,7 @@ public class Controller : MonoBehaviour
     Happening previous = Happening.Starting;
     public static int currentZomb = 0;
 
+    //keys for what to happen when certain words are entered
     private readonly IDictionary<string, Happening> keys = new Dictionary<string, Happening>
     {
         {"//", Happening.Ignore},
@@ -101,15 +104,17 @@ public class Controller : MonoBehaviour
         {"gameobject.transform.position =", Happening.ExpectNew }
     };
 
+    //list of variables currently in scope
     private List<List<string>> scopeVariables = new List<List<string>>();
 
     //monospace tag
     const string monostring = "<noparse>";
 
+    //booleans for button states
     private bool compile = false;
     static public bool stop = false;
 
-
+    //enum of possible instructions
     private enum Happening
     {
         Starting,
@@ -127,7 +132,7 @@ public class Controller : MonoBehaviour
         ExpectEquals,
         ExpectNew,
         New,
-        ////////////
+        ////////////Anything below this point does not have a list of strings asociated with it
         ExpectInt,
         ExpectString,
         ExpectFloat,
@@ -143,13 +148,16 @@ public class Controller : MonoBehaviour
         AddElse
     }
 
+    //list of list of strings of expected words
     private List<List<string>> allStrings = new List<List<string>>();
 
     // Start is called before the first frame update
     void Start()
     {
+        //add methods to methods list
         methods.Add("Update()", new List<Method>());
         methods.Add("Start()", new List<Method>());
+        //Add key words to allStrings list
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "using ", "public ", "//", "/*" }); //Starting
         allStrings.Add(new List<string>());
@@ -181,7 +189,7 @@ public class Controller : MonoBehaviour
         allStrings.Add(new List<string>());
         allStrings[allStrings.Count - 1] = new List<string>(new string[] { "Vector3(", "Vector3 (" });  //New
 
-
+        //set number center
         number_center = numbers.transform.position.y;
     }
 
@@ -193,65 +201,73 @@ public class Controller : MonoBehaviour
         ScrollNumbers();
     }
 
+    //Method to begin while loop
     public void BeginWhile(Code_While w)
     {
         StartCoroutine(w.NotInfinite());
     }
 
+    //Method to run compiled code
     public void Run()
     {
+        //set buttoons
         GM.stop.interactable = true;
-        //GM.run.interactable = false;
         GM.cnr.interactable = false;
-        if (!compile) return;
+        
+        if (!compile) return; //do nothing if not compiled
+        //Clear variables
         allVars.Clear();
+        //Add a variable list for each zombie
         allVars.Add(new Dictionary<string, Variable>(vars));
         allVars.Add(new Dictionary<string, Variable>(vars));
         allVars.Add(new Dictionary<string, Variable>(vars));
-        while (currentZomb < 3)
+        while (currentZomb < 3) //for each zombie
         {
+            //set variable to current zombie position
             Variable temp = allVars[currentZomb]["gameobject.transform.position"];
             temp.vec3_value = GM.zombie[currentZomb].transform.position;
             allVars[currentZomb]["gameobject.transform.position"] = temp;
+            //Run start methods
             MethodRun(methods["Start()"]);
-            currentZomb++;
+            currentZomb++; //increment current zombie
         }
-        StartCoroutine(RunHelp());
-        currentZomb = 0;
+        StartCoroutine(RunHelp()); //start routine to run update methods
+        currentZomb = 0; //reset currentZomb
     }
 
+    //Coroutine to run update methods to avoid infinite loops
     IEnumerator RunHelp()
     {
         while (!stop)
         {
-            while (currentZomb < 3)
+            while (currentZomb < 3) //for each zombie
             {
+                //set variable to current zombie position
                 Variable temp = allVars[currentZomb]["gameobject.transform.position"];
                 temp.vec3_value = GM.zombie[currentZomb].transform.position;
                 allVars[currentZomb]["gameobject.transform.position"] = temp;
+                //run update methods
                 MethodRun(methods["Update()"]);
-                currentZomb++;
+                currentZomb++;//increment current zombie
             }
-            currentZomb = 0;
+            currentZomb = 0; //reset current zombies to 0
             yield return new WaitForEndOfFrame();
         }
     }
 
+    //Method to run methods
     public static void MethodRun(List<Method> ms)
     {
-        for (int i = 0; i < ms.Count(); ++i)
+        for (int i = 0; i < ms.Count(); ++i) //for each method given
         {
-            bool output = ms[i].Compute();
-            if (!output)
-            {
-                Debug.Log("false method output");
-            }
+            bool output = ms[i].Compute(); //compute method
         }
     }
 
     //Method to scroll line numbers
     public void ScrollNumbers()
     {
+        //set new line numers position
         Vector3 pos = numbers.transform.localPosition;
         pos.y = theText.transform.localPosition.y;
         numbers.transform.localPosition = pos;
@@ -260,12 +276,14 @@ public class Controller : MonoBehaviour
     //Method to Add line numbers
     private void LineNumbers()
     {
-        int current = theText.textInfo.lineCount;
+        int current = theText.textInfo.lineCount; //get current line count
+        //Remove numbers until at right amount
         while (lines > current)
         {
             numbers.text = numbers.text.Substring(0, numbers.text.Length - (lines.ToString().Length + 1));
             lines--;
         }
+        //add numbers until at right amount
         while (lines < current)
         {
             lines++;
@@ -305,113 +323,125 @@ public class Controller : MonoBehaviour
     //Method to compile code
     public void Compile()
     {
-        GM.console.text = "- Compile Button Pressed\n";
-        Debug.Log("Compile Button Pressed");
-        int currentLine = 1;
+        GM.console.text = "- Compile Button Pressed\n"; //output to in game console
+        int currentLine = 1; //start at line 1
+
+        //stop buttons from being interactible during compile
         GM.stop.interactable = false;
-        //GM.run.interactable = false;
         GM.cnr.interactable = false;
 
+        //Try to compile
         Error error = TryCompile(ref currentLine);
 
-        if (error.errorCode != Error.ErrorCodes.None)
+        if (error.errorCode != Error.ErrorCodes.None) // if there is an erroe
         {
+            //set button interactability
             GM.stop.interactable = false;
-            //GM.run.interactable = false;
             GM.cnr.interactable = true;
             compile = false;
-            GM.console.text += "- " + error + "\n";
+            GM.console.text += "- " + error + "\n"; //output error
         }
         else
         {
             compile = true;
-            Run();
+            Run(); //run code
         }
     }
 
+    //Method to try and compile code
     private Error TryCompile(ref int lineNo)
     {
         stop = false;
-        string methodType = "Start()";
-        string stringset = "";
-        bool ignore = false;
-        bool superIgnore = false;
+        string methodType = "Start()"; //Update() or Start()
+        string stringset = ""; //name of variable that will be set next
+        bool ignore = false; //ignore code because of //
+        bool superIgnore = false; //ignore code because of /* */
         bool inClass = false;
         bool inMethod = false;
-        bool allowWhiteSpace = true;
-        bool lineUnfinished = false;
-        bool initialise = false;
-        bool expectCommand = false;
-        int character = 0;
+        bool allowWhiteSpace = true; //white space allowed before next command
+        bool lineUnfinished = false; //line is not finished yet
+        bool initialise = false; //variable is being initialised
+        bool expectCommand = false; //command is expected after \ character
+        //Counts
+        int character = 0; //character count
         int bracket = 0;    // { kind of brackets
-        int inString = 0;
+        int inString = 0;   // count "
         int lilBracket = 1; // ( kind of brackets
-        string word = "";
+        //Words
+        string word = ""; //current word
         string closestWord = "";
-        curHaps = Happening.Starting;
-        List<string> current = new List<string>(allStrings[(int)curHaps]);
+        //What's happening
+        curHaps = Happening.Starting; //curent part of code
+        List<string> current = new List<string>(allStrings[(int)curHaps]); //list of key words that could be at this stage
+        //reset variables
         vars.Clear();
         vars.Add("gameobject.transform.position", zomble);
         scopeVariables.Clear();
         methods["Update()"].Clear();
         methods["Start()"].Clear();
 
+        Happening next = Happening.ExpectInt; //The kind of value to expect next
 
-        Happening next = Happening.ExpectInt;
+        string allText = input.text.Substring(monostring.Length, input.text.Length - monostring.Length); //all text
 
-        string allText = input.text.Substring(monostring.Length, input.text.Length - monostring.Length);
-
+        //Loop through characters
         foreach (char c in allText)
         {
-            if (c == 8203)
+            if (c == 8203)//end of line added by text mesh pro
             {
                 lineNo++;
                 continue;
             }
 
-            if (c == '\n')
+            if (c == '\n') //new line
             {
                 superIgnore = false;
                 lineNo++;
             }
 
-            if ((!allowWhiteSpace || character > 1) && (c == '\n' || (c >= 0 && c <= 31)))
+            if ((!allowWhiteSpace || character > 1) && (c == '\n' || (c >= 0 && c <= 31))) //if whitespace is there but not allowed
             {
                 return new Error(Error.ErrorCodes.Syntax, "Too much white space found between commands", lineNo);
             }
-            else if (allowWhiteSpace && character == 0 && (c == '\n' || (c >= 0 && c <= 32)))
+            else if (allowWhiteSpace && character == 0 && (c == '\n' || (c >= 0 && c <= 32)))//if ignore would end
             {
-                if (!ignore)
+                if (!ignore) //if currently in ignore
                 {
                     continue;
                 }
                 else
                 {
-                    word += c;
+                    word += c; // add character to word
                 }
             }
             else
             {
-                word += c;
+                word += c; //add character to word
             }
 
 
-            if ((int)curHaps > allStrings.Count - 1)
+            if ((int)curHaps > allStrings.Count - 1) //if not specific key words expected
             {
                 switch (curHaps)
                 {
                     case Happening.ExpectWhile:
-                        if (c == ')' && lilBracket == 2)
+                        if (c == ')' && lilBracket == 2) //if brackets complete
                         {
+                            //Remove brackets from start and end of string
                             word = word.Trim();
                             word = word.Substring(1, word.Length - 1);
-                            Code_While thewhile = new Code_While();
-                            Error e = MakeIf(ref thewhile.checkCase, ref word, lineNo);
+
+                            Code_While thewhile = new Code_While(); //make new while
+                            Error e = MakeIf(ref thewhile.checkCase, ref word, lineNo);//create if in while
+                            //If error return errror
                             if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                            //Add method
                             List<Method> temp = methods[methodType];
                             AddMethod(ref temp, thewhile);
                             methods[methodType] = temp;
 
+                            //Get ready for next command
                             previous = curHaps;
                             curHaps = Happening.ExpectBracket;
                             allowWhiteSpace = true;
@@ -422,31 +452,35 @@ public class Controller : MonoBehaviour
                         }
                         else if (c == '(')
                         {
-                            lilBracket++;
+                            lilBracket++; //increment brackets
                         }
                         else if (c == ')')
                         {
-                            lilBracket--;
+                            lilBracket--; //decrement brackets
                         }
                         break;
                     case Happening.AddElse:
-                        if (c == '{' && lilBracket == 1)
+                        if (c == '{' && lilBracket == 1) //if else complete with no case
                         {
-                            bracket++;
-                            scopeVariables.Add(new List<string>());
+                            bracket++; //increment bracket
+                            scopeVariables.Add(new List<string>()); //start new scope
 
+                            //create if
                             Code_if codeif = new Code_if()
                             {
                                 compareValues = Variable.VariableType.BOOL,
                                 bl_lhsvalue = true,
                                 bl_rhsvalue = true,
-                                ifType = Code_if.Logic.EQUAL
+                                ifType = Code_if.Logic.EQUAL //true == true
                             };
-                            List<Method> temp = methods[methodType];
-                            Error e = AddElse(ref temp, codeif, lineNo);
+                            //Add else to if
+                            List<Method> temp = methods[methodType]; 
+                            Error e = AddElse(ref temp, codeif, lineNo); 
                             methods[methodType] = temp;
+                            //if error return error
                             if (e.errorCode != Error.ErrorCodes.None) return e;
 
+                            //Get ready for next instruction
                             previous = curHaps;
                             curHaps = Happening.InMethod;
                             allowWhiteSpace = true;
@@ -455,21 +489,29 @@ public class Controller : MonoBehaviour
                             current = new List<string>(allStrings[(int)curHaps]);
                             character = -1;
                         }
-                        else if (c == ')' && lilBracket == 2)
+                        else if (c == ')' && lilBracket == 2) //iff else finished with case
                         {
+                            //trim brackets of if
                             word = word.Trim();
                             word = word.Substring(2, word.Length - 2);
                             word = word.Trim();
                             word = word.Substring(1, word.Length - 1);
 
+                            //make if
                             Code_if theif = new Code_if();
                             Error e = MakeIf(ref theif, ref word, lineNo);
+                            //if error return error
                             if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                            //add else to if
                             List<Method> temp = methods[methodType];
                             e = AddElse(ref temp, theif, lineNo);
                             methods[methodType] = temp;
+
+                            //if error return error
                             if (e.errorCode != Error.ErrorCodes.None) return e;
 
+                            //get ready for next instrucion
                             previous = curHaps;
                             curHaps = Happening.ExpectBracket;
                             allowWhiteSpace = true;
@@ -480,11 +522,11 @@ public class Controller : MonoBehaviour
                         }
                         else if (c == '(')
                         {
-                            lilBracket++;
+                            lilBracket++; //increment bracket
                         }
                         else if (c == ')')
                         {
-                            lilBracket--;
+                            lilBracket--; //decrement bracket
                         }
                         if (lilBracket == 1)
                         {
@@ -492,17 +534,24 @@ public class Controller : MonoBehaviour
                         }
                         break;
                     case Happening.ExpectIf:
-                        if (c == ')' && lilBracket == 2)
+                        if (c == ')' && lilBracket == 2) //if if is complete
                         {
+                            //trim brackets of if
                             word = word.Trim();
                             word = word.Substring(1, word.Length - 1);
+
+                            //make if
                             Code_if theif = new Code_if();
                             Error e = MakeIf(ref theif, ref word, lineNo);
+                            //if error return error
                             if (e.errorCode != Error.ErrorCodes.None) return e;
+
+                            //add if method
                             List<Method> temp = methods[methodType];
                             AddMethod(ref temp, theif);
                             methods[methodType] = temp;
 
+                            //get ready for next instruction
                             previous = curHaps;
                             curHaps = Happening.ExpectBracket;
                             allowWhiteSpace = true;
@@ -513,16 +562,17 @@ public class Controller : MonoBehaviour
                         }
                         else if (c == '(')
                         {
-                            lilBracket++;
+                            lilBracket++; //increment bracket
                         }
                         else if (c == ')')
                         {
-                            lilBracket--;
+                            lilBracket--; //decrement bracket
                         }
                         break;
                     case Happening.DebugLog:
-                        if (expectCommand)
+                        if (expectCommand) //expect escape character
                         {
+                            //add correct  haracter for escape character
                             switch (c)
                             {
                                 case '\\':
@@ -542,57 +592,66 @@ public class Controller : MonoBehaviour
                             }
                             expectCommand = false;
                         }
-                        else if (c == '\\')
+                        else if (c == '\\') // if \
                         {
                             expectCommand = true;
                         }
                         else if (c == '\"' && inString < 2)
                         {
-                            inString++;
+                            inString++; //increment "
                         }
-                        else if (c == ';' && (inString == 2 || inString == 0))
+                        else if (c == ';' && (inString == 2 || inString == 0)) //if line complete
                         {
-                            if (word[word.Length - 2] != ')')
+                            if (word[word.Length - 2] != ')') //if command doesn't end in close bracket
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Expected ) not found", lineNo);
                             }
+                            //remove bracket and semicolon
                             word = word.Substring(0, word.Length - 2);
                             word = word.Trim();
-                            if (vars.ContainsKey(word))
+                            if (vars.ContainsKey(word))//id variable
                             {
+                                //create debug method with variable name
                                 Code_Debug debug = new Code_Debug()
                                 {
                                     variablename = word,
                                 };
+                                //add method
                                 List<Method> temp = methods[methodType];
                                 AddMethod(ref temp, debug);
                                 methods[methodType] = temp;
                             }
-                            else if (inString == 2)
+                            else if (inString == 2) //if string
                             {
+                                //create debug method with string
                                 Code_Debug debug = new Code_Debug()
                                 {
-                                    content = word.Substring(1, word.Length - 2),
+                                    content = word.Substring(1, word.Length - 2), //remove "
                                 };
+                                //add method
                                 List<Method> temp = methods[methodType];
                                 AddMethod(ref temp, debug);
                                 methods[methodType] = temp;
-                                inString = 0;
+                                inString = 0; //reset count
                             }
-                            else
+                            else //expect vector3 variable
                             {
-                                string[] words = word.Split('.');
+                                string[] words = word.Split('.'); //split wword at .
+                                //if too few or many . return error
                                 if (words.Count() != 2 && words.Count() != 4) return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + word + "\" exsists", lineNo);
 
+                                //make test variabe
                                 int test = word.Length - 2;
-                                if (test < 0) test = 0;
+                                if (test < 0) test = 0; //make sure not less than 0
                                 if (vars.ContainsKey(words[0]) || word.Substring(0, test) == "gameobject.transform.position")
                                 {
+                                    //create debug method
                                     Code_Debug debug = new Code_Debug()
                                     {
                                         variablename = word.Substring(0, word.Length - 2),
                                     };
 
+                                    //set correct vector part
                                     if (words[words.Length - 1] == "x")
                                     {
                                         debug.vPart = Code_if.VectorPart.x;
@@ -610,6 +669,7 @@ public class Controller : MonoBehaviour
                                         return new Error(Error.ErrorCodes.Syntax, words[words.Length - 1] + " is not a part of " + words[0], lineNo);
                                     }
 
+                                    //add method
                                     List<Method> temp = methods[methodType];
                                     AddMethod(ref temp, debug);
                                     methods[methodType] = temp;
@@ -619,6 +679,8 @@ public class Controller : MonoBehaviour
                                     return new Error(Error.ErrorCodes.Syntax, "No variable with the name: \"" + words[0] + "\" exsists", lineNo);
                                 }
                             }
+
+                            //get ready for next instructions
                             curHaps = Happening.Starting;
                             if (inMethod)
                             {
@@ -635,14 +697,15 @@ public class Controller : MonoBehaviour
                             character = -1;
                             stringset = "";
                         }
-                        else if (inString > 2)
+                        else if (inString > 2) //too many "
                         {
                             return new Error(Error.ErrorCodes.Syntax, "cannot output values", lineNo);
                         }
                         break;
                     case Happening.ExpectUsing:
-                        if (character > 0 && c == ';')
+                        if (character > 0 && c == ';') //if end of line
                         {
+                            //get ready for next instruction
                             word = "";
                             character = -1;
                             curHaps = Happening.Starting;
@@ -650,15 +713,15 @@ public class Controller : MonoBehaviour
                             allowWhiteSpace = true;
                             lineUnfinished = false;
                         }
-                        else if (c != 46 && !(c >= 65 && c <= 90) && !(c >= 97 && c <= 122))
+                        else if (c != 46 && !(c >= 65 && c <= 90) && !(c >= 97 && c <= 122)) //unexpected character
                         {
                             return new Error(Error.ErrorCodes.Syntax, "Invalid character found in using declairation", lineNo);
                         }
                         break;
                     case Happening.ExpectVariableName:
-                        if (c == ';')
+                        if (c == ';')//if end of line
                         {
-                            stringset = word.Substring(0, word.Length - 1);
+                            stringset = word.Substring(0, word.Length - 1); //remove ; from end
                             if (character == 0)
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "No variable name found", lineNo);
@@ -671,21 +734,24 @@ public class Controller : MonoBehaviour
                             allowWhiteSpace = true;
                             if (vars.ContainsKey(stringset))
                             {
+                                //Make sure variable is in scope
                                 if (vars[stringset].inScope == true)
                                 {
                                     return new Error(Error.ErrorCodes.Syntax, "cannot redefine \"" + stringset + "\"", lineNo);
                                 }
                             }
-                            else if (next == Happening.Starting)
+                            else if (next == Happening.Starting) //variable has not been initialised
                             {
                                 return new Error(Error.ErrorCodes.Syntax, "Variable not initialised", lineNo);
                             }
-                            if (!vars.ContainsKey(stringset))
+                            if (!vars.ContainsKey(stringset)) //if variabe does not exsist yet
                             {
+                                //create variable
                                 Variable theNew = new Variable
                                 {
                                     inScope = true
                                 };
+                                //set setting variable value based on type
                                 switch (next)
                                 {
                                     case Happening.ExpectInt:
@@ -709,18 +775,20 @@ public class Controller : MonoBehaviour
                                         theNew.str_value = "";
                                         break;
                                 }
-                                vars.Add(stringset, theNew);
+                                vars.Add(stringset, theNew); //add variable
                             }
                             else
                             {
-                                if (next != Happening.ExpectVec3)
+                                if (next != Happening.ExpectVec3) //not expecting a vector3
                                 {
+                                    //create simpleset method
                                     Code_SimpleSet set = new Code_SimpleSet
                                     {
                                         changeType = true,
                                         output = stringset
                                     };
 
+                                    //set setting value based on type
                                     switch (next)
                                     {
                                         case Happening.ExpectInt:
@@ -740,17 +808,20 @@ public class Controller : MonoBehaviour
                                             set.newType = Variable.VariableType.STRING;
                                             break;
                                     }
+                                    //add method
                                     List<Method> temp = methods[methodType];
                                     AddMethod(ref temp, set);
                                     methods[methodType] = temp;
                                 }
                                 else
                                 {
+                                    //create vector 3 set method
                                     Code_Vec3Set set = new Code_Vec3Set
                                     {
                                         output = stringset
                                     };
 
+                                    //add maths
                                     Mathematics maths = new Mathematics();
                                     maths.lhsComplete = true;
                                     maths.fLHS = 0;

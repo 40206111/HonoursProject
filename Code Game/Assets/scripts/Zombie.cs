@@ -21,8 +21,10 @@ public class Zombie : MonoBehaviour
         hitWait = 0.0f;
     }
 
+    //Method to reset game
     public void Reset()
     {
+        //Set variables back to start point
         speed = 2.0f;
         dead = true;
         SpeedUp = SpeedTime;
@@ -33,35 +35,38 @@ public class Zombie : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameMaster.pause)
+        if (GameMaster.pause) //if game is paused do nothing
         {
             return;
         }
-        SpeedUp -= Time.deltaTime;
+        SpeedUp -= Time.deltaTime; //decrease time until speed up
 
-        if (dead)
+        if (dead) //if zombie is dead do nothing else
         {
             hitWait = 0.0f;
             return;
         }
 
-        if (gameObject.transform.position.z < player.transform.position.z + 1)
+        if (gameObject.transform.position.z < player.transform.position.z + 1) // if zombie is near enough to player
         {
-            if (hitWait <= 0.0f)
+            if (hitWait <= 0.0f) //enough time has passed since last hit
             {
+                //Hit player
                 --player.GetComponent<Player>().health;
                 hitWait = hitTime;
             }
-            hitWait -= Time.deltaTime;
+            hitWait -= Time.deltaTime; //decrease time until next hit
         }
-        if (gameObject.transform.position.z > player.transform.position.z)
+        if (gameObject.transform.position.z > player.transform.position.z) // if zombie isn't at player
         {
+            //Move zombie forward
             Vector3 movement = gameObject.transform.position;
             movement.z -= speed * Time.deltaTime;
             gameObject.transform.position = movement;
         }
-        if (speed <= 7.0f && SpeedUp <= 0.0f)
+        if (speed <= 7.0f && SpeedUp <= 0.0f) // if speed is less than max speed and it is time to speed up
         {
+            //increase speed
             speed += 0.5f;
             SpeedUp = SpeedTime;
         }

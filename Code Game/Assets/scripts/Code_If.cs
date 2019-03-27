@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Class to store if statements
 public class Code_if : Method
 {
-
+    //Enum for the logic of if statements
     public enum Logic
     {
         NONE,
@@ -16,6 +17,7 @@ public class Code_if : Method
         MORETHAN
     }
 
+    //enum for parts of a vector
     public enum VectorPart
     {
         none,
@@ -24,26 +26,31 @@ public class Code_if : Method
         z
     }
 
-    public Code_if elses = null;
-    public Logic ifType = Logic.NONE;
-    public Code_if ifLHS = null;
+    public Code_if elses = null; //Variable for elses
+    public Logic ifType = Logic.NONE; //Logic of if statement
+    public Variable.VariableType compareValues = Variable.VariableType.VEC3; //types to compare
+
+    //Left hand side and right hand side values
+    public Code_if ifLHS = null; //IF
     public Code_if ifRHS = null;
-    public string lhs = "";
+    public string lhs = ""; //VARIABLE
     public string rhs = "";
-    public VectorPart rightV;
+    public VectorPart rightV; //VECTORPART
     public VectorPart leftV;
+    public bool bl_lhsvalue = false; //BOOLS
+    public bool bl_rhsvalue = false;
+    public string str_lhsvalue = ""; //STRINGS
+    public string str_rhsvalue = "";
+    public float nbr_lhsvalue = 0; //NUMBER
+    public float nbr_rhsvalue = 0;
+    public Mathematics mathLHS = null;  //MATHS
+    public Mathematics mathRHS = null;
+
+    //Variables for creation
     public bool hasLhs = false;
     public bool hasRhs = false;
-    public bool bl_lhsvalue = false;
-    public bool bl_rhsvalue = false;
-    public string str_lhsvalue = "";
-    public string str_rhsvalue = "";
-    public float nbr_lhsvalue = 0;
-    public float nbr_rhsvalue = 0;
-    public Mathematics mathLHS = null;
-    public Mathematics mathRHS = null;
-    public Variable.VariableType compareValues = Variable.VariableType.VEC3;
 
+    //Method to set the lhs of the given if to the rhs of this if
     public void SetLHSToRHS(ref Code_if theLHS)
     {
         theLHS.bl_lhsvalue = bl_rhsvalue;
@@ -56,22 +63,24 @@ public class Code_if : Method
         theLHS.lhs = rhs;
     }
 
+    //Method to run the if statement
     public override bool Compute()
     {
-        if (getValue())
+        if (getValue()) //if the checkcase is true
         {
-            Controller.MethodRun(methods);
+            Controller.MethodRun(methods); //run methods in if
         }
-        else if (elses != null)
+        else if (elses != null) //if there are elses
         {
-            elses.Compute();
+            elses.Compute(); //compute elses
         }
         return true;
     }
 
+    //get true or false value if if
     public bool getValue()
     {
-        if (ifType == Logic.NONE)
+        if (ifType == Logic.NONE) //if there is no logic for this if
         {
             return ifLHS.getValue();
         }

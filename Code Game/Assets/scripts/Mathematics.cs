@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class Mathematics
 {
+    //Enum of mathematical operators
     public enum Operator
     {
         NONE,
@@ -12,6 +13,7 @@ public class Mathematics
         DIVIDE
     }
 
+    //variables to store the left and right hand sides of the equation
     public Mathematics lhs = null;
     public Mathematics rhs = null;
     public string varLHS = "";
@@ -21,12 +23,16 @@ public class Mathematics
     public Operator op = Operator.NONE;
     public Code_if.VectorPart vectorLHS;
     public Code_if.VectorPart vectorRHS;
+
+    //variables for equation creation
     public bool lhsComplete = false;
     public bool rhsComplete = false;
 
-    public Mathematics() { }
-    public Mathematics(Mathematics m)
+    public Mathematics() { } //empty constructor
+
+    public Mathematics(Mathematics m) //constructor that makes a Mathematics object based on another Mathematics object
     {
+        //Make variables equal
         lhs = m.lhs;
         rhs = m.rhs;
         varLHS = m.varLHS;
@@ -40,9 +46,10 @@ public class Mathematics
         rhsComplete = m.rhsComplete;
     }
 
+    //Method to caluculate the result of the equation
     public float Calculate()
     {
-
+        //Use the right operator
         switch (op)
         {
             case Operator.NONE:
@@ -59,14 +66,16 @@ public class Mathematics
         return 0;
     }
 
+    //Method to get LHS value
     private float LeftValue()
     {
-        if (lhs != null)
+        if (lhs != null) //if there is another equation on the lhs
         {
-            return lhs.Calculate();
+            return lhs.Calculate(); //calculate lhs
         }
-        else if (varLHS != "")
+        else if (varLHS != "") //if there is a variable in the lhs
         {
+            //Return a the correct value based on variable type
             switch (Controller.allVars[Controller.currentZomb][varLHS].type)
             {
                 case Variable.VariableType.FLOAT:
@@ -74,6 +83,7 @@ public class Mathematics
                 case Variable.VariableType.INT:
                     return Controller.allVars[Controller.currentZomb][varLHS].int_value;
                 case Variable.VariableType.VEC3:
+                    //Return the correct vector part
                     switch (vectorLHS)
                     {
                         case Code_if.VectorPart.x:
@@ -86,17 +96,19 @@ public class Mathematics
                     break;
             }
         }
-        return fLHS;
+        return fLHS; //return the float value of the lhs
     }
 
+    //Method to get RHS value
     private float RightValue()
     {
-        if (rhs != null)
+        if (rhs != null) //if there is another equation on the rhs
         {
-            return rhs.Calculate();
+            return rhs.Calculate(); //calculate rhs
         }
-        else if (varRHS != "")
+        else if (varRHS != "") //if there is a variable in the rhs
         {
+            //Return a the correct value based on variable type
             switch (Controller.allVars[Controller.currentZomb][varRHS].type)
             {
                 case Variable.VariableType.FLOAT:
@@ -104,6 +116,7 @@ public class Mathematics
                 case Variable.VariableType.INT:
                     return Controller.allVars[Controller.currentZomb][varRHS].int_value;
                 case Variable.VariableType.VEC3:
+                    //Return the correct vector part
                     switch (vectorRHS)
                     {
                         case Code_if.VectorPart.x:
@@ -116,6 +129,6 @@ public class Mathematics
                     break;
             }
         }
-        return fRHS;
+        return fRHS; //return the float value of the rhs
     }
 }

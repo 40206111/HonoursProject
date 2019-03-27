@@ -5,74 +5,95 @@ using TMPro;
 
 public class Overlay : MonoBehaviour
 {
-    //store character emotions
+    //Character assets
     [SerializeField]
     private List<GameObject> ava;
     [SerializeField]
     private List<GameObject> larry;
     [SerializeField]
     private List<GameObject> gw;
-    //to store current character
+    //current enabled character asset
     private GameObject curEnabled;
 
-    //store name plate
+    //Dialogue box data
     [SerializeField]
     private TMP_Text nameplate;
-    //store dialogue content box
     [SerializeField]
     private TMP_Text content;
 
-    //store dialogue file to open
+    //file to read dialgue from
     public string dialogueFile = "";
+    //string to read dialogue into
+    string dialogue;
 
-    //bool to decide if dialogue will start on scene load
+    //Decide of overlay should run on load
     [SerializeField]
     private bool onLoad = true;
 
-    //bool for when there is an expected key press
+    //variables for helping to write dialogue
     private bool expect = false;
-    private int count = 0;  //current line
-    private string[] lines; //array of dialogue lines
-    private bool skip = false;  //if user has skipped dialougue writting out
-    private bool active = false;   //if dialogue box is currently writing out dialogue
+    private int count = 0;
+    private string[] lines;
+    private bool skip = false;
+    private bool active = false;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        if (onLoad) Read(); //read text
-        else gameObject.SetActive(false);   //deactivate gameobject
+        //begin if to be read on load
+        if (onLoad) Read();
+        else gameObject.SetActive(false);
     }
 
-    //Method to read in dialogue
+    //string that the file path will be put into
+    public string filePath;
+    IEnumerator ReadFile()
+    {
+        //find file path
+        filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Dialogue");
+        filePath = System.IO.Path.Combine(filePath, dialogueFile + ".txt");
+        if (filePath.Contains("://")) //if on web
+        {
+            WWW www = new WWW(filePath);
+            yield return www;
+            dialogue = www.text;
+        }
+        else
+            dialogue = System.IO.File.ReadAllText(filePath);
+
+        //split lines of dialogue
+        lines = dialogue.Split('\n');
+        //empty dialogue
+        content.text = "";
+
+        //begin dialogue read
+        StartCoroutine(WaitToActivate());
+        StartCoroutine(HelpRead(lines[count]));
+    }
+
+    //Method to begin dialogue read
     public void Read()
     {
-        //activate gameobject
         gameObject.SetActive(true);
-        //read in dialogue from file
-        string dialogue = System.IO.File.ReadAllText("Assets/Dialogue/" + dialogueFile + ".txt");
-        lines = dialogue.Split('\n');   //split on newline
-        content.text = ""; // remove text from content box
-        StartCoroutine(WaitToActivate());   //set diagloge box to active
-        StartCoroutine(HelpRead(lines[count])); //Read line 0
+        StartCoroutine(ReadFile());
     }
 
-    //Method to stop user being able to skip to quickly over the dialogue
+    //Method to stop user from being able to skip through dialogue too fast
     IEnumerator WaitToActivate()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(1);
         active = true;
     }
 
+    // Update is called once per frame
     private void Update()
     {
-        //If expecting a key press and there is a key press
-        if (expect && Input.anyKeyDown)
+        if (expect && Input.anyKeyDown) //if waiting for button press and button pressed
         {
-            //If there isn't any more dialogue left
-            if (count > lines.Length - 1)
+            if (count > lines.Length - 1) // if there are no lines left
             {
-                //Reset values
+                //deactivate overlay
                 count = 0;
                 active = false;
                 gameObject.SetActive(false);
@@ -80,15 +101,15 @@ public class Overlay : MonoBehaviour
             }
             else
             {
-                content.text = ""; //empty text box
+                //Start reading next line
+                content.text = "";
                 expect = false;
-                StartCoroutine(HelpRead(lines[count])); //Read next line
+                StartCoroutine(HelpRead(lines[count]));
             }
         }
-        //if textbox is currently being written to and there is a key press
-        else if (active && Input.anyKeyDown)
+        else if (active && Input.anyKeyDown) //if currently in dialogue and button pressed
         {
-            skip = true;    //Skip dialogue
+            skip = true;
         }
     }
 
@@ -97,20 +118,20 @@ public class Overlay : MonoBehaviour
     {
         bool linestart = true;
         string word = "";
-        //while there is still content left to write
+
+        //while there is still more characters in line and line has not been skipped
         while (line != "" && !skip)
         {
-            char c = line[0];   //get first character
-            line = line.Substring(1, line.Length - 1); //remove first character
+            //remove character
+            char c = line[0];
+            line = line.Substring(1, line.Length - 1);
 
-            //if the actual content hasn't started yet
-            if (linestart)
+            if (linestart) // if this is the first word in the line
             {
-                if (c == ':')
+                if (c == ':') // if character name is given
                 {
-                    //CHANGE CHARACTER
-                    if (curEnabled != null) curEnabled.SetActive(false);    //deactivate active character
-                    //Set New character
+                    if (curEnabled != null) curEnabled.SetActive(false);
+                    //Set new Character based on word given
                     if (word == "Ava")
                     {
                         nameplate.text = "Ava";
@@ -146,43 +167,43 @@ public class Overlay : MonoBehaviour
                         nameplate.text = "Glitch Witch";
                         curEnabled = gw[3];
                     }
-                    curEnabled.SetActive(true); //activate new character
-                    linestart = false;  //set linestart to false
-                }
-                else if (c == ' ')
-                {
-                    //character has not changed, continue
+                    //enable new sprite
+                    curEnabled.SetActive(true);
                     linestart = false;
+                }
+                else if (c == ' ') //new character name not given
+                {
+                    linestart = false;
+                    //add word back to line
                     line = word + " " + line;
                 }
                 else
                 {
-                    word += c;
+                    word += c; //add character to word
                 }
             }
             else
             {
-                content.text += c; //add character to content box
-                yield return new WaitForSeconds(0.05f); //wait before adding next character
+                //display characters one at a time
+                content.text += c;
+                yield return new WaitForSeconds(0.05f);
             }
 
         }
 
-        //if text is skipped
         if (skip)
         {
+            //skip to end of text
             skip = false;
-            content.text += line;   //put rest of line into content box
+            content.text += line;
         }
 
-        count++;    //increase line count
-        expect = true;  //expect key press
-        //if there are still lines left
-        if (count < lines.Length)
+        count++; //increase line count
+        expect = true; //expect button press
+        if (count < lines.Length) //if there are more lines
         {
             active = false;
             StartCoroutine(WaitToActivate());
-            expect = true;
         }
     }
 }
